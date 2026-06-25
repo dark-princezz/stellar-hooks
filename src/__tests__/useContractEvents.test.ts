@@ -196,7 +196,7 @@ describe("useContractEvents", () => {
 
     await hook.refetch();
 
-    const call = mockGetEvents.mock.calls[0][0];
+    const call = mockGetEvents.mock.calls[0]![0];
     expect(call).not.toHaveProperty("startLedger");
   });
 });
