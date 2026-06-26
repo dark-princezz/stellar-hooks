@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
-import { SorobanRpc, xdr } from "@stellar/stellar-sdk";
+import { rpc, xdr } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 import type { LedgerEntryState } from "../types";
-import { sleep } from "../utils";
 
 // ─── Reducer ──────────────────────────────────────────────────────────────────
 
 type Action =
   | { type: "FETCH_START" }
-  | { type: "FETCH_SUCCESS"; payload: SorobanRpc.Api.LedgerEntryResult }
+  | { type: "FETCH_SUCCESS"; payload: rpc.Api.LedgerEntryResult }
   | { type: "FETCH_NOT_FOUND" }
   | { type: "FETCH_ERROR"; payload: Error };
 
@@ -30,33 +29,12 @@ function reducer(state: LedgerEntryState, action: Action): LedgerEntryState {
 // ─── Options ──────────────────────────────────────────────────────────────────
 
 export interface UseLedgerEntryOptions {
-  /** Set false to skip automatic fetching. Default: true */
   enabled?: boolean;
-  /** Poll every N ms. Set to 0 to disable. Default: 0 */
   refetchInterval?: number;
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
-/**
- * Read a raw Soroban ledger entry by its XDR key.
- * Useful for reading persistent contract data without constructing a full
- * contract call.
- *
- * @example
- * ```tsx
- * // Read a counter stored in a Soroban contract
- * const key = xdr.LedgerKey.contractData(
- *   new xdr.LedgerKeyContractData({
- *     contract: new Address(CONTRACT_ID).toScAddress(),
- *     key: xdr.ScVal.scvSymbol("Counter"),
- *     durability: xdr.ContractDataDurability.persistent(),
- *   })
- * );
- *
- * const { data, isLoading } = useLedgerEntry(key);
- * ```
- */
 export function useLedgerEntry(
   ledgerKey: xdr.LedgerKey | null | undefined,
   options: UseLedgerEntryOptions = {}
@@ -80,7 +58,7 @@ export function useLedgerEntry(
     dispatch({ type: "FETCH_START" });
 
     try {
-      const server = new SorobanRpc.Server(config.sorobanRpcUrl);
+      const server = new rpc.Server(config.sorobanRpcUrl);
       const result = await server.getLedgerEntries(ledgerKey);
 
       if (result.entries.length === 0) {
@@ -102,7 +80,6 @@ export function useLedgerEntry(
     }
   }, [ledgerKey, config.sorobanRpcUrl]);
 
-  // Keep ref fresh so state.refetch always points to the latest
   useEffect(() => { refetchRef.current = fetch; }, [fetch]);
 
   useEffect(() => {

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import { StellarTomlResolver } from "@stellar/stellar-sdk";
+import { StellarToml } from "@stellar/stellar-sdk";
 
 export interface StellarTomlData {
-  CURRENCIES?: Array<Record<string, any>>;
-  VALIDATORS?: Array<Record<string, any>>;
-  DOCUMENTATION?: Record<string, any>;
-  [key: string]: any;
+  CURRENCIES?: Array<Record<string, unknown>>;
+  VALIDATORS?: Array<Record<string, unknown>>;
+  DOCUMENTATION?: Record<string, unknown>;
+  [key: string]: unknown;
 }
 
 export interface UseStellarTomlReturn {
@@ -15,9 +15,6 @@ export interface UseStellarTomlReturn {
   refetch: () => Promise<void>;
 }
 
-/**
- * Fetches and parses a domain's stellar.toml file via the SEP-1 standard.
- */
 export function useStellarToml(
   domain: string | null | undefined
 ): UseStellarTomlReturn {
@@ -30,10 +27,9 @@ export function useStellarToml(
     setIsLoading(true);
     setError(null);
     try {
-      const toml = await StellarTomlResolver.resolve(domain);
-      setData(toml as StellarTomlData);
+      const toml = await StellarToml.Resolver.resolve(domain);
+      setData(toml as unknown as StellarTomlData);
     } catch (err) {
-      // Gracefully capture and surface errors (e.g., CORS, network failure)
       setError(err instanceof Error ? err : new Error(String(err)));
     } finally {
       setIsLoading(false);

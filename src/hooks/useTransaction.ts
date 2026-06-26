@@ -1,9 +1,8 @@
 import { useCallback, useReducer } from "react";
 import {
-  SorobanRpc,
+  rpc,
   TransactionBuilder,
   Horizon,
-  xdr,
 } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 import type { TransactionState, TransactionStatus } from "../types";
@@ -12,9 +11,7 @@ import { sleep, backoff } from "../utils";
 // ─── Options ──────────────────────────────────────────────────────────────────
 
 export interface UseTransactionOptions {
-  /** "soroban" uses SorobanRpc; "classic" uses Horizon. Default: "soroban" */
   mode?: "soroban" | "classic";
-  /** Polling timeout in seconds. Default: 60 */
   timeoutSeconds?: number;
 }
 
@@ -58,20 +55,6 @@ const initial: TransactionState = {
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
-/**
- * Submit a pre-signed transaction XDR and poll until it is confirmed.
- * Works with both Soroban (RPC) and classic Stellar (Horizon) transactions.
- *
- * @example
- * ```tsx
- * const { submit, status, hash, isLoading } = useTransaction();
- *
- * async function handleSend() {
- *   const signedXdr = await freighter.signTransaction(builtXdr);
- *   await submit(signedXdr);
- * }
- * ```
- */
 export function useTransaction(
   options: UseTransactionOptions = {}
 ): UseTransactionReturn {
@@ -85,7 +68,7 @@ export function useTransaction(
 
       try {
         if (mode === "soroban") {
-          const server = new SorobanRpc.Server(config.sorobanRpcUrl);
+          const server = new rpc.Server(config.sorobanRpcUrl);
           const tx = TransactionBuilder.fromXDR(signedXdr, config.networkPassphrase);
 
           const sendResult = await server.sendTransaction(tx);
@@ -97,7 +80,6 @@ export function useTransaction(
           const txHash = sendResult.hash;
           dispatch({ type: "STATUS", payload: "polling" });
 
-          // Poll
           const deadline = Date.now() + timeoutSeconds * 1000;
           let attempt = 0;
 
@@ -107,12 +89,12 @@ export function useTransaction(
 
             const getResult = await server.getTransaction(txHash);
 
-            if (getResult.status === SorobanRpc.Api.GetTransactionStatus.SUCCESS) {
+            if (getResult.status === rpc.Api.GetTransactionStatus.SUCCESS) {
               dispatch({ type: "SUCCESS", hash: txHash });
               return;
             }
 
-            if (getResult.status === SorobanRpc.Api.GetTransactionStatus.FAILED) {
+            if (getResult.status === rpc.Api.GetTransactionStatus.FAILED) {
               throw new Error(`Transaction failed on-chain: ${txHash}`);
             }
           }
@@ -123,7 +105,6 @@ export function useTransaction(
           const server = new Horizon.Server(config.horizonUrl);
           const tx = TransactionBuilder.fromXDR(signedXdr, config.networkPassphrase);
 
-          // Horizon submitTransaction resolves when the tx is included in a ledger
           const result = await server.submitTransaction(tx as Parameters<typeof server.submitTransaction>[0]);
           dispatch({ type: "SUCCESS", hash: result.hash });
         }

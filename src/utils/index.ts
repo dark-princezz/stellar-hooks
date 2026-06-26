@@ -1,25 +1,29 @@
 import { Horizon } from "@stellar/stellar-sdk";
 import type { StellarBalance, StellarAccountData } from "../types";
 
-/**
- * Parse a raw Horizon AccountResponse into the friendlier StellarAccountData shape.
- */
 export function parseAccountResponse(
   raw: Horizon.AccountResponse
 ): StellarAccountData {
   const balances: StellarBalance[] = raw.balances.map((b) => {
     const isNative = b.asset_type === "native";
-    return {
+    const balance: StellarBalance = {
       assetType: b.asset_type,
-      assetCode: "asset_code" in b ? b.asset_code : undefined,
-      assetIssuer: "asset_issuer" in b ? b.asset_issuer : undefined,
       balance: b.balance,
       balanceFloat: parseFloat(b.balance),
-      buyingLiabilities: b.buying_liabilities,
-      sellingLiabilities: b.selling_liabilities,
-      limit: "limit" in b ? b.limit : undefined,
+      buyingLiabilities: "buying_liabilities" in b ? b.buying_liabilities : "0.0000000",
+      sellingLiabilities: "selling_liabilities" in b ? b.selling_liabilities : "0.0000000",
       isNative,
     };
+    if ("asset_code" in b) {
+      balance.assetCode = b.asset_code;
+    }
+    if ("asset_issuer" in b) {
+      balance.assetIssuer = b.asset_issuer;
+    }
+    if ("limit" in b) {
+      balance.limit = b.limit;
+    }
+    return balance;
   });
 
   return {
@@ -42,23 +46,14 @@ export function parseAccountResponse(
   };
 }
 
-/**
- * Clamp a polling interval between min and max ms with exponential back-off.
- */
 export function backoff(attempt: number, baseMs = 1000, maxMs = 10000): number {
   return Math.min(baseMs * 2 ** attempt, maxMs);
 }
 
-/**
- * Sleep for `ms` milliseconds.
- */
 export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-/**
- * Type-safe assertion that a value is not null/undefined.
- */
 export function assertDefined<T>(
   value: T | null | undefined,
   message: string

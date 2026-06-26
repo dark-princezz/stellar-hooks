@@ -1,6 +1,5 @@
 import { useCallback, useReducer } from "react";
 import {
-  Asset,
   Horizon,
   Operation,
   TransactionBuilder,
