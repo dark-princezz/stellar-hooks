@@ -218,7 +218,11 @@ export function useFreighterAccounts(
         const result = await requestAccess();
         if (result.error || !result.address) return null;
         const pk = asPublicKey(result.address);
-        // Ensure the active-after-switch address lands at the front of `known`.
+        // Persist synchronously so `known[0] === switched` immediately after
+        // resolution — callers (and tests) rely on this contract. The
+        // active-tracking useEffect will write the same value once
+        // useFreighter propagates the new active key; that's an idempotent
+        // second write we accept in exchange for synchronous consistency.
         remember(pk);
         return pk;
       } finally {

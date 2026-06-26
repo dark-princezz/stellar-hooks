@@ -163,21 +163,35 @@ export function useContractStorage<T = xdr.ScVal>(
   const ledger = useLedgerEntry(ledgerKey, ledgerOptions);
 
   return useMemo(() => {
+    // `parseResult` is user-supplied, so we cannot trust it to be total on
+    // arbitrary retval shapes. We catch any throw and surface it as a
+    // hook-level error rather than crashing the render. Callers can choose
+    // to make their parsers total to avoid this branch.
     const raw = readContractDataVal(ledger.data);
-    const parsed: T | null =
-      raw === null
-        ? null
-        : parseResult
-          ? (parseResult(raw) as T)
-          : (raw as unknown as T);
+    let parsed: T | null = null;
+    let parseError: Error | null = null;
+    if (raw !== null) {
+      if (parseResult) {
+        try {
+          parsed = parseResult(raw) as T;
+        } catch (e) {
+          parseError = e instanceof Error ? e : new Error(String(e));
+          parsed = null;
+        }
+      } else {
+        parsed = raw as unknown as T;
+      }
+    }
+
+    const combinedError = ledger.error ?? parseError;
 
     return {
       data: parsed,
       raw,
       isLoading: ledger.isLoading,
       isRefetching: ledger.isRefetching,
-      isError: ledger.error !== null,
-      error: ledger.error,
+      isError: combinedError !== null,
+      error: combinedError,
       refetch: ledger.refetch,
       lastFetchedAt: ledger.lastFetchedAt,
     };
