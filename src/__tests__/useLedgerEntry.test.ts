@@ -252,6 +252,36 @@ describe("useLedgerEntry", () => {
     expect(mockGetLedgerEntries).toHaveBeenCalledTimes(2);
   });
 
+  it("refetch() bypasses cache even when called within the TTL window", async () => {
+    const utils = await import("../utils");
+    mockGetLedgerEntries.mockResolvedValue({ entries: [mockEntry] });
+
+    // First fetch populates the in-memory cache
+    const { result } = renderHook(() =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      useLedgerEntry(mockLedgerKey as any),
+    );
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(mockGetLedgerEntries).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(utils.setCache)).toHaveBeenCalledTimes(1);
+
+    // Simulate a warm cache — data is still within the TTL window
+    vi.mocked(utils.getCache).mockReturnValue(mockEntry);
+
+    // Calling refetch() must bypass the cache and hit the RPC server again,
+    // regardless of the TTL.  If cache bypass is broken, getCache will
+    // return the stale entry and getLedgerEntries won't be called a second time.
+    await act(async () => {
+      await result.current.refetch();
+    });
+
+    expect(
+      mockGetLedgerEntries,
+      "refetch() should bypass the in-memory cache and call RPC again",
+    ).toHaveBeenCalledTimes(2);
+  });
+
   it("polls RPC on the refetchInterval", async () => {
     vi.useFakeTimers();
     mockGetLedgerEntries.mockResolvedValue({ entries: [mockEntry] });
