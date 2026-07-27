@@ -1,7 +1,7 @@
-import { Horizon } from "@stellar/stellar-sdk";
+import { getHorizonServer } from "../utils/memoizedServers";
 import { useStellarContext } from "../context";
 
-export function useHorizonServer(): Horizon.Server {
+export function useHorizonServer(): ReturnType<typeof getHorizonServer> {
   const { config } = useStellarContext();
-  return new Horizon.Server(config.horizonUrl);
+  return getHorizonServer(config.horizonUrl);
 }

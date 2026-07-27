@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
-import { Horizon, Memo, TransactionBuilder, Operation } from "@stellar/stellar-sdk";
+import { Memo, TransactionBuilder, Operation } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 import { useFreighter } from "./useFreighter";
 import { useTransactionCore } from "./useTransactionCore";
 import type { TransactionStatus, StellarTransactionError } from "../types";
@@ -83,7 +84,7 @@ export function useMultiSig(options: UseMultiSigOptions = {}): UseMultiSigReturn
         throw new Error("Freighter is not connected. Call connect() first or provide a source address.");
       }
 
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       const sourceAccount = await server.loadAccount(sourceAddress);
 
       const builder = new TransactionBuilder(sourceAccount, {

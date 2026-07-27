@@ -7,8 +7,8 @@
 
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { Address, Contract, scValToNative, TransactionBuilder } from "@stellar/stellar-sdk";
-import * as rpc from "@stellar/stellar-sdk/rpc";
 import { useStellarContext } from "../context";
+import { getRpcServer } from "../utils/memoizedServers";
 import { getCache, setCache, validateContractId, validatePublicKey } from "../utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ export function useSorobanTokenBalance(
       try {
         validateContractId(contractId, "contractId");
         validatePublicKey(accountAddress, "accountAddress");
-        const server = new rpc.Server(config.sorobanRpcUrl);
+        const server = getRpcServer(config.sorobanRpcUrl);
         const contract = new Contract(contractId);
 
         // Build the balance(address) call operation

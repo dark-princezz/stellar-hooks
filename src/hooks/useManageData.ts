@@ -6,8 +6,9 @@
  */
 
 import { useCallback } from "react";
-import { Horizon, Operation, TransactionBuilder } from "@stellar/stellar-sdk";
+import { Operation, TransactionBuilder } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 import { useTransactionCore } from "./useTransactionCore";
 import { useFreighter } from "./useFreighter";
 import { unsafeAsXdrString, type TransactionStatus, type StellarTransactionError } from "../types";
@@ -106,7 +107,7 @@ export function useManageData(
       }
 
       // 1. Load source account from Horizon to get the sequence number
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       const sourceAccount = await server.loadAccount(publicKey);
 
       // 2. Build the transaction with a ManageData operation

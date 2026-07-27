@@ -1,6 +1,7 @@
 import { useCallback } from "react";
-import { AuthFlag, Horizon, Operation, TransactionBuilder } from "@stellar/stellar-sdk";
+import { AuthFlag, Operation, TransactionBuilder } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 import { useTransactionCore } from "./useTransactionCore";
 import { useFreighter } from "./useFreighter";
 import type { TransactionStatus, StellarTransactionError } from "../types";
@@ -95,7 +96,7 @@ export function useAccountFlags(options: UseAccountFlagsOptions = {}): UseAccoun
       throw new Error("Freighter is not connected. Call connect() first.");
     }
 
-    const server = new Horizon.Server(config.horizonUrl);
+    const server = getHorizonServer(config.horizonUrl);
     const sourceAccount = await server.loadAccount(publicKey);
 
     const setFlagsMask = setFlags && setFlags.length > 0 ? toMask(setFlags) : undefined;

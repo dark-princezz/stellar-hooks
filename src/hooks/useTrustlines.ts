@@ -6,6 +6,7 @@ import {
   TransactionBuilder,
 } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 import { useFreighter } from "./useFreighter";
 import { useTransactionCore } from "./useTransactionCore";
 import { unsafeAsXdrString, unsafeAsAssetIssuer, type StellarBalance, type StellarTransactionError, type TransactionStatus } from "../types";
@@ -89,7 +90,7 @@ export function useTrustlines(
     if (!publicKey) return;
     listDispatch({ type: "LOADING" });
     try {
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       const raw = await server.loadAccount(publicKey);
       const trustlines = raw.balances
         .filter((b: Horizon.HorizonApi.BalanceLine) => b.asset_type !== "native")
@@ -119,7 +120,7 @@ export function useTrustlines(
         throw new Error("Freighter is not connected. Call connect() first.");
       }
 
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       const sourceAccount = await server.loadAccount(freighterKey);
 
       const tx = new TransactionBuilder(sourceAccount, {
@@ -151,7 +152,7 @@ export function useTrustlines(
         throw new Error("Freighter is not connected. Call connect() first.");
       }
 
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       const sourceAccount = await server.loadAccount(freighterKey);
 
       const tx = new TransactionBuilder(sourceAccount, {

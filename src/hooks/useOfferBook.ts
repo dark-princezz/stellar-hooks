@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Horizon, Asset } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 
 export interface UseOfferBookOptions {
   selling: Asset;
@@ -46,7 +47,7 @@ export function useOfferBook(options: UseOfferBookOptions) {
       try {
         if (!data) setIsLoading(true);
         
-        const server = new Horizon.Server(config.horizonUrl);
+        const server = getHorizonServer(config.horizonUrl);
         const ob = await server.orderbook(options.selling, options.buying).limit(options.limit || 20).call();
         
         if (isMounted) {
