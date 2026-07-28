@@ -1,6 +1,7 @@
 import { useCallback } from "react";
-import { Horizon, Transaction, TransactionBuilder, Operation, Memo, xdr } from "@stellar/stellar-sdk";
+import { Transaction, TransactionBuilder, Operation, Memo, xdr } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 import { useFreighter } from "./useFreighter";
 import { useTransactionCore } from "./useTransactionCore";
 import { unsafeAsXdrString, type TransactionStatus, type StellarTransactionError } from "../types";
@@ -69,7 +70,7 @@ export function useStellarTransaction(options: UseStellarTransactionOptions = {}
   const submit = useCallback(async (operations: xdr.Operation[]) => {
     if (!publicKey) throw new Error("Freighter is not connected. Call connect() first.");
 
-    const server = new Horizon.Server(config.horizonUrl);
+    const server = getHorizonServer(config.horizonUrl);
     const sourceAccount = await server.loadAccount(publicKey);
 
     const builder = new TransactionBuilder(sourceAccount, {

@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { Horizon } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 
 export interface UseEffectsOptions {
   /** Whether the hook is active. Default: true */
@@ -150,7 +151,7 @@ export function useEffects(
 
     closeStream();
 
-    const server = new Horizon.Server(config.horizonUrl);
+    const server = getHorizonServer(config.horizonUrl);
     let builder = server.effects().forAccount(publicKey).order(orderRef.current);
 
     if (cursor) {
@@ -186,7 +187,7 @@ export function useEffects(
     dispatch({ type: "FETCH_START" });
 
     try {
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       let builder = server
         .effects()
         .forAccount(publicKey)

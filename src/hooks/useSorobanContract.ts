@@ -16,6 +16,7 @@ import {
 import type { Transaction } from "@stellar/stellar-sdk";
 import * as rpc from "@stellar/stellar-sdk/rpc";
 import { useStellarContext } from "../context";
+import { getRpcServer } from "../utils/memoizedServers";
 import { useFreighter } from "./useFreighter";
 import type { ContractCallOptions, UseContractCallReturn, TransactionStatus, StellarContractId, StellarTxHash, StellarTransactionError } from "../types";
 import { unsafeAsXdrString, asTxHash, unsafeAsTxHash } from "../types";
@@ -144,7 +145,7 @@ export function useSorobanContract<TResult = unknown>(
         dispatch({ type: "BUILDING" });
 
         // rpc is the correct namespace in @stellar/stellar-sdk@13 (previously SorobanRpc)
-        const server = sorobanRpcServer ?? new rpc.Server(config.sorobanRpcUrl);
+        const server = sorobanRpcServer ?? getRpcServer(config.sorobanRpcUrl);
         const contract = new Contract(contractId);
 
         // Convert plain JS values to ScVals if needed
@@ -311,7 +312,7 @@ export function useSorobanContract<TResult = unknown>(
 
       try {
         validateContractId(contractId);
-        const server = sorobanRpcServer ?? new rpc.Server(config.sorobanRpcUrl);
+        const server = sorobanRpcServer ?? getRpcServer(config.sorobanRpcUrl);
         const contract = new Contract(contractId);
 
         // Convert plain JS values to ScVals if needed

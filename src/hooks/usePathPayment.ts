@@ -8,11 +8,11 @@
 import { useCallback } from "react";
 import {
   Asset,
-  Horizon,
   Operation,
   TransactionBuilder,
 } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 import { useTransactionCore } from "./useTransactionCore";
 import { useFreighter } from "./useFreighter";
 import type { TransactionStatus, StellarTransactionError } from "../types";
@@ -175,7 +175,7 @@ export function usePathPayment(
     }
 
     // 1. Load source account
-    const server = new Horizon.Server(config.horizonUrl);
+    const server = getHorizonServer(config.horizonUrl);
     const sourceAccount = await server.loadAccount(publicKey);
 
     // 2. Resolve assets

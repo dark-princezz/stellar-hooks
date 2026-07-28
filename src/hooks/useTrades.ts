@@ -6,8 +6,9 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Asset, Horizon } from "@stellar/stellar-sdk";
+import { Asset } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 
 export interface TradeRecord {
   id: string;
@@ -104,7 +105,7 @@ export function useTrades(
     setError(null);
 
     try {
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       let query = server
         .trades()
         .forAccount(publicKey)

@@ -7,8 +7,8 @@
 
 import { useCallback, useMemo, useRef } from "react";
 import { xdr } from "@stellar/stellar-sdk";
-import * as rpc from "@stellar/stellar-sdk/rpc";
 import { useStellarContext } from "../context";
+import { getRpcServer } from "../utils/memoizedServers";
 import type { LedgerEntryState } from "../types";
 import { getCache, setCache } from "../utils";
 import { useStellarQuery } from "./useStellarQuery";
@@ -76,7 +76,7 @@ export function useLedgerEntry(
       if (cached) return cached;
     }
 
-    const server = new rpc.Server(config.sorobanRpcUrl);
+    const server = getRpcServer(config.sorobanRpcUrl);
     const result = await server.getLedgerEntries(ledgerKey);
 
     if (result.entries.length === 0) return null;

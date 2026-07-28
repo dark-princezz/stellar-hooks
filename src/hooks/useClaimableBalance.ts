@@ -14,6 +14,7 @@ import {
   xdr,
 } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 import { useTransactionCore } from "./useTransactionCore";
 import { useFreighter } from "./useFreighter";
 import { unsafeAsXdrString, type TransactionStatus, type StellarTransactionError } from "../types";
@@ -178,7 +179,7 @@ export function useClaimableBalances(
 
     try {
       validatePublicKey(publicKey);
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       const response = await server
         .claimableBalances()
         .claimant(publicKey)
@@ -250,7 +251,7 @@ export function useClaimBalance(
       }
 
       // 1. Load source account for sequence number
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       const sourceAccount = await server.loadAccount(publicKey);
 
       // 2. Build the transaction
@@ -381,7 +382,7 @@ export function useCreateClaimableBalance(
       }
 
       // 1. Load source account for sequence number
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       const sourceAccount = await server.loadAccount(publicKey);
 
       // 2. Resolve the asset

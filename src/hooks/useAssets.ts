@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useReducer } from "react";
 import { Horizon } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 
 export interface UseAssetsOptions {
   /** Filter by asset code */
@@ -101,7 +102,7 @@ export function useAssets(options: UseAssetsOptions = {}): UseAssetsReturn {
     dispatch({ type: "FETCH_START" });
 
     try {
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       let callBuilder = server.assets();
 
       if (assetCode) callBuilder = callBuilder.forCode(assetCode);

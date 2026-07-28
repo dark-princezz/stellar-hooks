@@ -7,13 +7,13 @@
 
 import { useCallback } from "react";
 import {
-  Horizon,
   Memo,
   Transaction,
   TransactionBuilder,
   xdr,
 } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 import { useFreighter } from "./useFreighter";
 import { useTransactionCore } from "./useTransactionCore";
 import type { TransactionState, TransactionStatus, StellarTransactionError } from "../types";
@@ -152,7 +152,7 @@ export function useTransaction(
       }
 
       // 1. Load the source account to obtain the current sequence number.
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       const sourceAccount = await server.loadAccount(publicKey);
 
       // 2. Build the transaction.

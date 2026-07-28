@@ -6,8 +6,9 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Asset, Horizon } from "@stellar/stellar-sdk";
+import { Asset } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 
 export interface OrderBookLevel {
   /** Price as a ratio {n}/{d} */
@@ -105,7 +106,7 @@ export function useOrderBook(
     setError(null);
 
     try {
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       const ob = await server.orderbook(selling, buying).limit(limit).call();
       setRaw(ob as unknown as OrderBookRecord);
       setLastFetchedAt(new Date());

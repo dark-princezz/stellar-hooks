@@ -6,8 +6,9 @@
  */
 
 import { useCallback } from "react";
-import { Horizon, Operation, TransactionBuilder } from "@stellar/stellar-sdk";
+import { Operation, TransactionBuilder } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 import { useTransactionCore } from "./useTransactionCore";
 import { useFreighter } from "./useFreighter";
 import type { TransactionStatus, StellarTransactionError } from "../types";
@@ -79,7 +80,7 @@ export function useBumpSequence(options: UseBumpSequenceOptions): UseBumpSequenc
       throw new Error("Freighter is not connected. Call connect() first.");
     }
 
-    const server = new Horizon.Server(config.horizonUrl);
+    const server = getHorizonServer(config.horizonUrl);
     const sourceAccount = await server.loadAccount(publicKey);
 
     const tx = new TransactionBuilder(sourceAccount, {

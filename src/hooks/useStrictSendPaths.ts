@@ -6,8 +6,9 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Asset, Horizon } from "@stellar/stellar-sdk";
+import { Asset } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 
 export interface PathRecord {
   source_asset_type: string;
@@ -109,7 +110,7 @@ export function useStrictSendPaths(
       setError(null);
 
       try {
-        const server = new Horizon.Server(config.horizonUrl);
+        const server = getHorizonServer(config.horizonUrl);
         const response = await server
           .strictSendPaths(sourceAsset, sourceAmount, destinationAssets)
           .call();

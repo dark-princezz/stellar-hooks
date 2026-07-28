@@ -8,9 +8,9 @@
  */
 
 import { useCallback, useReducer } from "react";
-import { TransactionBuilder, Horizon } from "@stellar/stellar-sdk";
-import * as rpc from "@stellar/stellar-sdk/rpc";
+import { TransactionBuilder } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer, getRpcServer } from "../utils/memoizedServers";
 import type { TransactionState, TransactionStatus, StellarXdrString, StellarTxHash, StellarTransactionError } from "../types";
 import { asTxHash } from "../types";
 import { sleep, backoff } from "../utils";
@@ -81,7 +81,7 @@ export function useTransactionCore(
 
       try {
         if (mode === "soroban") {
-          const server = new rpc.Server(config.sorobanRpcUrl);
+          const server = getRpcServer(config.sorobanRpcUrl);
           const tx = TransactionBuilder.fromXDR(signedXdr, config.networkPassphrase);
 
           const sendResult = await server.sendTransaction(tx);
@@ -133,10 +133,10 @@ export function useTransactionCore(
           dispatch({ type: "ERROR", payload: timeoutError });
           onError?.(timeoutError);
         } else {
-          const server = new Horizon.Server(config.horizonUrl);
+          const server = getHorizonServer(config.horizonUrl);
           const tx = TransactionBuilder.fromXDR(signedXdr, config.networkPassphrase);
 
-          const result = await server.submitTransaction(tx as Parameters<typeof server.submitTransaction>[0]);
+          const result = await server.submitTransaction(tx);
           dispatch({ type: "SUCCESS", hash: asTxHash(result.hash) });
           onSuccess?.(result.hash);
         }

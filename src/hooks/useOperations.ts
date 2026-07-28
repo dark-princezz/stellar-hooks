@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Horizon } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
+import { getHorizonServer } from "../utils/memoizedServers";
 
 export interface UseOperationsOptions {
   /** Stellar account public key to fetch operations for */
@@ -92,7 +93,7 @@ export function useOperations(
     setError(null);
 
     try {
-      const server = new Horizon.Server(config.horizonUrl);
+      const server = getHorizonServer(config.horizonUrl);
       let query = server.operations().order(order).limit(limit).includeFailed(includeFailed);
 
       if (cursor) {
