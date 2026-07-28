@@ -15,6 +15,22 @@ export interface UseSequenceNumberReturn {
   refresh: () => Promise<void>;
 }
 
+/**
+ * Fetches the current sequence number for a Stellar account, with optional
+ * auto-increment for building multiple transactions in a single session.
+ *
+ * @example
+ * ```tsx
+ * // Basic usage — get the current sequence number
+ * const { sequence, isLoading, error, refresh } = useSequenceNumber(publicKey);
+ * // sequence: "1234567890"
+ *
+ * // With autoIncrement — each call to refresh() increments locally
+ * // so you can build multiple transactions without re-fetching
+ * const { sequence, refresh } = useSequenceNumber(publicKey, { autoIncrement: true });
+ * // sequence: "1234567890" → refresh() → "1234567891" → refresh() → "1234567892"
+ * ```
+ */
 export function useSequenceNumber(
   publicKey: string | null | undefined,
   options: UseSequenceNumberOptions = {}

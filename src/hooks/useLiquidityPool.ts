@@ -41,7 +41,8 @@ export function useLiquidityPool(
     if (!poolId) return null;
 
     const url = `${config.horizonUrl.replace(/\/$/, "")}/liquidity_pools/${poolId}`;
-    const response = await fetch(url);
+    const controller = new AbortController();
+    const response = await fetch(url, { signal: controller.signal });
     if (!response.ok) {
       throw new Error(`Failed to fetch liquidity pool: ${response.status}`);
     }

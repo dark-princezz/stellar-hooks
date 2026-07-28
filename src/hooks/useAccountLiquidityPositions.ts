@@ -29,7 +29,8 @@ export function useAccountLiquidityPositions(
 
     validatePublicKey(publicKey);
     const url = `${config.horizonUrl.replace(/\/$/, "")}/liquidity_pools?account=${publicKey}&limit=200`;
-    const response = await fetch(url);
+    const controller = new AbortController();
+    const response = await fetch(url, { signal: controller.signal });
     if (!response.ok) {
       throw new Error(`Failed to fetch liquidity positions: ${response.status}`);
     }

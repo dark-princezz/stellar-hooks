@@ -112,6 +112,7 @@ export function useSorobanTokenBalance(
 
   const { config } = useStellarContext();
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const refetchRef = useRef<(force?: boolean) => Promise<void>>(() => Promise.resolve());
 
   const [state, dispatch] = useReducer(reducer, {
@@ -126,6 +127,12 @@ export function useSorobanTokenBalance(
   const fetch = useCallback(
     async (force = false) => {
       if (!contractId || !accountAddress) return;
+
+      // Abort any in-flight request before starting a new one
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      abortControllerRef.current = new AbortController();
 
       const cacheKey = `soroban-token-balance-${contractId}-${accountAddress}-${config.network}`;
 
@@ -175,6 +182,8 @@ export function useSorobanTokenBalance(
         setCache(cacheKey, raw, cacheTTL);
         dispatch({ type: "FETCH_SUCCESS", payload: raw });
       } catch (err) {
+        // Ignore AbortError from cancelled requests
+        if (err instanceof Error && err.name === "AbortError") return;
         dispatch({
           type: "FETCH_ERROR",
           payload: err instanceof Error ? err : new Error(String(err)),
@@ -191,6 +200,13 @@ export function useSorobanTokenBalance(
   useEffect(() => {
     if (!enabled || !contractId || !accountAddress) return;
     void fetch();
+
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
+    };
   }, [enabled, contractId, accountAddress, fetch]);
 
   useEffect(() => {

@@ -91,6 +91,7 @@ export function useStellarQuery<T>(
   const initialDataRef = useRef(initialData);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const isFetchingRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     stateRef.current = state;
@@ -108,6 +109,12 @@ export function useStellarQuery<T>(
     if (!enabled) return;
     if (deduplicate && isFetchingRef.current) return;
 
+    // Abort any in-flight request before starting a new one
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+
     isFetchingRef.current = true;
     dispatch({ type: "FETCH_START", hasData: stateRef.current.data !== null });
 
@@ -115,12 +122,15 @@ export function useStellarQuery<T>(
       const result = await fetcherRef.current();
       dispatch({ type: "FETCH_SUCCESS", payload: result });
     } catch (err) {
+      // Ignore AbortError from cancelled requests
+      if (err instanceof Error && err.name === "AbortError") return;
       dispatch({
         type: "FETCH_ERROR",
         payload: err instanceof Error ? err : new Error(String(err)),
       });
     } finally {
       isFetchingRef.current = false;
+      abortControllerRef.current = null;
     }
   }, [enabled, deduplicate]);
 
@@ -145,6 +155,10 @@ export function useStellarQuery<T>(
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
       }
     };
     // initialData intentionally omitted: read via initialDataRef instead.
