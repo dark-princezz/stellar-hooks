@@ -131,10 +131,8 @@ export function useCreateAccount(options: UseCreateAccountOptions = {}): UseCrea
         flags: { auth_required: false, auth_revocable: false, auth_immutable: false },
         id: sourceAccountId,
         paging_token: "",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        _links: {} as any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+        _links: {} as unknown as Horizon.ServerApi.AccountRecord["_links"],
+      } as unknown as Horizon.ServerApi.AccountRecord);
 
       return new TransactionBuilder(sourceAccount, {
         fee: baseFee,
