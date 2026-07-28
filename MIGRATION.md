@@ -24,32 +24,40 @@ This is the first public release of `stellar-hooks`. There are no prior versions
 
 ---
 
-<!--
 ## v0.2.0
-
-Template for future breaking changes:
 
 ### Breaking changes
 
-#### `hookName` — description of what changed
+#### `useAccountMerge` — migrated to options + `submit()` convention
+
+The hook no longer exposes a `merge(destination, opts)` function. Instead, it follows the same `options` + `submit()` pattern used by every other write hook in the library.
 
 **Before:**
 ```ts
-const { oldField } = useHook();
+const { merge, status, hash, error } = useAccountMerge();
+await merge("GDEST...", { confirm: true });
 ```
 
 **After:**
 ```ts
-const { newField } = useHook();
+const { submit, status, hash, error } = useAccountMerge({
+  destination: "GDEST...",
+  memo: "closing out", // optional
+  fee: 100,            // optional, default 100
+  timeoutSeconds: 60,  // optional, default 60
+});
+
+await submit();
 ```
 
-**Why:** Explanation of why the change was made.
+**Why:** The old `merge(destination, { confirm: true })` API was inconsistent with every other write hook in the library. The new API aligns with `usePayment`, `useTrade`, `useTrustline`, etc., all of which accept options in the hook call and expose a no-arg `submit()`.
 
 ### Deprecations
 
-- `deprecatedField` on `InterfaceName` — use `newField` instead. Will be removed in v0.3.0.
+- `merge` and `confirm` (removed in v0.2.0 — use `submit` and the `destination` option instead).
 
 ### New features
 
-- ...
--->
+- `useAccountMerge` now supports memo text, configurable fee, timeout, and `onSuccess` / `onError` callbacks.
+
+---
