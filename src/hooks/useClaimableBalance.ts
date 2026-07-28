@@ -202,7 +202,9 @@ export function useClaimableBalances(
     } catch (err) {
       dispatch({
         type: "ERROR",
-        payload: err instanceof Error ? err : new Error(String(err)),
+        payload: err instanceof Error
+          ? (err as unknown as StellarTransactionError)
+          : { type: "transaction", message: String(err) } as StellarTransactionError,
       });
     }
   }, [publicKey, config.horizonUrl]);
@@ -240,7 +242,11 @@ export function useClaimBalance(
   const claim = useCallback(
     async (balanceId: string) => {
       if (!publicKey) {
-        throw new Error("Freighter is not connected. Call connect() first.");
+        const err: StellarTransactionError = {
+          type: "network",
+          message: "Freighter is not connected. Call connect() first.",
+        };
+        throw err;
       }
 
       // 1. Load source account for sequence number
@@ -362,11 +368,16 @@ export function useCreateClaimableBalance(
   const create = useCallback(
     async ({ asset, amount, claimants }: CreateClaimableBalanceParams) => {
       if (!publicKey) {
-        throw new Error("Freighter is not connected. Call connect() first.");
+        const err: StellarTransactionError = {
+          type: "network",
+          message: "Freighter is not connected. Call connect() first.",
+        };
+        throw err;
       }
 
       if (claimants.length === 0) {
-        throw new Error("At least one claimant is required.");
+        const claimantErr: StellarTransactionError = { type: "transaction", message: "At least one claimant is required." };
+        throw claimantErr;
       }
 
       // 1. Load source account for sequence number

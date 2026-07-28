@@ -71,7 +71,8 @@ export function useFeeStats(
 
   const fetcher = useCallback(async (): Promise<FeeStats | null> => {
     const url = `${config.horizonUrl.replace(/\/$/, "")}/fee_stats`;
-    const response = await fetch(url);
+    const controller = new AbortController();
+    const response = await fetch(url, { signal: controller.signal });
     if (!response.ok) {
       throw new Error(`Failed to fetch fee stats: ${response.status}`);
     }
