@@ -101,7 +101,9 @@ export function useTrustlines(
       if (mountedRef.current) {
         listDispatch({
           type: "ERROR",
-          payload: err instanceof Error ? err : new Error(String(err)),
+          payload: err instanceof Error
+            ? (err as unknown as StellarTransactionError)
+            : { type: "transaction", message: String(err) } as StellarTransactionError,
         });
       }
     }
@@ -116,7 +118,11 @@ export function useTrustlines(
   const removeTrustline = useCallback(
     async (asset: TrustlineAsset) => {
       if (!freighterKey) {
-        throw new Error("Freighter is not connected. Call connect() first.");
+        const err: StellarTransactionError = {
+          type: "network",
+          message: "Freighter is not connected. Call connect() first.",
+        };
+        throw err;
       }
 
       const server = new Horizon.Server(config.horizonUrl);
@@ -148,7 +154,11 @@ export function useTrustlines(
   const addTrustline = useCallback(
     async (asset: TrustlineAsset) => {
       if (!freighterKey) {
-        throw new Error("Freighter is not connected. Call connect() first.");
+        const err: StellarTransactionError = {
+          type: "network",
+          message: "Freighter is not connected. Call connect() first.",
+        };
+        throw err;
       }
 
       const server = new Horizon.Server(config.horizonUrl);

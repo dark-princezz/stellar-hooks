@@ -63,6 +63,20 @@ const PERCENTILE_KEY: Record<FeePercentile, keyof FeeStats["maxFee"]> = {
   99: "p99",
 };
 
+/**
+ * Fetches current Stellar network fee statistics and a recommended fee
+ * at a configurable percentile.
+ *
+ * @example
+ * ```tsx
+ * const { feeStats, recommendedFee, isLoading } = useFeeStats({
+ *   percentile: 95,
+ *   refetchInterval: 60_000,
+ * });
+ * // recommendedFee: "500"  (stroops at the 95th percentile)
+ * // feeStats.lastLedgerBaseFee: "100"
+ * ```
+ */
 export function useFeeStats(
   options: UseFeeStatsOptions = {}
 ): UseFeeStatsReturn {
