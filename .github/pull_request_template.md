@@ -1,17 +1,21 @@
-# Pull Request
+---
+name: Pull Request
+about: Submit a pull request to improve the project
+title: ''
+labels: ''
+assignees: ''
+---
 
-## Summary
-- Added stricter typing for Soroban contract call arguments in `ContractCallOptions`.
-- `args` now accepts `xdr.ScVal[]` instead of `unknown[]`.
-- `parseResult` now receives `xdr.ScVal` instead of `any`.
+**Describe the changes**
+A clear and concise description of what the code changes do.
 
-## Files Changed
-- `src/types/index.ts`
+**Motivation and context**
+Explain why these changes are needed.
 
-## Testing
-- Run `npm run typecheck`
-- Run `npm test`
+**Related issues**
+Link any related issues. Example: Fixes #123
 
-## Notes
-- The hook implementation still supports runtime conversion of plain JS values via `nativeToScVal`.
-- This change improves compile-time type safety for contract call arguments and result parsing.
+**Checklist**
+- [ ] Tests added/updated
+- [ ] Documentation updated
+- [ ] Code follows linting rules
