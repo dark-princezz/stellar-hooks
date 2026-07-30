@@ -18,7 +18,8 @@ import type {
   UseFreighterOptions,
   UseFreighterReturn,
 } from "../types";
-import { asPublicKey, unsafeAsXdrString, type StellarPublicKey, type StellarXdrString } from "../types";
+import { asPublicKey, unsafeAsXdrString, type StellarXdrString } from "../types";
+import { UserRejectedError, isUserRejectionMessage } from "../utils/errors";
 
 // ─── Network mismatch helpers ─────────────────────────────────────────────────
 
@@ -229,7 +230,11 @@ export function useFreighter(options?: UseFreighterOptions): UseFreighterReturn 
         ...(opts?.networkPassphrase && { networkPassphrase: opts.networkPassphrase }),
         ...(opts?.address && { address: opts.address }),
       });
-      if (error) throw new Error(error.message);
+      if (error) {
+        throw isUserRejectionMessage(error.message)
+          ? new UserRejectedError(error.message, { cause: error, walletId: "freighter", operation: "signTransaction" })
+          : new Error(error.message);
+      }
       return unsafeAsXdrString(signedTxXdr);
     },
     []
@@ -242,7 +247,11 @@ export function useFreighter(options?: UseFreighterOptions): UseFreighterReturn 
       const { signedAuthEntry, error } = await signAuthEntry(entryPreimageXdr, {
         address: publicKey,
       });
-      if (error) throw new Error(error.message);
+      if (error) {
+        throw isUserRejectionMessage(error.message)
+          ? new UserRejectedError(error.message, { cause: error, walletId: "freighter", operation: "signAuthEntry" })
+          : new Error(error.message);
+      }
       if (!signedAuthEntry) throw new Error("No signed auth entry returned");
       return unsafeAsXdrString(signedAuthEntry);
     },
@@ -254,7 +263,11 @@ export function useFreighter(options?: UseFreighterOptions): UseFreighterReturn 
       const address = opts?.accountToSign ?? state.publicKey;
       if (!address) throw new Error("Wallet not connected");
       const { signedMessage: signed, error } = await signMessage(blob, { address });
-      if (error) throw new Error(error.message);
+      if (error) {
+        throw isUserRejectionMessage(error.message)
+          ? new UserRejectedError(error.message, { cause: error, walletId: "freighter", operation: "signBlob" })
+          : new Error(error.message);
+      }
       if (!signed) throw new Error("No signed message returned");
       return signed.toString();
     },
@@ -268,7 +281,11 @@ export function useFreighter(options?: UseFreighterOptions): UseFreighterReturn 
       setIsSigningMessage(true);
       try {
         const { signedMessage: signed, error } = await signMessage(message, { address });
-        if (error) throw new Error(error.message);
+        if (error) {
+          throw isUserRejectionMessage(error.message)
+            ? new UserRejectedError(error.message, { cause: error, walletId: "freighter", operation: "signMessage" })
+            : new Error(error.message);
+        }
         if (!signed) throw new Error("No signed message returned");
         return signed.toString();
       } finally {
