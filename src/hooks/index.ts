@@ -36,6 +36,18 @@ export type {
   UseWalletOptions,
   UseWalletReturn,
 } from "./useWallet";
+export { useXBull } from "./useXBull";
+export type {
+  XBullState,
+  UseXBullOptions,
+  UseXBullReturn,
+} from "./useXBull";
+export { useRabet } from "./useRabet";
+export type {
+  RabetState,
+  UseRabetOptions,
+  UseRabetReturn,
+} from "./useRabet";
 
 export { useFreighterAccounts } from "./useFreighterAccounts";
 export type {
@@ -45,7 +57,13 @@ export type {
 
 
 export { useStellarToml } from "./useStellarToml";
-export type { UseStellarTomlOptions, UseStellarTomlReturn } from "./useStellarToml";
+export type {
+  StellarTomlCurrency,
+  StellarTomlData,
+  StellarTomlDocumentation,
+  UseStellarTomlOptions,
+  UseStellarTomlReturn,
+} from "./useStellarToml";
 
 export { useAssetMetadata } from "./useAssetMetadata";
 export type { UseAssetMetadataReturn } from "./useAssetMetadata";

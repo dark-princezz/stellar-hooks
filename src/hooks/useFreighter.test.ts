@@ -13,6 +13,7 @@ import {
   mockFreighterConnected,
   mockFreighterInstalled,
 } from "@stellar/freighter-api";
+import { UserRejectedError } from "../utils/errors";
 
 beforeEach(() => {
   vi.resetModules();
@@ -53,7 +54,7 @@ describe("useFreighter — Freighter not installed", () => {
     vi.mocked(requestAccess).mockResolvedValue({
       address: "",
       error: { message: "Extension not found", code: -1 },
-    });
+    } as any);
 
     const { result } = renderHook(() => useFreighter());
     await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -70,8 +71,9 @@ describe("useFreighter — Freighter not installed", () => {
   it("signTransaction() throws when the wallet returns an error", async () => {
     vi.mocked(signTransaction).mockResolvedValue({
       signedTxXdr: "",
+      signerAddress: "",
       error: { message: "Wallet not available" },
-    });
+    } as any);
 
     const { result } = renderHook(() => useFreighter());
     await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -117,7 +119,8 @@ describe("useFreighter — signMessage (#254)", () => {
     mockFreighterConnected();
     vi.mocked(signMessage).mockResolvedValue({
       signedMessage: "deadbeef",
-      error: null,
+      signerAddress: "",
+      error: null as any,
     });
 
     const { result } = renderHook(() => useFreighter());
@@ -134,7 +137,7 @@ describe("useFreighter — signMessage (#254)", () => {
     expect(result.current.isSigningMessage).toBe(false);
   });
 
-  it("signMessage() resets isSigningMessage on error", async () => {
+  it("signMessage() resets isSigningMessage on user rejection", async () => {
     mockFreighterConnected();
     vi.mocked(signMessage).mockResolvedValue({
       signedMessage: "",
@@ -146,7 +149,7 @@ describe("useFreighter — signMessage (#254)", () => {
 
     await expect(
       act(() => result.current.signMessage("challenge")),
-    ).rejects.toThrow("User rejected");
+    ).rejects.toThrow(UserRejectedError);
 
     expect(result.current.isSigningMessage).toBe(false);
   });
@@ -155,7 +158,8 @@ describe("useFreighter — signMessage (#254)", () => {
     mockFreighterConnected();
     vi.mocked(signMessage).mockResolvedValue({
       signedMessage: "sig",
-      error: null,
+      signerAddress: "",
+      error: null as any,
     });
 
     const { result } = renderHook(() => useFreighter());
@@ -186,7 +190,7 @@ describe("useFreighter — autoConnect (#257)", () => {
     vi.mocked(isAllowed).mockResolvedValue({ isAllowed: true });
     vi.mocked(requestAccess).mockResolvedValue({
       address: "GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UQ",
-      error: null,
+      error: null as any,
     });
     vi.mocked(getNetworkDetails).mockResolvedValue({
       network: "TESTNET",
@@ -220,5 +224,172 @@ describe("useFreighter — autoConnect (#257)", () => {
     await waitFor(() => expect(result.current.isConnected).toBe(true));
 
     expect(vi.mocked(isAllowed)).not.toHaveBeenCalled();
+  });
+});
+
+describe("useFreighter — UserRejectedError (#460)", () => {
+  it("signTransaction() throws UserRejectedError when user rejects", async () => {
+    mockFreighterConnected();
+    vi.mocked(signTransaction).mockResolvedValue({
+      signedTxXdr: "",
+      error: { message: "User rejected" },
+    });
+
+    const { result } = renderHook(() => useFreighter());
+    await waitFor(() => expect(result.current.isConnected).toBe(true));
+
+    try {
+      await result.current.signTransaction("xdr" as any);
+      expect.fail("Expected signTransaction to throw");
+    } catch (err) {
+      expect(err).toBeInstanceOf(UserRejectedError);
+      expect((err as UserRejectedError).code).toBe("USER_REJECTED");
+      expect((err as UserRejectedError).walletId).toBe("freighter");
+      expect((err as UserRejectedError).operation).toBe("signTransaction");
+      expect((err as UserRejectedError).message).toBe("User rejected");
+    }
+  });
+
+  it("signTransaction() throws generic Error for non-rejection failures", async () => {
+    mockFreighterConnected();
+    vi.mocked(signTransaction).mockResolvedValue({
+      signedTxXdr: "",
+      error: { message: "Network error" },
+    });
+
+    const { result } = renderHook(() => useFreighter());
+    await waitFor(() => expect(result.current.isConnected).toBe(true));
+
+    try {
+      await result.current.signTransaction("xdr" as any);
+      expect.fail("Expected signTransaction to throw");
+    } catch (err) {
+      expect(err).toBeInstanceOf(Error);
+      expect(err).not.toBeInstanceOf(UserRejectedError);
+      expect((err as Error).message).toBe("Network error");
+    }
+  });
+
+  it("signMessage() throws UserRejectedError when user denies", async () => {
+    mockFreighterConnected();
+    vi.mocked(signMessage).mockResolvedValue({
+      signedMessage: "",
+      error: { message: "User denied" },
+    });
+
+    const { result } = renderHook(() => useFreighter());
+    await waitFor(() => expect(result.current.isConnected).toBe(true));
+
+    try {
+      await result.current.signMessage("hello");
+      expect.fail("Expected signMessage to throw");
+    } catch (err) {
+      expect(err).toBeInstanceOf(UserRejectedError);
+      expect((err as UserRejectedError).code).toBe("USER_REJECTED");
+      expect((err as UserRejectedError).walletId).toBe("freighter");
+      expect((err as UserRejectedError).operation).toBe("signMessage");
+    }
+  });
+
+  it("signBlob() throws UserRejectedError when user rejects", async () => {
+    mockFreighterConnected();
+    vi.mocked(signMessage).mockResolvedValue({
+      signedMessage: "",
+      error: { message: "User rejected" },
+    });
+
+    const { result } = renderHook(() => useFreighter());
+    await waitFor(() => expect(result.current.isConnected).toBe(true));
+
+    try {
+      await result.current.signBlob("data");
+      expect.fail("Expected signBlob to throw");
+    } catch (err) {
+      expect(err).toBeInstanceOf(UserRejectedError);
+      expect((err as UserRejectedError).code).toBe("USER_REJECTED");
+      expect((err as UserRejectedError).walletId).toBe("freighter");
+      expect((err as UserRejectedError).operation).toBe("signBlob");
+    }
+  });
+
+  it("signAuthEntry() throws UserRejectedError when user declines", async () => {
+    mockFreighterConnected();
+    const { signAuthEntry } = await import("@stellar/freighter-api");
+    vi.mocked(signAuthEntry).mockResolvedValue({
+      signedAuthEntry: "",
+      error: { message: "User declined" },
+    });
+
+    const { result } = renderHook(() => useFreighter());
+    await waitFor(() => expect(result.current.isConnected).toBe(true));
+
+    try {
+      await result.current.signAuthEntry("entry-xdr" as any);
+      expect.fail("Expected signAuthEntry to throw");
+    } catch (err) {
+      expect(err).toBeInstanceOf(UserRejectedError);
+      expect((err as UserRejectedError).code).toBe("USER_REJECTED");
+      expect((err as UserRejectedError).walletId).toBe("freighter");
+      expect((err as UserRejectedError).operation).toBe("signAuthEntry");
+    }
+  });
+
+  it("detects 'User cancelled' as user rejection", async () => {
+    mockFreighterConnected();
+    vi.mocked(signTransaction).mockResolvedValue({
+      signedTxXdr: "",
+      error: { message: "User cancelled" },
+    });
+
+    const { result } = renderHook(() => useFreighter());
+    await waitFor(() => expect(result.current.isConnected).toBe(true));
+
+    await expect(
+      result.current.signTransaction("xdr" as any),
+    ).rejects.toBeInstanceOf(UserRejectedError);
+  });
+
+  it("detects 'Access denied' as user rejection", async () => {
+    mockFreighterConnected();
+    vi.mocked(signTransaction).mockResolvedValue({
+      signedTxXdr: "",
+      error: { message: "Access denied" },
+    });
+
+    const { result } = renderHook(() => useFreighter());
+    await waitFor(() => expect(result.current.isConnected).toBe(true));
+
+    await expect(
+      result.current.signTransaction("xdr" as any),
+    ).rejects.toBeInstanceOf(UserRejectedError);
+  });
+
+  it("detects 'Permission denied' as user rejection", async () => {
+    mockFreighterConnected();
+    vi.mocked(signTransaction).mockResolvedValue({
+      signedTxXdr: "",
+      error: { message: "Permission denied" },
+    });
+
+    const { result } = renderHook(() => useFreighter());
+    await waitFor(() => expect(result.current.isConnected).toBe(true));
+
+    await expect(
+      result.current.signTransaction("xdr" as any),
+    ).rejects.toBeInstanceOf(UserRejectedError);
+  });
+
+  it("UserRejectedError extends StellarHookError", () => {
+    const err = new UserRejectedError("User rejected", {
+      walletId: "freighter",
+      operation: "signTransaction",
+    });
+
+    expect(err).toBeInstanceOf(Error);
+    // UserRejectedError extends StellarHookError
+    expect(err.code).toBe("USER_REJECTED");
+    expect(err.name).toBe("UserRejectedError");
+    expect(err.walletId).toBe("freighter");
+    expect(err.operation).toBe("signTransaction");
   });
 });

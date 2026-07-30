@@ -1,5 +1,6 @@
 import albedo from "@albedo-link/intent";
 import type { WalletAdapter } from "./types";
+import { UserRejectedError, isUserRejectionMessage } from "../utils/errors";
 
 export function createAlbedoAdapter(): WalletAdapter {
   return {
@@ -7,7 +8,6 @@ export function createAlbedoAdapter(): WalletAdapter {
     name: "Albedo",
 
     isInstalled(): boolean {
-      // Albedo is web-based and doesn't require extension installation
       return true;
     },
 
@@ -24,10 +24,19 @@ export function createAlbedoAdapter(): WalletAdapter {
     },
 
     async signTransaction(xdr: string, opts?: { networkPassphrase?: string }): Promise<string> {
-      const res = await albedo.tx({
-        xdr,
-        ...(opts?.networkPassphrase && { network: opts.networkPassphrase }),
-      });
+      let res: { signed_envelope?: string; xdr?: string };
+      try {
+        res = await albedo.tx({
+          xdr,
+          ...(opts?.networkPassphrase && { network: opts.networkPassphrase }),
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        if (isUserRejectionMessage(message)) {
+          throw new UserRejectedError(message, { cause: err, walletId: "albedo", operation: "signTransaction" });
+        }
+        throw err;
+      }
       const signedXdr = res.signed_envelope || res.xdr;
       if (!signedXdr) {
         throw new Error("No signed transaction returned from Albedo");
@@ -36,10 +45,19 @@ export function createAlbedoAdapter(): WalletAdapter {
     },
 
     async signMessage(message: string, opts?: { accountToSign?: string }): Promise<string> {
-      const res = await albedo.signMessage({
-        message,
-        ...(opts?.accountToSign && { pubkey: opts.accountToSign }),
-      });
+      let res: { signature?: string };
+      try {
+        res = await albedo.signMessage({
+          message,
+          ...(opts?.accountToSign && { pubkey: opts.accountToSign }),
+        });
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (isUserRejectionMessage(msg)) {
+          throw new UserRejectedError(msg, { cause: err, walletId: "albedo", operation: "signMessage" });
+        }
+        throw err;
+      }
       if (!res.signature) {
         throw new Error("No signature returned from Albedo");
       }

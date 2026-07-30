@@ -9,6 +9,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useStellarAccount } from "../hooks/useStellarAccount";
 import { Horizon } from "@stellar/stellar-sdk";
+import { MOCK_ACCOUNT_ID } from "../mocks/handlers";
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -48,7 +49,7 @@ vi.mock("../context", () => ({
 const mockLoadAccount = actualMockLoadAccount;
 
 const XLM_ONLY_RESPONSE = {
-  account_id: "GABC...",
+  account_id: MOCK_ACCOUNT_ID,
   sequence: "123",
   subentry_count: 0,
   thresholds: { low_threshold: 0, med_threshold: 0, high_threshold: 0 },
@@ -59,14 +60,14 @@ const XLM_ONLY_RESPONSE = {
 } as unknown as Horizon.AccountResponse;
 
 const MULTI_ASSET_RESPONSE = {
-  account_id: "GABC...",
+  account_id: MOCK_ACCOUNT_ID,
   sequence: "123",
   subentry_count: 2,
   thresholds: { low_threshold: 0, med_threshold: 0, high_threshold: 0 },
   flags: { auth_required: false, auth_revocable: false, auth_immutable: false, auth_clawback_enabled: false },
   balances: [
     { asset_type: "native", balance: "100.0000000", buying_liabilities: "0.0000000", selling_liabilities: "0.0000000" },
-    { asset_type: "credit_alphanum4", asset_code: "USDC", asset_issuer: "GABC...", balance: "50.0000000", buying_liabilities: "0.0000000", selling_liabilities: "0.0000000", limit: "1000.0000000" },
+    { asset_type: "credit_alphanum4", asset_code: "USDC", asset_issuer: MOCK_ACCOUNT_ID, balance: "50.0000000", buying_liabilities: "0.0000000", selling_liabilities: "0.0000000", limit: "1000.0000000" },
     { asset_type: "credit_alphanum12", asset_code: "STELLAR", asset_issuer: "GXYZ...", balance: "10.0000000", buying_liabilities: "0.0000000", selling_liabilities: "0.0000000", limit: "1000.0000000" },
   ],
 } as unknown as Horizon.AccountResponse;
@@ -81,7 +82,7 @@ describe("useStellarAccount", () => {
   it("handles account with no trustlines (XLM only)", async () => {
     mockLoadAccount.mockResolvedValueOnce(XLM_ONLY_RESPONSE);
 
-    const { result } = renderHook(() => useStellarAccount("GABC..."));
+    const { result } = renderHook(() => useStellarAccount(MOCK_ACCOUNT_ID));
 
     expect(result.current.isLoading).toBe(true);
 
@@ -95,7 +96,7 @@ describe("useStellarAccount", () => {
   it("handles account with multiple custom assets", async () => {
     mockLoadAccount.mockResolvedValueOnce(MULTI_ASSET_RESPONSE);
 
-    const { result } = renderHook(() => useStellarAccount("GABC..."));
+    const { result } = renderHook(() => useStellarAccount(MOCK_ACCOUNT_ID));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -113,7 +114,7 @@ describe("useStellarAccount", () => {
   });
 
   it("respects the disabled state (enabled: false)", async () => {
-    const { result } = renderHook(() => useStellarAccount("GABC...", { enabled: false }));
+    const { result } = renderHook(() => useStellarAccount(MOCK_ACCOUNT_ID, { enabled: false }));
 
     expect(result.current.data).toBeNull();
     expect(result.current.isLoading).toBe(false);
@@ -124,7 +125,7 @@ describe("useStellarAccount", () => {
     const error = new Error("Account not found");
     mockLoadAccount.mockRejectedValueOnce(error);
 
-    const { result } = renderHook(() => useStellarAccount("GABC..."));
+    const { result } = renderHook(() => useStellarAccount(MOCK_ACCOUNT_ID));
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 

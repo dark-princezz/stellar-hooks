@@ -11,8 +11,11 @@ on:
 
 jobs:
   lint:
-    name: Lint & Type-check
+    name: Lint & Type-check (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["18", "20", "22"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,7 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       - name: Install dependencies
@@ -37,10 +40,10 @@ jobs:
 
   test:
     name: Test (React ${{ matrix.react-version }})
-    name: Test suite
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        node-version: ["18", "20", "22"]
         react-version: ["18", "19"]
     steps:
       - name: Checkout
@@ -49,7 +52,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       - name: Install dependencies
@@ -62,14 +65,22 @@ jobs:
       - name: Type-check
         run: npm run typecheck
 
+      - name: Test with coverage
+        run: npm run test:coverage
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
 
   size:
-    name: Bundle size
+    name: Bundle size (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["18", "20", "22"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -77,7 +88,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       - name: Build

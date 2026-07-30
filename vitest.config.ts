@@ -14,6 +14,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    setupFiles: ["./vitest.setup.ts"],
     include: ["src/**/*.test.ts", "src/**/*.test.tsx", "src/**/*.test-d.ts", "examples/**/*.test.tsx"],
     exclude: [
       "**/node_modules/**",
@@ -22,7 +23,7 @@ export default defineConfig({
     ],
     coverage: {
       provider: "v8",
-      reporter: ["text", "json", "html"],
+      reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         lines: 90,
         functions: 90,

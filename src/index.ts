@@ -23,6 +23,23 @@ export type {
   SignAlbedoMessageOptions,
   UseAlbedoReturn,
 } from "./hooks/useAlbedo";
+export { useWallet } from "./hooks/useWallet";
+export type {
+  UseWalletOptions,
+  UseWalletReturn,
+} from "./hooks/useWallet";
+export { useXBull } from "./hooks/useXBull";
+export type {
+  XBullState,
+  UseXBullOptions,
+  UseXBullReturn,
+} from "./hooks/useXBull";
+export { useRabet } from "./hooks/useRabet";
+export type {
+  RabetState,
+  UseRabetOptions,
+  UseRabetReturn,
+} from "./hooks/useRabet";
 export { useFreighterAccounts } from "./hooks/useFreighterAccounts";
 export type {
   UseFreighterAccountsOptions,
@@ -201,7 +218,13 @@ export type {
 } from "./types";
 
 // Hook-specific Types
-export type { StellarTomlData, UseStellarTomlReturn } from "./hooks/useStellarToml";
+export type {
+  StellarTomlCurrency,
+  StellarTomlData,
+  StellarTomlDocumentation,
+  UseStellarTomlOptions,
+  UseStellarTomlReturn,
+} from "./hooks/useStellarToml";
 export type { AssetMetadata, UseAssetMetadataReturn } from "./hooks/useAssetMetadata";
 export type { UseNetworkStatusArgs, NetworkStatus } from "./hooks/useNetworkStatus";
 export type {
@@ -225,6 +248,8 @@ export {
   createFreighterAdapter,
   createLobstrAdapter,
   createXBullAdapter,
+  createAlbedoAdapter,
+  createRabetAdapter,
   createAllAdapters,
 } from "./wallets";
 
