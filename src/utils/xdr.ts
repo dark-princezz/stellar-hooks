@@ -50,7 +50,7 @@ export function decodeXdr(xdrString: string, type?: "transaction" | "scval"): Xd
     if (type === "transaction" || !type) {
       try {
         const envelope = xdr.TransactionEnvelope.fromXDR(xdrString, "base64");
-        const tx = envelope.toXDR("json");
+        const tx = JSON.parse(JSON.stringify(envelope));
         return {
           data: tx,
           type: "transaction",

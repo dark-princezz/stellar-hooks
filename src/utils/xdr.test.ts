@@ -40,13 +40,13 @@ describe("decodeXdr", () => {
   });
 
   it("decodes transaction envelope when type is specified", () => {
-    const mockEnvelope = { toXDR: vi.fn().mockReturnValue("{ tx: 'data' }") };
+    const mockEnvelope = { _switch: { name: "envelopeTypeTx", value: 2 }, _arm: "v1", _value: { tx: "data" } };
     vi.mocked(xdr.TransactionEnvelope.fromXDR).mockReturnValue(mockEnvelope as any);
 
     const result = decodeXdr("AAAAAg...", "transaction");
     
     expect(xdr.TransactionEnvelope.fromXDR).toHaveBeenCalledWith("AAAAAg...", "base64");
-    expect(result.data).toEqual("{ tx: 'data' }");
+    expect(result.data).toEqual({ _switch: { name: "envelopeTypeTx", value: 2 }, _arm: "v1", _value: { tx: "data" } });
     expect(result.type).toBe("transaction");
     expect(result.error).toBeUndefined();
   });
@@ -66,12 +66,12 @@ describe("decodeXdr", () => {
   });
 
   it("auto-detects transaction envelope when type is not specified", () => {
-    const mockEnvelope = { toXDR: vi.fn().mockReturnValue("{ tx: 'data' }") };
+    const mockEnvelope = { _switch: { name: "envelopeTypeTx", value: 2 }, _arm: "v1", _value: { tx: "data" } };
     vi.mocked(xdr.TransactionEnvelope.fromXDR).mockReturnValue(mockEnvelope as any);
 
     const result = decodeXdr("AAAAAg...");
     
-    expect(result.data).toEqual("{ tx: 'data' }");
+    expect(result.data).toEqual({ _switch: { name: "envelopeTypeTx", value: 2 }, _arm: "v1", _value: { tx: "data" } });
     expect(result.type).toBe("transaction");
   });
 

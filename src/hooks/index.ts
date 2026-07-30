@@ -241,3 +241,9 @@ export type {
   UseIntersectionObserverReturn,
 } from "./useIntersectionObserver";
 export { useLobstr } from './useLobstr';
+
+export { useXdrDecoder } from "./useXdrDecoder";
+export type {
+  UseXdrDecoderOptions,
+  UseXdrDecoderReturn,
+} from "./useXdrDecoder";
