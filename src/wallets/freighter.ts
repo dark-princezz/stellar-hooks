@@ -8,6 +8,7 @@ import {
   normalizeRequestAccess,
 } from "./freighter-normalization";
 import type { WalletAdapter } from "./types";
+import { UserRejectedError, isUserRejectionMessage } from "../utils/errors";
 
 export function createFreighterAdapter(): WalletAdapter {
   return {
@@ -33,21 +34,33 @@ export function createFreighterAdapter(): WalletAdapter {
       const { signedTxXdr, error } = await freighterSignTx(xdr, {
         ...(opts?.networkPassphrase && { networkPassphrase: opts.networkPassphrase }),
       });
-      if (error) throw new Error(error.message);
+      if (error) {
+        throw isUserRejectionMessage(error.message)
+          ? new UserRejectedError(error.message, { cause: error, walletId: "freighter", operation: "signTransaction" })
+          : new Error(error.message);
+      }
       return signedTxXdr;
     },
 
     async signMessage(message: string, opts?: { accountToSign?: string }): Promise<string> {
       const address = opts?.accountToSign;
       const { signedMessage, error } = await freighterSignMessage(message, { address });
-      if (error) throw new Error(error.message);
+      if (error) {
+        throw isUserRejectionMessage(error.message)
+          ? new UserRejectedError(error.message, { cause: error, walletId: "freighter", operation: "signMessage" })
+          : new Error(error.message);
+      }
       if (!signedMessage) throw new Error("No signed message returned from Freighter");
       return signedMessage.toString();
     },
 
     async signAuthEntry(entryPreimageXdr: string): Promise<string> {
       const { signedAuthEntry, error } = await freighterSignAuthEntry(entryPreimageXdr);
-      if (error) throw new Error(error.message);
+      if (error) {
+        throw isUserRejectionMessage(error.message)
+          ? new UserRejectedError(error.message, { cause: error, walletId: "freighter", operation: "signAuthEntry" })
+          : new Error(error.message);
+      }
       if (!signedAuthEntry) throw new Error("No signed auth entry returned from Freighter");
       return signedAuthEntry;
     },

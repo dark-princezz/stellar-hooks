@@ -236,6 +236,7 @@ export {
 
 // Utilities
 export { parseAccountResponse, getCache, setCache } from "./utils";
+export { StellarHookError, UserRejectedError, isUserRejectionMessage } from "./utils/errors";
 
 export { useOfferBook } from "./hooks/useOfferBook";
 export type { UseOfferBookOptions } from "./hooks/useOfferBook";
