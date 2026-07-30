@@ -682,6 +682,7 @@
     "typecheck": "tsc --noEmit",
     "test": "cross-env NODE_OPTIONS=\"--experimental-require-module\" vitest run",
     "test:watch": "vitest",
+    "test:coverage": "cross-env NODE_OPTIONS=\"--experimental-require-module\" vitest run --coverage",
     "test:types": "tsd --files src/types/branded.test-d.ts",
     "test:tree-shaking": "node scripts/test-tree-shaking.mjs",
     "test:futurenet": "cross-env NODE_OPTIONS=\"--experimental-require-module\" RUN_FUTURENET_TESTS=1 vitest run --config vitest.futurenet.config.ts --no-file-parallelism",
