@@ -165,7 +165,7 @@ describe("useTransactionCore", () => {
         expect(result.current.status).toBe("error");
       });
 
-      expect(result.current.error?.message).toBe(errorMsg);
+      expect(result.current.error?.message).toBe(`Unexpected error: ${errorMsg}`);
       expect(result.current.isLoading).toBe(false);
       expect(result.current.isSuccess).toBe(false);
       expect(result.current.isError).toBe(true);
@@ -204,7 +204,9 @@ describe("useTransactionCore", () => {
       });
 
       expect(onError).toHaveBeenCalledTimes(1);
-      expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: errorMsg }));
+      expect(onError).toHaveBeenCalledWith(
+        expect.objectContaining({ message: `Unexpected error: ${errorMsg}`, type: "network" })
+      );
     });
 
     it("reset returns state to idle after an error", async () => {
@@ -351,7 +353,7 @@ describe("useTransactionCore", () => {
         expect(result.current.status).toBe("error");
       });
 
-      expect(result.current.error?.message).toContain("Submission error");
+      expect(result.current.error?.message).toContain("Submission failed");
       expect(result.current.isLoading).toBe(false);
       expect(result.current.isError).toBe(true);
     });
@@ -425,7 +427,9 @@ describe("useTransactionCore", () => {
       });
 
       expect(onError).toHaveBeenCalledTimes(1);
-      expect(onError).toHaveBeenCalledWith(expect.any(Error));
+      expect(onError).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "network", message: expect.stringContaining("Submission failed") })
+      );
     });
 
     it("reset returns state to idle after an error", async () => {

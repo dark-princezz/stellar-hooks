@@ -1,0 +1,422 @@
+/* ─── Reset & Base ─────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  background: linear-gradient(135deg, #0f0c29 0%, #1a1a3e 50%, #24243e 100%);
+  color: #e4e4e7;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+a {
+  color: #818cf8;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code {
+  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 0.85em;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ─── Layout ───────────────────────────────────────────────────────────────── */
+
+.viewer {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #818cf8, #c084fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+header p {
+  color: #a1a1aa;
+  font-size: 0.95rem;
+}
+
+/* ─── Cards ────────────────────────────────────────────────────────────────── */
+
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  backdrop-filter: blur(12px);
+}
+
+.card h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #d4d4d8;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(129, 140, 248, 0.2);
+  color: #818cf8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+}
+
+/* ─── Wallet ───────────────────────────────────────────────────────────────── */
+
+.wallet-card {
+  text-align: center;
+}
+
+.connect-btn {
+  background: linear-gradient(135deg, #818cf8, #c084fc);
+  color: #fff;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.connect-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.connect-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.wallet-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.pubkey {
+  font-size: 0.85rem;
+  color: #a1a1aa;
+}
+
+.pubkey code {
+  font-size: 0.8rem;
+  word-break: break-all;
+}
+
+.disconnect-btn {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.disconnect-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+}
+
+/* ─── XLM Balance ──────────────────────────────────────────────────────────── */
+
+.xlm-balance {
+  font-size: 1.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.xlm-balance small {
+  font-weight: 400;
+  color: #71717a;
+  font-size: 0.85rem;
+}
+
+/* ─── Token Table ──────────────────────────────────────────────────────────── */
+
+.token-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.token-table th {
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.token-table td {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.token-table tr:last-child td {
+  border-bottom: none;
+}
+
+.token-table tr.loading {
+  opacity: 0.6;
+}
+
+.token-symbol {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.token-symbol div {
+  display: flex;
+  flex-direction: column;
+}
+
+.token-symbol small {
+  font-size: 0.75rem;
+  color: #71717a;
+}
+
+.token-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #818cf8, #c084fc);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.token-id code {
+  font-size: 0.75rem;
+}
+
+.token-balance {
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+/* ─── Add Token Form ───────────────────────────────────────────────────────── */
+
+.add-token-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.add-token-form input {
+  flex: 1;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: #e4e4e7;
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.add-token-form input::placeholder {
+  color: #52525b;
+}
+
+.add-token-form input:focus {
+  outline: none;
+  border-color: #818cf8;
+}
+
+.add-token-form button {
+  padding: 10px 20px;
+  background: rgba(129, 140, 248, 0.15);
+  color: #818cf8;
+  border: 1px solid rgba(129, 140, 248, 0.3);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.add-token-form button:hover:not(:disabled) {
+  background: rgba(129, 140, 248, 0.25);
+}
+
+.add-token-form button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ─── Custom Tokens List ───────────────────────────────────────────────────── */
+
+.custom-tokens-details {
+  margin-top: 12px;
+  font-size: 0.85rem;
+}
+
+.custom-tokens-details summary {
+  cursor: pointer;
+  color: #71717a;
+  padding: 8px 0;
+}
+
+.custom-tokens-list {
+  list-style: none;
+  margin-top: 8px;
+}
+
+.custom-tokens-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.custom-tokens-list .contract-id {
+  font-size: 0.75rem;
+  color: #71717a;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #71717a;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: auto;
+}
+
+.remove-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* ─── Refetch Button ───────────────────────────────────────────────────────── */
+
+.refetch-btn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #71717a;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.refetch-btn:hover:not(:disabled) {
+  border-color: #818cf8;
+  color: #818cf8;
+}
+
+.refetch-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ─── States ───────────────────────────────────────────────────────────────── */
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: #71717a;
+}
+
+.empty-state p {
+  margin: 8px 0;
+}
+
+.loading-text,
+.empty-text {
+  color: #71717a;
+  font-size: 0.9rem;
+}
+
+.loading-spinner {
+  display: inline-block;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error-text {
+  color: #ef4444;
+  font-size: 0.85rem;
+}
+
+/* ─── Footer ───────────────────────────────────────────────────────────────── */
+
+.footer {
+  text-align: center;
+  color: #52525b;
+  font-size: 0.8rem;
+  padding: 24px 0;
+}
+
+.footer a {
+  color: #52525b;
+  text-decoration: underline;
+}

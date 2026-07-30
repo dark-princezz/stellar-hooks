@@ -4,7 +4,7 @@
  * @package stellar-hooks
  */
 
-import { useState, useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Horizon, TransactionBuilder, Operation } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 import type { StellarTransactionError } from "../types";
@@ -57,6 +57,7 @@ export function useCreateAccount(options: UseCreateAccountOptions = {}): UseCrea
   const { config, network } = useStellarContext();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<StellarTransactionError | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const fundWithFriendbot = useCallback(
     async (publicKey: string) => {
@@ -75,7 +76,13 @@ export function useCreateAccount(options: UseCreateAccountOptions = {}): UseCrea
           }
         }
 
-        const response = await fetch(`${url}?addr=${encodeURIComponent(publicKey)}`);
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+        }
+        abortControllerRef.current = new AbortController();
+        const response = await fetch(`${url}?addr=${encodeURIComponent(publicKey)}`, {
+          signal: abortControllerRef.current.signal,
+        });
         if (!response.ok) {
           const errorData = await response.json().catch(() => null);
           const err: StellarTransactionError = {
@@ -86,6 +93,7 @@ export function useCreateAccount(options: UseCreateAccountOptions = {}): UseCrea
           throw err;
         }
       } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") return;
         let parsedError: StellarTransactionError;
         if (typeof err === 'object' && err !== null && 'type' in err) {
           parsedError = err as StellarTransactionError;
@@ -124,10 +132,8 @@ export function useCreateAccount(options: UseCreateAccountOptions = {}): UseCrea
         flags: { auth_required: false, auth_revocable: false, auth_immutable: false },
         id: sourceAccountId,
         paging_token: "",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        _links: {} as any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+        _links: {} as unknown as Horizon.ServerApi.AccountRecord["_links"],
+      } as unknown as Horizon.ServerApi.AccountRecord);
 
       return new TransactionBuilder(sourceAccount, {
         fee: baseFee,

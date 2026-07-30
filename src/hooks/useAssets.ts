@@ -4,7 +4,7 @@
  * @package stellar-hooks
  */
 
-import { useCallback, useEffect, useReducer } from "react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
 import { Horizon } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 
@@ -96,6 +96,7 @@ export function useAssets(options: UseAssetsOptions = {}): UseAssetsReturn {
 
   const { config } = useStellarContext();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const mountedRef = useRef(true);
 
   const fetchAssets = useCallback(async () => {
     dispatch({ type: "FETCH_START" });
@@ -111,8 +112,10 @@ export function useAssets(options: UseAssetsOptions = {}): UseAssetsReturn {
       callBuilder = callBuilder.limit(limit).order(order);
 
       const response = await callBuilder.call();
+      if (!mountedRef.current) return;
       dispatch({ type: "FETCH_SUCCESS", payload: response.records });
     } catch (err) {
+      if (!mountedRef.current) return;
       dispatch({
         type: "FETCH_ERROR",
         payload: err instanceof Error ? err : new Error(String(err)),
@@ -128,9 +131,13 @@ export function useAssets(options: UseAssetsOptions = {}): UseAssetsReturn {
   ]);
 
   useEffect(() => {
+    mountedRef.current = true;
     if (enabled) {
       void fetchAssets();
     }
+    return () => {
+      mountedRef.current = false;
+    };
   }, [enabled, fetchAssets]);
 
   return { ...state, refetch: fetchAssets };

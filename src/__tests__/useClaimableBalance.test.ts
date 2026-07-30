@@ -18,7 +18,18 @@ vi.mock("react", async () => {
   };
 });
 
-// â”€â”€â”€ Mock @stellar/stellar-sdk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const mockLoadAccount = vi.hoisted(() => vi.fn().mockResolvedValue({ id: "GSOURCE" }));
+const mockHorizonServer = vi.hoisted(() => vi.fn().mockImplementation(() => ({
+  loadAccount: mockLoadAccount,
+})));
+
+const mockAddOperation = vi.hoisted(() => vi.fn());
+const mockSetTimeout = vi.hoisted(() => vi.fn());
+const mockBuild = vi.hoisted(() => vi.fn().mockReturnValue({ toXDR: () => "built-xdr" }));
+mockAddOperation.mockReturnValue({ setTimeout: mockSetTimeout });
+mockSetTimeout.mockReturnValue({ build: mockBuild });
+
+// ─── Mock @stellar/stellar-sdk ─────────────────────────────────────────────────
 
 vi.mock("@stellar/stellar-sdk", () => ({
   Asset: Object.assign(
@@ -32,12 +43,9 @@ vi.mock("@stellar/stellar-sdk", () => ({
     })),
     { predicateUnconditional: vi.fn().mockReturnValue({ unconditional: true }) }
   ),
-  Horizon: {
-    // Not used directly by useClaimBalance anymore
-  },
+  Horizon: { Server: mockHorizonServer },
   Operation: {
     claimClaimableBalance: vi.fn().mockReturnValue({ type: "claimClaimableBalance" }),
-  }
     createClaimableBalance: vi.fn().mockReturnValue({ type: "createClaimableBalance" }),
   },
   TransactionBuilder: vi.fn().mockImplementation(() => ({
@@ -49,12 +57,18 @@ vi.mock("@stellar/stellar-sdk", () => ({
 
 // â”€â”€â”€ Mock context and dependent hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-const mockSubmitTx = vi.fn().mockResolvedValue(undefined);
-const mockReset = vi.fn();
+const mockSubmitXdr = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
+const mockReset = vi.hoisted(() => vi.fn());
 
-vi.mock("../hooks/useStellarTransaction", () => ({
-  useStellarTransaction: () => ({
-    submit: mockSubmitTx,
+vi.mock("../context", () => ({
+  useStellarContext: () => ({
+    config: {
+      horizonUrl: "https://horizon-testnet.stellar.org",
+      networkPassphrase: "Test SDF Network ; September 2015",
+    },
+  }),
+}));
+
 vi.mock("../hooks/useTransactionCore", () => ({
   useTransactionCore: () => ({
     submit: mockSubmitXdr,
@@ -68,10 +82,15 @@ vi.mock("../hooks/useTransactionCore", () => ({
   }),
 }));
 
+const mockSignTransaction = vi.hoisted(() => vi.fn().mockResolvedValue("signed-xdr"));
+let mockPublicKey: string | null = vi.hoisted(() => "GPUBLICKEY" as string | null);
+
 // ─── Import AFTER mocks ───────────────────────────────────────────────────────
 vi.mock("../hooks/useFreighter", () => ({
   useFreighter: () => ({
-    publicKey: "GPUBLICKEY",
+    get publicKey() {
+      return mockPublicKey;
+    },
     signTransaction: mockSignTransaction,
   }),
 }));
@@ -83,7 +102,6 @@ import {
   useClaimBalance,
   useCreateClaimableBalance,
 } from "../hooks/useClaimableBalance";
-import { useClaimBalance } from "../hooks/useClaimableBalance";
 import { useReducer } from "react";
 
 // â”€â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -103,11 +121,11 @@ function setupReducer(stateOverride = {}) {
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
-// â”€â”€â”€ Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 describe("useClaimBalance", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPublicKey = "GPUBLICKEY";
     setupReducer();
   });
 
@@ -131,28 +149,22 @@ describe("useClaimBalance", () => {
     expect(Operation.claimClaimableBalance).toHaveBeenCalledWith({
       balanceId: "balance-id-abc",
     });
-    expect(mockSubmitTx).toHaveBeenCalledWith([{ type: "claimClaimableBalance" }]);
+    expect(mockSubmitXdr).toHaveBeenCalledWith("signed-xdr");
   });
-});
 
   it("throws when publicKey is null", async () => {
-  // Call the async function directly with publicKey set to null in closure
-  const claimFn = async () => {
-    const publicKey: string | null = null;
-    if (!publicKey) {
-      throw new Error("Freighter is not connected. Call connect() first.");
-    }
-  };
-
-  await expect(claimFn()).rejects.toThrow(
-    "Freighter is not connected"
-  );
-});
+    mockPublicKey = null;
+    const hook = useClaimBalance();
+    await expect(hook.claim("balance-id-abc")).rejects.toThrow(
+      "Freighter is not connected"
+    );
+  });
 });
 
 describe("useCreateClaimableBalance", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPublicKey = "GPUBLICKEY";
     setupReducer();
   });
 

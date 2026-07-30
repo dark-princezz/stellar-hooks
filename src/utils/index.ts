@@ -46,7 +46,7 @@ export function parseAccountResponse(raw: Horizon.AccountResponse): StellarAccou
           ...(isAsset && { assetCode: (b as Horizon.HorizonApi.BalanceLineAsset).asset_code }),
           ...(isAsset && { assetIssuer: unsafeAsAssetIssuer((b as Horizon.HorizonApi.BalanceLineAsset).asset_issuer) }),
           balance: b.balance,
-          balanceFloat: parseFloat(b.balance),
+          balanceFloat: parseBalance(b.balance),
           buyingLiabilities: isAsset || b.asset_type === "native"
             ? (b as Horizon.HorizonApi.BalanceLineAsset | Horizon.HorizonApi.BalanceLineNative).buying_liabilities
             : "0",
@@ -59,6 +59,39 @@ export function parseAccountResponse(raw: Horizon.AccountResponse): StellarAccou
       }),
     raw,
   };
+}
+
+/**
+ * Converts a Stellar balance string (7 decimal places) to a number without floating point precision errors.
+ * Uses fixed-point arithmetic to avoid rounding issues with 7 decimal place values.
+ * 
+ * @param balanceStr - Balance string with 7 decimal places (e.g., "100.1234567")
+ * @returns Number representation of the balance
+ */
+export function parseBalance(balanceStr: string): number {
+  // Remove any whitespace
+  const trimmed = balanceStr.trim();
+  
+  // Split into whole and fractional parts
+  const parts = trimmed.split('.');
+  if (parts.length === 1) {
+    // No decimal point, treat as integer
+    return parseInt(parts[0] || '0', 10);
+  }
+  
+  const [wholeStr, fractionStr] = parts;
+  
+  // Pad or truncate fractional part to exactly 7 digits (Stellar standard)
+  const paddedFraction = (fractionStr || '').padEnd(7, '0').slice(0, 7);
+  
+  // Combine into a single integer representing the value in stroops
+  const wholeValue = BigInt(wholeStr || '0');
+  const fractionValue = BigInt(paddedFraction);
+  const stroops = wholeValue * BigInt(10_000_000) + fractionValue;
+  
+  // Convert to number by dividing by 10^7
+  // Use Number() for the final conversion since we need a number type
+  return Number(stroops) / 10_000_000;
 }
 
 /**
@@ -94,3 +127,6 @@ export function getCache<T>(key: string): T | null {
 export function setCache<T>(key: string, data: T, ttl: number): void {
   cache.set(key, { data, expires: Date.now() + ttl });
 }
+
+export * from './xdr';
+export * from './errors';

@@ -5,47 +5,12 @@
  * @license MIT
  */
 
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { getHorizonServer } from "../utils/memoizedServers";
 import { useStellarContext } from "../context";
 import type { StellarAccountData, StellarPublicKey } from "../types";
 import { parseAccountResponse, validatePublicKey } from "../utils";
-
-// ─── State ──────────────────────────────────────────────────────────────────
-
-interface AccountState {
-  data: StellarAccountData | null;
-  isLoading: boolean;
-  isRefetching: boolean;
-  error: Error | null;
-  lastFetchedAt: Date | null;
-}
-
-type AccountAction =
-  | { type: "FETCH_START" }
-  | { type: "FETCH_SUCCESS"; payload: StellarAccountData | null }
-  | { type: "FETCH_ERROR"; payload: Error };
-
-function reducer(state: AccountState, action: AccountAction): AccountState {
-  switch (action.type) {
-    case "FETCH_START":
-      return { ...state, isLoading: state.data === null, isRefetching: state.data !== null, error: null };
-    case "FETCH_SUCCESS":
-      return { data: action.payload, isLoading: false, isRefetching: false, error: null, lastFetchedAt: new Date() };
-    case "FETCH_ERROR":
-      return { ...state, isLoading: false, isRefetching: false, error: action.payload };
-    default:
-      return state;
-  }
-}
-
-const initialState: AccountState = {
-  data: null,
-  isLoading: false,
-  isRefetching: false,
-  error: null,
-  lastFetchedAt: null,
-};
+import { useStellarQuery } from "./useStellarQuery";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -102,7 +67,7 @@ export function useStellarAccount(
   const { enabled = true, refetchInterval = 0, deduplicate = true } = options;
   const { config } = useStellarContext();
 
-  const fetchAccount = useCallback(async (): Promise<StellarAccountData | null> => {
+  const fetchAccount = useCallback(async (signal?: AbortSignal): Promise<StellarAccountData | null> => {
     if (!publicKey) return null;
     validatePublicKey(publicKey);
     const server = getHorizonServer(config.horizonUrl);
@@ -115,6 +80,7 @@ export function useStellarAccount(
     refetchInterval,
     deduplicate,
     initialData: null,
+    debugLabel: "useStellarAccount",
   });
 
   return useMemo(
@@ -137,93 +103,42 @@ export function useStellarAccount(
     ],
   );
 }
-  const ctx = useStellarContext();
-  const { config } = ctx;
-  // Support older tests/mocks that don't include `requestCache` by falling
-  // back to a module-scoped cache. Provider instances will supply their own
-  // requestCache via context for proper scoping.
-  const moduleFallbackCache = useRef<Map<string, Promise<unknown>> | null>(null);
-  if (moduleFallbackCache.current === null) moduleFallbackCache.current = new Map();
-  const requestCache = (ctx as unknown as { requestCache?: Map<string, Promise<unknown>> }).requestCache ?? moduleFallbackCache.current;
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const isFetchingRef = useRef(false);
-  const activeControllerRef = useRef<AbortController | null>(null);
 
-  const fetchAccount = useCallback(async () => {
-    if (!publicKey) {
-      dispatch({ type: "FETCH_SUCCESS", payload: null });
-      return;
-    }
-    if (deduplicate && isFetchingRef.current) return;
+/**
+ * React Suspense-compatible variant of {@link useStellarAccount}.
+ * Throws a Promise during data fetching for `<Suspense>` boundaries
+ * and throws Errors for `<ErrorBoundary>` boundaries.
+ */
+export function useSuspenseStellarAccount(
+  publicKey: StellarPublicKey | null | undefined,
+  options: UseStellarAccountOptions = {},
+): UseStellarAccountReturn {
+  const state = useStellarAccount(publicKey, options);
+  const promiseRef = useRef<{ promise: Promise<void>; resolve: () => void } | null>(null);
 
-    isFetchingRef.current = true;
-    dispatch({ type: "FETCH_START" });
-
-    try {
-      validatePublicKey(publicKey);
-      const server = getHorizonServer(config.horizonUrl);
-      // AbortController per fetch cycle so we can cancel on cleanup
-      const controller = new AbortController();
-      // abort previous pending controller for this component
-      activeControllerRef.current?.abort();
-      activeControllerRef.current = controller;
-      const signal = controller.signal;
-
-      const cacheKey = `${publicKey}:${config.horizonUrl}`;
-
-      if (deduplicate) {
-        const inFlight = requestCache.get(cacheKey) as Promise<unknown> | undefined;
-        if (inFlight) {
-          try {
-            const parsed = (await inFlight) as StellarAccountData;
-            dispatch({ type: "FETCH_SUCCESS", payload: parsed });
-            return;
-          } catch (err) {
-            // fallthrough to outer catch
-          }
-        }
-      }
-
-      const fetchPromise = (async () => {
-        const rawAccount = await server.loadAccount(publicKey);
-        return parseAccountResponse(rawAccount);
-      })();
-
-      if (deduplicate) requestCache.set(cacheKey, fetchPromise);
-
-      try {
-        const parsed = await fetchPromise;
-        dispatch({ type: "FETCH_SUCCESS", payload: parsed as StellarAccountData });
-      } finally {
-        if (deduplicate) requestCache.delete(cacheKey);
-      }
-    } catch (err) {
-      // Treat aborts as a silent cancellation — don't set error state.
-      if (err instanceof Error && (err.name === "AbortError" || (err as unknown as { code?: string }).code === "ABORT_ERR")) {
-        return;
-      }
-      dispatch({ type: "FETCH_ERROR", payload: err instanceof Error ? err : new Error(String(err)) });
-    } finally {
-      isFetchingRef.current = false;
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [publicKey, config.horizonUrl, deduplicate]);
+  if (!promiseRef.current) {
+    let resolveFn!: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolveFn = resolve;
+    });
+    promiseRef.current = { promise, resolve: resolveFn };
+  }
 
   useEffect(() => {
-    if (enabled && publicKey) {
-      void fetchAccount();
-      if (refetchInterval > 0) {
-        timerRef.current = setInterval(() => void fetchAccount(), refetchInterval);
-      }
-    } else if (!publicKey || !enabled) {
-      dispatch({ type: "FETCH_SUCCESS", payload: null });
+    if (!state.isLoading && promiseRef.current) {
+      promiseRef.current.resolve();
+      promiseRef.current = null;
     }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-      activeControllerRef.current?.abort();
-    };
-  }, [enabled, publicKey, refetchInterval, fetchAccount]);
+  }, [state.isLoading]);
 
-  return { account: state.data, ...state, refetch: fetchAccount };
+  if ((options.enabled ?? true) && Boolean(publicKey)) {
+    if (state.error) {
+      throw state.error;
+    }
+    if (state.isLoading && state.data === null && promiseRef.current) {
+      throw promiseRef.current.promise;
+    }
+  }
+
+  return state;
 }

@@ -29,6 +29,34 @@ vi.mock("../context", () => ({
       networkPassphrase: "Test SDF Network ; September 2015",
     },
   }),
+  useOptionalStellarContext: () => ({
+    config: {
+      horizonUrl: "https://horizon-testnet.stellar.org",
+      networkPassphrase: "Test SDF Network ; September 2015",
+    },
+  }),
+  useOptionalStellarHookDebugContext: () => null,
+}));
+
+vi.mock("../hooks/useFreighter", () => ({
+  useFreighter: () => ({
+    publicKey: "GPUBLICKEY",
+    isConnected: true,
+    signTransaction: vi.fn().mockResolvedValue("signed-xdr"),
+  }),
+}));
+
+vi.mock("../hooks/useTransactionCore", () => ({
+  useTransactionCore: () => ({
+    submit: vi.fn().mockResolvedValue(undefined),
+    reset: vi.fn(),
+    status: "idle",
+    hash: null,
+    error: null,
+    isLoading: false,
+    isSuccess: false,
+    isError: false,
+  }),
 }));
 
 import { useLiquidityPool } from "../hooks/useLiquidityPool";
@@ -50,7 +78,8 @@ describe("useLiquidityPool", () => {
     });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      "https://horizon-testnet.stellar.org/liquidity_pools/pool123abc"
+      "https://horizon-testnet.stellar.org/liquidity_pools/pool123abc",
+      expect.any(Object)
     );
     expect(result.current.pool).toEqual(mockPoolResponse);
     expect(result.current.pool!.reserves).toHaveLength(2);
@@ -116,5 +145,16 @@ describe("useLiquidityPool", () => {
     await vi.waitFor(() => {
       expect(result.current.pool!.total_shares).toBe("60000.0000000");
     });
+  });
+
+  it("exposes deposit and withdraw functions", () => {
+    const { result } = renderHook(() => useLiquidityPool("pool123abc"));
+
+    expect(typeof result.current.deposit).toBe("function");
+    expect(typeof result.current.withdraw).toBe("function");
+    expect(result.current.depositStatus).toBe("idle");
+    expect(result.current.withdrawStatus).toBe("idle");
+    expect(result.current.isDepositLoading).toBe(false);
+    expect(result.current.isWithdrawLoading).toBe(false);
   });
 });

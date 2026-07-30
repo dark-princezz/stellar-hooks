@@ -1,11 +1,19 @@
-# CODEOWNERS — auto-assigns reviewers when pull requests are opened.
-# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# GitHub Code Owners for stellar-hooks
+# 
+# Syntax:
+#   pattern @username or @org/team-name
 #
-# Format: <path-pattern>  @<github-username-or-team>
-#
-# Entries are ordered from least specific to most specific.
-# Later entries override earlier ones for the same path.
+# Global default owner
+* @dark-princezz
 
-# ===== Default ownership =====
-# Repository owner is the default reviewer for all paths
-*  @Amas-01
+# Core library & React context
+/src/context/ @dark-princezz
+/src/utils/ @dark-princezz
+
+# Hooks & Wallet Integrations
+/src/hooks/ @dark-princezz
+/src/wallets/ @dark-princezz
+
+# Configuration & CI workflows
+/package.json @dark-princezz
+/.github/workflows/ @dark-princezz

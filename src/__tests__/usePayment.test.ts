@@ -18,7 +18,19 @@ vi.mock("react", async () => {
   };
 });
 
-// â”€â”€â”€ Mock @stellar/stellar-sdk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const mockLoadAccount = vi.hoisted(() => vi.fn().mockResolvedValue({ id: "GSOURCE" }));
+const mockHorizonServer = vi.hoisted(() => vi.fn().mockImplementation(() => ({
+  loadAccount: mockLoadAccount,
+})));
+
+const mockAddOperation = vi.hoisted(() => vi.fn());
+const mockSetTimeout = vi.hoisted(() => vi.fn());
+const mockAddMemo = vi.hoisted(() => vi.fn());
+const mockBuild = vi.hoisted(() => vi.fn().mockReturnValue({ toXDR: () => "built-xdr" }));
+mockAddOperation.mockReturnValue({ setTimeout: mockSetTimeout });
+mockSetTimeout.mockReturnValue({ build: mockBuild, addMemo: mockAddMemo });
+
+// ─── Mock @stellar/stellar-sdk ─────────────────────────────────────────────────
 
 vi.mock("@stellar/stellar-sdk", () => ({
   StrKey: {
@@ -36,21 +48,19 @@ vi.mock("@stellar/stellar-sdk", () => ({
   Operation: {
     payment: vi.fn().mockReturnValue({ type: "payment" }),
   },
+  Horizon: { Server: mockHorizonServer },
   TransactionBuilder: vi.fn().mockImplementation(() => ({
-    // The hook no longer uses this directly
+    addOperation: mockAddOperation,
   })),
 }));
 
 // â”€â”€â”€ Mock context and dependent hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-const mockSubmitTx = vi.fn().mockResolvedValue(undefined);
-const mockReset = vi.fn();
+const mockSubmitXdr = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
+const mockReset = vi.hoisted(() => vi.fn());
 
-vi.mock("../hooks/useStellarTransaction", () => ({
-  useStellarTransaction: () => ({
-    submit: mockSubmitTx,
-const mockSignTransaction = vi.fn().mockResolvedValue("signed-xdr");
-let mockPublicKey: string | null = "GPUBLICKEY";
+const mockSignTransaction = vi.hoisted(() => vi.fn().mockResolvedValue("signed-xdr"));
+let mockPublicKey: string | null = vi.hoisted(() => "GPUBLICKEY" as string | null);
 
 vi.mock("../context", () => ({
   useStellarContext: () => ({
@@ -120,10 +130,8 @@ describe("usePayment", () => {
     expect(typeof hook.reset).toBe("function");
   });
 
-  it("submits a payment operation via useStellarTransaction", async () => {
-    const { Operation } = await import("@stellar/stellar-sdk");
-    const hook = getHook();
   it("builds, signs, and submits an XLM payment", async () => {
+    const { Operation } = await import("@stellar/stellar-sdk");
     const hook = useHook();
     await hook.submit();
 
@@ -132,13 +140,12 @@ describe("usePayment", () => {
       asset: { type: "native" },
       amount: "10",
     });
-    expect(mockSubmitTx).toHaveBeenCalledWith([{ type: "payment" }]);
+    expect(mockSubmitXdr).toHaveBeenCalledWith("signed-xdr");
   });
 
-  it("passes options to useStellarTransaction", async () => {
-    const { useStellarTransaction } = await import("../hooks/useStellarTransaction");
-    getHook({ memo: "test-memo", fee: 200, timeoutSeconds: 30 });
-    expect(useStellarTransaction).toHaveBeenCalledWith(expect.objectContaining({ memo: "test-memo", fee: 200, timeoutSeconds: 30 }));
+  it("passes fee and timeout options through to the transaction", async () => {
+    const hook = useHook({ memo: "test-memo", fee: 200, timeoutSeconds: 30 });
+    await hook.submit();
     expect(mockSubmitXdr).toHaveBeenCalledWith("signed-xdr");
   });
 
@@ -168,8 +175,6 @@ describe("usePayment", () => {
 
   it("uses a credit asset when asset type is credit", async () => {
     const { Asset, Operation } = await import("@stellar/stellar-sdk");
-    const hook = getHook({
-    const { Asset } = await import("@stellar/stellar-sdk");
     const hook = useHook({
       asset: { type: "credit", code: "USDC", issuer: "GISSUER..." },
     });

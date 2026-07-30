@@ -1,7 +1,10 @@
 {
   "name": "stellar-hooks",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "sideEffects": false,
+  "workspaces": [
+    "packages/*"
+  ],
   "description": "React hooks for Stellar and Soroban — useFreighter, useStellarAccount, useSorobanContract, useTransaction, and more.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -17,30 +20,731 @@
         "types": "./dist/index.d.ts",
         "default": "./dist/index.js"
       }
+    },
+    "./useAccountFlags": {
+      "types": "./dist/hooks/useAccountFlags.d.ts",
+      "import": {
+        "types": "./dist/hooks/useAccountFlags.d.mts",
+        "default": "./dist/hooks/useAccountFlags.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useAccountFlags.d.ts",
+        "default": "./dist/hooks/useAccountFlags.js"
+      }
+    },
+    "./useAccountLiquidityPositions": {
+      "types": "./dist/hooks/useAccountLiquidityPositions.d.ts",
+      "import": {
+        "types": "./dist/hooks/useAccountLiquidityPositions.d.mts",
+        "default": "./dist/hooks/useAccountLiquidityPositions.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useAccountLiquidityPositions.d.ts",
+        "default": "./dist/hooks/useAccountLiquidityPositions.js"
+      }
+    },
+    "./useAccountMerge": {
+      "types": "./dist/hooks/useAccountMerge.d.ts",
+      "import": {
+        "types": "./dist/hooks/useAccountMerge.d.mts",
+        "default": "./dist/hooks/useAccountMerge.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useAccountMerge.d.ts",
+        "default": "./dist/hooks/useAccountMerge.js"
+      }
+    },
+    "./useAssetBalance": {
+      "types": "./dist/hooks/useAssetBalance.d.ts",
+      "import": {
+        "types": "./dist/hooks/useAssetBalance.d.mts",
+        "default": "./dist/hooks/useAssetBalance.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useAssetBalance.d.ts",
+        "default": "./dist/hooks/useAssetBalance.js"
+      }
+    },
+    "./useAssetMetadata": {
+      "types": "./dist/hooks/useAssetMetadata.d.ts",
+      "import": {
+        "types": "./dist/hooks/useAssetMetadata.d.mts",
+        "default": "./dist/hooks/useAssetMetadata.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useAssetMetadata.d.ts",
+        "default": "./dist/hooks/useAssetMetadata.js"
+      }
+    },
+    "./useAssetSearch": {
+      "types": "./dist/hooks/useAssetSearch.d.ts",
+      "import": {
+        "types": "./dist/hooks/useAssetSearch.d.mts",
+        "default": "./dist/hooks/useAssetSearch.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useAssetSearch.d.ts",
+        "default": "./dist/hooks/useAssetSearch.js"
+      }
+    },
+    "./useAssets": {
+      "types": "./dist/hooks/useAssets.d.ts",
+      "import": {
+        "types": "./dist/hooks/useAssets.d.mts",
+        "default": "./dist/hooks/useAssets.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useAssets.d.ts",
+        "default": "./dist/hooks/useAssets.js"
+      }
+    },
+    "./useBumpSequence": {
+      "types": "./dist/hooks/useBumpSequence.d.ts",
+      "import": {
+        "types": "./dist/hooks/useBumpSequence.d.mts",
+        "default": "./dist/hooks/useBumpSequence.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useBumpSequence.d.ts",
+        "default": "./dist/hooks/useBumpSequence.js"
+      }
+    },
+    "./useClaimableBalance": {
+      "types": "./dist/hooks/useClaimableBalance.d.ts",
+      "import": {
+        "types": "./dist/hooks/useClaimableBalance.d.mts",
+        "default": "./dist/hooks/useClaimableBalance.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useClaimableBalance.d.ts",
+        "default": "./dist/hooks/useClaimableBalance.js"
+      }
+    },
+    "./useContractEvents": {
+      "types": "./dist/hooks/useContractEvents.d.ts",
+      "import": {
+        "types": "./dist/hooks/useContractEvents.d.mts",
+        "default": "./dist/hooks/useContractEvents.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useContractEvents.d.ts",
+        "default": "./dist/hooks/useContractEvents.js"
+      }
+    },
+    "./useContractId": {
+      "types": "./dist/hooks/useContractId.d.ts",
+      "import": {
+        "types": "./dist/hooks/useContractId.d.mts",
+        "default": "./dist/hooks/useContractId.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useContractId.d.ts",
+        "default": "./dist/hooks/useContractId.js"
+      }
+    },
+    "./useContractStorage": {
+      "types": "./dist/hooks/useContractStorage.d.ts",
+      "import": {
+        "types": "./dist/hooks/useContractStorage.d.mts",
+        "default": "./dist/hooks/useContractStorage.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useContractStorage.d.ts",
+        "default": "./dist/hooks/useContractStorage.js"
+      }
+    },
+    "./useCreateAccount": {
+      "types": "./dist/hooks/useCreateAccount.d.ts",
+      "import": {
+        "types": "./dist/hooks/useCreateAccount.d.mts",
+        "default": "./dist/hooks/useCreateAccount.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useCreateAccount.d.ts",
+        "default": "./dist/hooks/useCreateAccount.js"
+      }
+    },
+    "./useEffects": {
+      "types": "./dist/hooks/useEffects.d.ts",
+      "import": {
+        "types": "./dist/hooks/useEffects.d.mts",
+        "default": "./dist/hooks/useEffects.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useEffects.d.ts",
+        "default": "./dist/hooks/useEffects.js"
+      }
+    },
+    "./useFeeStats": {
+      "types": "./dist/hooks/useFeeStats.d.ts",
+      "import": {
+        "types": "./dist/hooks/useFeeStats.d.mts",
+        "default": "./dist/hooks/useFeeStats.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useFeeStats.d.ts",
+        "default": "./dist/hooks/useFeeStats.js"
+      }
+    },
+    "./useAlbedo": {
+      "types": "./dist/hooks/useAlbedo.d.ts",
+      "import": {
+        "types": "./dist/hooks/useAlbedo.d.mts",
+        "default": "./dist/hooks/useAlbedo.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useAlbedo.d.ts",
+        "default": "./dist/hooks/useAlbedo.js"
+      }
+    },
+    "./useFreighter": {
+      "types": "./dist/hooks/useFreighter.d.ts",
+      "import": {
+        "types": "./dist/hooks/useFreighter.d.mts",
+        "default": "./dist/hooks/useFreighter.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useFreighter.d.ts",
+        "default": "./dist/hooks/useFreighter.js"
+      }
+    },
+    "./useFreighterAccounts": {
+      "types": "./dist/hooks/useFreighterAccounts.d.ts",
+      "import": {
+        "types": "./dist/hooks/useFreighterAccounts.d.mts",
+        "default": "./dist/hooks/useFreighterAccounts.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useFreighterAccounts.d.ts",
+        "default": "./dist/hooks/useFreighterAccounts.js"
+      }
+    },
+    "./useRabet": {
+      "types": "./dist/hooks/useRabet.d.ts",
+      "import": {
+        "types": "./dist/hooks/useRabet.d.mts",
+        "default": "./dist/hooks/useRabet.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useRabet.d.ts",
+        "default": "./dist/hooks/useRabet.js"
+      }
+    },
+    "./useWallet": {
+      "types": "./dist/hooks/useWallet.d.ts",
+      "import": {
+        "types": "./dist/hooks/useWallet.d.mts",
+        "default": "./dist/hooks/useWallet.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useWallet.d.ts",
+        "default": "./dist/hooks/useWallet.js"
+      }
+    },
+    "./useXBull": {
+      "types": "./dist/hooks/useXBull.d.ts",
+      "import": {
+        "types": "./dist/hooks/useXBull.d.mts",
+        "default": "./dist/hooks/useXBull.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useXBull.d.ts",
+        "default": "./dist/hooks/useXBull.js"
+      }
+    },
+    "./useHorizonServer": {
+      "types": "./dist/hooks/useHorizonServer.d.ts",
+      "import": {
+        "types": "./dist/hooks/useHorizonServer.d.mts",
+        "default": "./dist/hooks/useHorizonServer.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useHorizonServer.d.ts",
+        "default": "./dist/hooks/useHorizonServer.js"
+      }
+    },
+    "./useInflation": {
+      "types": "./dist/hooks/useInflation.d.ts",
+      "import": {
+        "types": "./dist/hooks/useInflation.d.mts",
+        "default": "./dist/hooks/useInflation.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useInflation.d.ts",
+        "default": "./dist/hooks/useInflation.js"
+      }
+    },
+    "./useIntersectionObserver": {
+      "types": "./dist/hooks/useIntersectionObserver.d.ts",
+      "import": {
+        "types": "./dist/hooks/useIntersectionObserver.d.mts",
+        "default": "./dist/hooks/useIntersectionObserver.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useIntersectionObserver.d.ts",
+        "default": "./dist/hooks/useIntersectionObserver.js"
+      }
+    },
+    "./useLedgerEntry": {
+      "types": "./dist/hooks/useLedgerEntry.d.ts",
+      "import": {
+        "types": "./dist/hooks/useLedgerEntry.d.mts",
+        "default": "./dist/hooks/useLedgerEntry.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useLedgerEntry.d.ts",
+        "default": "./dist/hooks/useLedgerEntry.js"
+      }
+    },
+    "./useLiquidityPool": {
+      "types": "./dist/hooks/useLiquidityPool.d.ts",
+      "import": {
+        "types": "./dist/hooks/useLiquidityPool.d.mts",
+        "default": "./dist/hooks/useLiquidityPool.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useLiquidityPool.d.ts",
+        "default": "./dist/hooks/useLiquidityPool.js"
+      }
+    },
+    "./useManageData": {
+      "types": "./dist/hooks/useManageData.d.ts",
+      "import": {
+        "types": "./dist/hooks/useManageData.d.mts",
+        "default": "./dist/hooks/useManageData.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useManageData.d.ts",
+        "default": "./dist/hooks/useManageData.js"
+      }
+    },
+    "./useMultiSig": {
+      "types": "./dist/hooks/useMultiSig.d.ts",
+      "import": {
+        "types": "./dist/hooks/useMultiSig.d.mts",
+        "default": "./dist/hooks/useMultiSig.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useMultiSig.d.ts",
+        "default": "./dist/hooks/useMultiSig.js"
+      }
+    },
+    "./useMultiOperationTransaction": {
+      "types": "./dist/hooks/useMultiOperationTransaction.d.ts",
+      "import": {
+        "types": "./dist/hooks/useMultiOperationTransaction.d.mts",
+        "default": "./dist/hooks/useMultiOperationTransaction.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useMultiOperationTransaction.d.ts",
+        "default": "./dist/hooks/useMultiOperationTransaction.js"
+      }
+    },
+    "./HookActivityOverlay": {
+      "types": "./dist/devtools/HookActivityOverlay.d.ts",
+      "import": {
+        "types": "./dist/devtools/HookActivityOverlay.d.mts",
+        "default": "./dist/devtools/HookActivityOverlay.mjs"
+      },
+      "require": {
+        "types": "./dist/devtools/HookActivityOverlay.d.ts",
+        "default": "./dist/devtools/HookActivityOverlay.js"
+      }
+    },
+    "./useNetwork": {
+      "types": "./dist/hooks/useNetwork.d.ts",
+      "import": {
+        "types": "./dist/hooks/useNetwork.d.mts",
+        "default": "./dist/hooks/useNetwork.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useNetwork.d.ts",
+        "default": "./dist/hooks/useNetwork.js"
+      }
+    },
+    "./useNetworkConfig": {
+      "types": "./dist/hooks/useNetworkConfig.d.ts",
+      "import": {
+        "types": "./dist/hooks/useNetworkConfig.d.mts",
+        "default": "./dist/hooks/useNetworkConfig.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useNetworkConfig.d.ts",
+        "default": "./dist/hooks/useNetworkConfig.js"
+      }
+    },
+    "./useNetworkStatus": {
+      "types": "./dist/hooks/useNetworkStatus.d.ts",
+      "import": {
+        "types": "./dist/hooks/useNetworkStatus.d.mts",
+        "default": "./dist/hooks/useNetworkStatus.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useNetworkStatus.d.ts",
+        "default": "./dist/hooks/useNetworkStatus.js"
+      }
+    },
+    "./useOfferBook": {
+      "types": "./dist/hooks/useOfferBook.d.ts",
+      "import": {
+        "types": "./dist/hooks/useOfferBook.d.mts",
+        "default": "./dist/hooks/useOfferBook.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useOfferBook.d.ts",
+        "default": "./dist/hooks/useOfferBook.js"
+      }
+    },
+    "./useOffers": {
+      "types": "./dist/hooks/useOffers.d.ts",
+      "import": {
+        "types": "./dist/hooks/useOffers.d.mts",
+        "default": "./dist/hooks/useOffers.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useOffers.d.ts",
+        "default": "./dist/hooks/useOffers.js"
+      }
+    },
+    "./useOperations": {
+      "types": "./dist/hooks/useOperations.d.ts",
+      "import": {
+        "types": "./dist/hooks/useOperations.d.mts",
+        "default": "./dist/hooks/useOperations.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useOperations.d.ts",
+        "default": "./dist/hooks/useOperations.js"
+      }
+    },
+    "./useOrderBook": {
+      "types": "./dist/hooks/useOrderBook.d.ts",
+      "import": {
+        "types": "./dist/hooks/useOrderBook.d.mts",
+        "default": "./dist/hooks/useOrderBook.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useOrderBook.d.ts",
+        "default": "./dist/hooks/useOrderBook.js"
+      }
+    },
+    "./usePathPayment": {
+      "types": "./dist/hooks/usePathPayment.d.ts",
+      "import": {
+        "types": "./dist/hooks/usePathPayment.d.mts",
+        "default": "./dist/hooks/usePathPayment.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/usePathPayment.d.ts",
+        "default": "./dist/hooks/usePathPayment.js"
+      }
+    },
+    "./usePayment": {
+      "types": "./dist/hooks/usePayment.d.ts",
+      "import": {
+        "types": "./dist/hooks/usePayment.d.mts",
+        "default": "./dist/hooks/usePayment.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/usePayment.d.ts",
+        "default": "./dist/hooks/usePayment.js"
+      }
+    },
+    "./useSequenceNumber": {
+      "types": "./dist/hooks/useSequenceNumber.d.ts",
+      "import": {
+        "types": "./dist/hooks/useSequenceNumber.d.mts",
+        "default": "./dist/hooks/useSequenceNumber.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useSequenceNumber.d.ts",
+        "default": "./dist/hooks/useSequenceNumber.js"
+      }
+    },
+    "./useSorobanContract": {
+      "types": "./dist/hooks/useSorobanContract.d.ts",
+      "import": {
+        "types": "./dist/hooks/useSorobanContract.d.mts",
+        "default": "./dist/hooks/useSorobanContract.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useSorobanContract.d.ts",
+        "default": "./dist/hooks/useSorobanContract.js"
+      }
+    },
+    "./useSorobanServer": {
+      "types": "./dist/hooks/useSorobanServer.d.ts",
+      "import": {
+        "types": "./dist/hooks/useSorobanServer.d.mts",
+        "default": "./dist/hooks/useSorobanServer.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useSorobanServer.d.ts",
+        "default": "./dist/hooks/useSorobanServer.js"
+      }
+    },
+    "./useSorobanTokenBalance": {
+      "types": "./dist/hooks/useSorobanTokenBalance.d.ts",
+      "import": {
+        "types": "./dist/hooks/useSorobanTokenBalance.d.mts",
+        "default": "./dist/hooks/useSorobanTokenBalance.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useSorobanTokenBalance.d.ts",
+        "default": "./dist/hooks/useSorobanTokenBalance.js"
+      }
+    },
+    "./useStellarAccount": {
+      "types": "./dist/hooks/useStellarAccount.d.ts",
+      "import": {
+        "types": "./dist/hooks/useStellarAccount.d.mts",
+        "default": "./dist/hooks/useStellarAccount.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useStellarAccount.d.ts",
+        "default": "./dist/hooks/useStellarAccount.js"
+      }
+    },
+    "./useStellarAccounts": {
+      "types": "./dist/hooks/useStellarAccounts.d.ts",
+      "import": {
+        "types": "./dist/hooks/useStellarAccounts.d.mts",
+        "default": "./dist/hooks/useStellarAccounts.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useStellarAccounts.d.ts",
+        "default": "./dist/hooks/useStellarAccounts.js"
+      }
+    },
+    "./useStellarBalance": {
+      "types": "./dist/hooks/useStellarBalance.d.ts",
+      "import": {
+        "types": "./dist/hooks/useStellarBalance.d.mts",
+        "default": "./dist/hooks/useStellarBalance.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useStellarBalance.d.ts",
+        "default": "./dist/hooks/useStellarBalance.js"
+      }
+    },
+    "./useStellarNetwork": {
+      "types": "./dist/hooks/useStellarNetwork.d.ts",
+      "import": {
+        "types": "./dist/hooks/useStellarNetwork.d.mts",
+        "default": "./dist/hooks/useStellarNetwork.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useStellarNetwork.d.ts",
+        "default": "./dist/hooks/useStellarNetwork.js"
+      }
+    },
+    "./useStellarOffers": {
+      "types": "./dist/hooks/useStellarOffers.d.ts",
+      "import": {
+        "types": "./dist/hooks/useStellarOffers.d.mts",
+        "default": "./dist/hooks/useStellarOffers.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useStellarOffers.d.ts",
+        "default": "./dist/hooks/useStellarOffers.js"
+      }
+    },
+    "./useStellarQuery": {
+      "types": "./dist/hooks/useStellarQuery.d.ts",
+      "import": {
+        "types": "./dist/hooks/useStellarQuery.d.mts",
+        "default": "./dist/hooks/useStellarQuery.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useStellarQuery.d.ts",
+        "default": "./dist/hooks/useStellarQuery.js"
+      }
+    },
+    "./useStellarToml": {
+      "types": "./dist/hooks/useStellarToml.d.ts",
+      "import": {
+        "types": "./dist/hooks/useStellarToml.d.mts",
+        "default": "./dist/hooks/useStellarToml.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useStellarToml.d.ts",
+        "default": "./dist/hooks/useStellarToml.js"
+      }
+    },
+    "./useStellarTransaction": {
+      "types": "./dist/hooks/useStellarTransaction.d.ts",
+      "import": {
+        "types": "./dist/hooks/useStellarTransaction.d.mts",
+        "default": "./dist/hooks/useStellarTransaction.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useStellarTransaction.d.ts",
+        "default": "./dist/hooks/useStellarTransaction.js"
+      }
+    },
+    "./useStrictSendPaths": {
+      "types": "./dist/hooks/useStrictSendPaths.d.ts",
+      "import": {
+        "types": "./dist/hooks/useStrictSendPaths.d.mts",
+        "default": "./dist/hooks/useStrictSendPaths.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useStrictSendPaths.d.ts",
+        "default": "./dist/hooks/useStrictSendPaths.js"
+      }
+    },
+    "./useTrade": {
+      "types": "./dist/hooks/useTrade.d.ts",
+      "import": {
+        "types": "./dist/hooks/useTrade.d.mts",
+        "default": "./dist/hooks/useTrade.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useTrade.d.ts",
+        "default": "./dist/hooks/useTrade.js"
+      }
+    },
+    "./useTrades": {
+      "types": "./dist/hooks/useTrades.d.ts",
+      "import": {
+        "types": "./dist/hooks/useTrades.d.mts",
+        "default": "./dist/hooks/useTrades.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useTrades.d.ts",
+        "default": "./dist/hooks/useTrades.js"
+      }
+    },
+    "./useTransaction": {
+      "types": "./dist/hooks/useTransaction.d.ts",
+      "import": {
+        "types": "./dist/hooks/useTransaction.d.mts",
+        "default": "./dist/hooks/useTransaction.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useTransaction.d.ts",
+        "default": "./dist/hooks/useTransaction.js"
+      }
+    },
+    "./useTransactionCore": {
+      "types": "./dist/hooks/useTransactionCore.d.ts",
+      "import": {
+        "types": "./dist/hooks/useTransactionCore.d.mts",
+        "default": "./dist/hooks/useTransactionCore.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useTransactionCore.d.ts",
+        "default": "./dist/hooks/useTransactionCore.js"
+      }
+    },
+    "./useTransactionHistory": {
+      "types": "./dist/hooks/useTransactionHistory.d.ts",
+      "import": {
+        "types": "./dist/hooks/useTransactionHistory.d.mts",
+        "default": "./dist/hooks/useTransactionHistory.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useTransactionHistory.d.ts",
+        "default": "./dist/hooks/useTransactionHistory.js"
+      }
+    },
+    "./useTrustline": {
+      "types": "./dist/hooks/useTrustline.d.ts",
+      "import": {
+        "types": "./dist/hooks/useTrustline.d.mts",
+        "default": "./dist/hooks/useTrustline.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useTrustline.d.ts",
+        "default": "./dist/hooks/useTrustline.js"
+      }
+    },
+    "./useTrustlines": {
+      "types": "./dist/hooks/useTrustlines.d.ts",
+      "import": {
+        "types": "./dist/hooks/useTrustlines.d.mts",
+        "default": "./dist/hooks/useTrustlines.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useTrustlines.d.ts",
+        "default": "./dist/hooks/useTrustlines.js"
+      }
+    },
+    "./useWalletConnect": {
+      "types": "./dist/hooks/useWalletConnect.d.ts",
+      "import": {
+        "types": "./dist/hooks/useWalletConnect.d.mts",
+        "default": "./dist/hooks/useWalletConnect.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useWalletConnect.d.ts",
+        "default": "./dist/hooks/useWalletConnect.js"
+      }
+    },
+    "./useWalletKit": {
+      "types": "./dist/hooks/useWalletKit.d.ts",
+      "import": {
+        "types": "./dist/hooks/useWalletKit.d.mts",
+        "default": "./dist/hooks/useWalletKit.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useWalletKit.d.ts",
+        "default": "./dist/hooks/useWalletKit.js"
+      }
+    },
+    "./useWalletsKit": {
+      "types": "./dist/hooks/useWalletsKit.d.ts",
+      "import": {
+        "types": "./dist/hooks/useWalletsKit.d.mts",
+        "default": "./dist/hooks/useWalletsKit.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useWalletsKit.d.ts",
+        "default": "./dist/hooks/useWalletsKit.js"
+      }
+    },
+    "./useXdrDecoder": {
+      "types": "./dist/hooks/useXdrDecoder.d.ts",
+      "import": {
+        "types": "./dist/hooks/useXdrDecoder.d.mts",
+        "default": "./dist/hooks/useXdrDecoder.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useXdrDecoder.d.ts",
+        "default": "./dist/hooks/useXdrDecoder.js"
+      }
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --clean --treeshake --external react,@stellar/stellar-sdk,@stellar/stellar-sdk/rpc,@stellar/stellar-sdk/contract,@stellar/freighter-api,@walletconnect/sign-client,@creit-tech/stellar-wallets-kit/sdk",
+    "build": "tsup",
     "build:types-package": "npm --prefix packages/types run build",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "dev": "tsup --watch",
     "lint": "eslint src --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
-    "test": "NODE_OPTIONS=\"--experimental-require-module\" vitest run",
+    "test": "cross-env NODE_OPTIONS=\"--experimental-require-module\" vitest run",
     "test:watch": "vitest",
+    "test:coverage": "cross-env NODE_OPTIONS=\"--experimental-require-module\" vitest run --coverage",
+    "test:types": "tsd --files src/types/branded.test-d.ts",
+    "test:tree-shaking": "node scripts/test-tree-shaking.mjs",
+    "test:futurenet": "cross-env NODE_OPTIONS=\"--experimental-require-module\" RUN_FUTURENET_TESTS=1 vitest run --config vitest.futurenet.config.ts --no-file-parallelism",
+    "test:e2e": "playwright test",
     "prepare": "husky",
     "prepublishOnly": "npm run build",
-    "release": "semantic-release",
-    "release:dry-run": "semantic-release --dry-run",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "release": "changeset publish",
     "size": "npm run build && size-limit",
     "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
+    "docs:build": "npm run docs:typedoc:all && vitepress build docs",
     "docs:preview": "vitepress preview docs",
     "docs:typedoc": "typedoc",
     "docs:typedoc:all": "npm run docs:typedoc && cd packages/query && npm run docs:build && cd ../swr && npm run docs:build && cd ../..",
-    "docs:clean": "rm -rf docs/api"
+    "docs:clean": "rm -rf docs/api",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "size-limit": [
     {
@@ -67,7 +771,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/spiffamani/stellar-hooks.git"
+    "url": "https://github.com/dark-princezz/stellar-hooks.git"
   },
   "engines": {
     "node": ">=18"
@@ -87,20 +791,21 @@
     }
   },
   "dependencies": {
+    "@albedo-link/intent": "^0.12.0",
     "@stellar/freighter-api": "^6.0.1",
     "@stellar/stellar-sdk": "^13.0.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.1",
     "@commitlint/cli": "^21.1.0",
     "@commitlint/config-conventional": "^21.1.0",
-    "@semantic-release/changelog": "6.0.3",
-    "@semantic-release/commit-analyzer": "13.0.1",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "12.0.8",
-    "@semantic-release/npm": "13.1.5",
-    "@semantic-release/release-notes-generator": "^14.1.1",
     "@size-limit/preset-small-lib": "^12.1.0",
+    "@storybook/addon-essentials": "^8.0.0",
+    "@storybook/addon-interactions": "^8.0.0",
+    "@storybook/addon-links": "^8.0.0",
+    "@storybook/react": "^8.0.0",
+    "@storybook/react-vite": "^8.0.0",
     "@tanstack/react-query": "^5.101.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^14.3.1",
@@ -108,9 +813,10 @@
     "@types/node": "^25.9.1",
     "@types/react": "^18.3.0",
     "@types/react-test-renderer": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.62.1",
+    "@typescript-eslint/parser": "^8.62.1",
     "@walletconnect/sign-client": "^2.23.9",
+    "cross-env": "^10.1.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "husky": "^9.1.7",
@@ -119,8 +825,10 @@
     "react": "^18.3.0",
     "react-dom": "^18.3.1",
     "react-test-renderer": "^18.3.0",
-    "semantic-release": "25.0.3",
+    "rollup-plugin-visualizer": "^7.0.1",
     "size-limit": "^12.1.0",
+    "storybook": "^8.0.0",
+    "tsd": "^0.33.0",
     "tsup": "^8.0.0",
     "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.12.0",

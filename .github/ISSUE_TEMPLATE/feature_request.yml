@@ -1,0 +1,77 @@
+name: "🚀 Feature Request"
+description: "Suggest an idea for stellar-hooks."
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new feature! Please provide as much detail as possible to help us understand your request.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Is your feature request related to a problem?"
+      description: "A clear and concise description of what the problem is."
+      placeholder: "I'm always frustrated when I have to manually paginate through Horizon responses..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Describe the solution you'd like"
+      description: "A clear and concise description of what you want to happen."
+      placeholder: "A new useHorizonPagination hook that handles cursor-based pagination automatically."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Describe alternatives you've considered"
+      description: "A clear and concise description of any alternative solutions or features you've considered."
+      placeholder: "I could manually manage pagination state, but it would be much cleaner as a reusable hook."
+    validations:
+      required: false
+
+  - type: textarea
+    id: api
+    attributes:
+      label: "Proposed API (if applicable)"
+      description: "Describe how you envision the API surface. What would the function signature / component props look like?"
+      render: tsx
+      placeholder: |
+        ```tsx
+        function useHorizonPagination<T>(
+          endpoint: string,
+          opts?: { limit?: number; cursor?: string }
+        ): { data: T[]; next: () => void; hasMore: boolean }
+        ```
+    validations:
+      required: false
+
+  - type: dropdown
+    id: hook-category
+    attributes:
+      label: "Which area does this feature relate to?"
+      multiple: false
+      options:
+        - Freighter / wallet interaction
+        - Stellar account / balance
+        - Soroban / smart contracts
+        - Transaction building / signing
+        - Horizon / network data
+        - Core infrastructure / provider
+        - Documentation / examples
+        - Build / tooling
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "Additional context"
+      description: "Add any other context or screenshots about the feature request here."
+    validations:
+      required: false

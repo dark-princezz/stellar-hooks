@@ -6,19 +6,46 @@
  */
 
 // Provider & context
-export { StellarProvider, useStellarContext } from "./context";
+export { StellarProvider, StellarHooksProvider, useStellarContext } from "./context";
+export { HookActivityOverlay } from "./devtools/HookActivityOverlay";
+export type { HookActivityOverlayProps } from "./devtools/HookActivityOverlay";
 
 // Hooks
 export { useNetwork } from "./hooks/useNetwork";
 export { useStellarNetwork } from "./hooks/useStellarNetwork";
 export type { UseStellarNetworkReturn } from "./hooks/useStellarNetwork";
 export { useFreighter } from "./hooks/useFreighter";
+export { useAlbedo } from "./hooks/useAlbedo";
+export type {
+  AlbedoState,
+  UseAlbedoOptions,
+  SignAlbedoTransactionOptions,
+  SignAlbedoMessageOptions,
+  UseAlbedoReturn,
+} from "./hooks/useAlbedo";
+export { useWallet } from "./hooks/useWallet";
+export type {
+  UseWalletOptions,
+  UseWalletReturn,
+} from "./hooks/useWallet";
+export { useXBull } from "./hooks/useXBull";
+export type {
+  XBullState,
+  UseXBullOptions,
+  UseXBullReturn,
+} from "./hooks/useXBull";
+export { useRabet } from "./hooks/useRabet";
+export type {
+  RabetState,
+  UseRabetOptions,
+  UseRabetReturn,
+} from "./hooks/useRabet";
 export { useFreighterAccounts } from "./hooks/useFreighterAccounts";
 export type {
   UseFreighterAccountsOptions,
   UseFreighterAccountsReturn,
 } from "./hooks/useFreighterAccounts";
-export { useStellarAccount } from "./hooks/useStellarAccount";
+export { useStellarAccount, useSuspenseStellarAccount } from "./hooks/useStellarAccount";
 export { useStellarAccounts } from "./hooks/useStellarAccounts";
 export type {
   UseStellarAccountsOptions,
@@ -31,10 +58,21 @@ export type {
   UseTransactionOptions,
   UseTransactionReturn,
 } from "./hooks/useTransaction";
+export { useMultiOperationTransaction } from "./hooks/useMultiOperationTransaction";
+export type {
+  MultiOperationBuilder,
+  MultiOperationInput,
+  UseMultiOperationTransactionOptions,
+  UseMultiOperationTransactionReturn,
+} from "./hooks/useMultiOperationTransaction";
 export { useLedgerEntry } from "./hooks/useLedgerEntry";
 export { useStellarToml } from "./hooks/useStellarToml";
 export { useAssetMetadata } from "./hooks/useAssetMetadata";
 export { useStellarOffers } from "./hooks/useStellarOffers";
+export { useOffers } from "./hooks/useOffers";
+export type { UseOffersOptions, UseOffersReturn } from "./hooks/useOffers";
+export { useNetworkConfig } from "./hooks/useNetworkConfig";
+export { useHorizonServer } from "./hooks/useHorizonServer";
 export { useEffects } from "./hooks/useEffects";
 export { usePayment } from "./hooks/usePayment";
 export type {
@@ -77,11 +115,7 @@ export type {
   UseTradeReturn,
 } from "./hooks/useTrade";
 
-export { useAccountMerge } from "./hooks/useAccountMerge";
-export type {
-  UseAccountMergeOptions,
-  UseAccountMergeReturn,
-} from "./hooks/useAccountMerge";
+export type { UseAccountMergeOptions, UseAccountMergeReturn } from "./hooks/useAccountMerge";
 
 export {
   useClaimableBalances,
@@ -114,6 +148,8 @@ export type {
 export { useMultiSig } from "./hooks/useMultiSig";
 export type {
   BuildOptions,
+  SignerEntry,
+  Thresholds,
   UseMultiSigOptions,
   UseMultiSigReturn,
 } from "./hooks/useMultiSig";
@@ -131,6 +167,16 @@ export type {
 
 export { useAssets } from "./hooks/useAssets";
 export type { UseAssetsOptions, UseAssetsReturn } from "./hooks/useAssets";
+
+export { useAssetBalance } from "./hooks/useAssetBalance";
+export type { AssetDescriptor, UseAssetBalanceReturn } from "./hooks/useAssetBalance";
+
+export { useTrustlines } from "./hooks/useTrustlines";
+export type { TrustlineAsset, UseTrustlinesReturn } from "./hooks/useTrustlines";
+
+export { useAccountMerge } from "./hooks/useAccountMerge";
+
+export { useSorobanServer } from "./hooks/useSorobanServer";
 
 // Types
 export type {
@@ -151,12 +197,15 @@ export type {
   TransactionState,
   // Contract
   ContractCallOptions,
+  SorobanSimulationEstimate,
   UseContractCallReturn,
   // Ledger
   LedgerEntryState,
   // Provider
   StellarProviderProps,
+  StellarHooksProviderProps,
   StellarContextValue,
+  HookActivitySnapshot,
   // Wallets Kit
   WalletsKitOptions,
   WalletsKitState,
@@ -169,7 +218,13 @@ export type {
 } from "./types";
 
 // Hook-specific Types
-export type { StellarTomlData, UseStellarTomlReturn } from "./hooks/useStellarToml";
+export type {
+  StellarTomlCurrency,
+  StellarTomlData,
+  StellarTomlDocumentation,
+  UseStellarTomlOptions,
+  UseStellarTomlReturn,
+} from "./hooks/useStellarToml";
 export type { AssetMetadata, UseAssetMetadataReturn } from "./hooks/useAssetMetadata";
 export type { UseNetworkStatusArgs, NetworkStatus } from "./hooks/useNetworkStatus";
 export type {
@@ -177,18 +232,6 @@ export type {
   UseTransactionHistoryReturn,
 } from "./hooks/useTransactionHistory";
 export type { UseStellarOffersOptions, UseStellarOffersReturn } from "./hooks/useStellarOffers";
-export type {
-  StellarTomlData,
-  UseStellarTomlReturn,
-} from "./hooks/useStellarToml";
-export type {
-  AssetMetadata,
-  UseAssetMetadataReturn,
-} from "./hooks/useAssetMetadata";
-export type {
-  UseStellarOffersOptions,
-  UseStellarOffersReturn,
-} from "./hooks/useStellarOffers";
 export type { UseEffectsOptions, UseEffectsReturn } from "./hooks/useEffects";
 export { useOperations } from "./hooks/useOperations";
 export type {
@@ -205,18 +248,22 @@ export {
   createFreighterAdapter,
   createLobstrAdapter,
   createXBullAdapter,
+  createAlbedoAdapter,
+  createRabetAdapter,
   createAllAdapters,
 } from "./wallets";
 
 // Utilities
 export { parseAccountResponse, getCache, setCache } from "./utils";
+export { decodeXdr, formatXdrResult, detectXdrType } from "./utils/xdr";
+export type { XdrDecodeResult } from "./utils/xdr";
 
 export { useOfferBook } from "./hooks/useOfferBook";
 export type { UseOfferBookOptions } from "./hooks/useOfferBook";
 
 export { useContractId } from "./hooks/useContractId";
 export type {
-  AssetDescriptor,
+  AssetDescriptor as ContractAssetDescriptor,
   UseContractIdReturn,
 } from "./hooks/useContractId";
 
@@ -238,9 +285,18 @@ export { useLiquidityPool } from "./hooks/useLiquidityPool";
 export type {
   LiquidityPoolReserve,
   LiquidityPoolRecord,
+  PoolPrice,
+  LiquidityPoolDepositParams,
+  LiquidityPoolWithdrawParams,
   UseLiquidityPoolOptions,
   UseLiquidityPoolReturn,
 } from "./hooks/useLiquidityPool";
+
+export { useFeeBumpTransaction } from "./hooks/useFeeBumpTransaction";
+export type {
+  UseFeeBumpTransactionOptions,
+  UseFeeBumpTransactionReturn,
+} from "./hooks/useFeeBumpTransaction";
 
 export { useAccountLiquidityPositions } from "./hooks/useAccountLiquidityPositions";
 export type {
@@ -250,3 +306,40 @@ export type {
 
 export { useContractEvents } from "./hooks/useContractEvents";
 export type { UseContractEventsOptions } from "./hooks/useContractEvents";
+
+export { useTrades } from "./hooks/useTrades";
+export type {
+  TradeRecord,
+  UseTradesOptions,
+  UseTradesReturn,
+} from "./hooks/useTrades";
+
+export { useOrderBook } from "./hooks/useOrderBook";
+export type {
+  OrderBookLevel,
+  OrderBookRecord,
+  UseOrderBookOptions,
+  UseOrderBookReturn,
+} from "./hooks/useOrderBook";
+
+export { useStrictSendPaths } from "./hooks/useStrictSendPaths";
+export type {
+  PathRecord,
+  UseStrictSendPathsOptions,
+  UseStrictSendPathsReturn,
+} from "./hooks/useStrictSendPaths";
+
+export { useAssetSearch } from "./hooks/useAssetSearch";
+export type {
+  StellarAssetInfo,
+  StellarAssetRating,
+  StellarAssetTomlInfo,
+  UseAssetSearchOptions,
+  UseAssetSearchReturn,
+} from "./hooks/useAssetSearch";
+
+export { useXdrDecoder } from "./hooks/useXdrDecoder";
+export type {
+  UseXdrDecoderOptions,
+  UseXdrDecoderReturn,
+} from "./hooks/useXdrDecoder";

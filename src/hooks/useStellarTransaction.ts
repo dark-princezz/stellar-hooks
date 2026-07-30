@@ -1,6 +1,5 @@
 import { useCallback } from "react";
-import { Horizon, TransactionBuilder, Operation, Memo } from "@stellar/stellar-sdk";
-import { Horizon, Transaction, TransactionBuilder, xdr } from "@stellar/stellar-sdk";
+import { Horizon, Transaction, TransactionBuilder, Operation, Memo, xdr } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 import { useFreighter } from "./useFreighter";
 import { useTransactionCore } from "./useTransactionCore";
@@ -63,6 +62,7 @@ export function useStellarTransaction(options: UseStellarTransactionOptions = {}
   const { submit: submitXdr, reset, status, hash, error, isLoading, isSuccess, isError } = useTransactionCore({
     mode: "classic",
     timeoutSeconds,
+    debugLabel: "useStellarTransaction",
     ...(onSuccess && { onSuccess }),
     ...(onError && { onError }),
   });

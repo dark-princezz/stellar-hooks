@@ -208,7 +208,9 @@ describe("useMultiSig", () => {
   });
 
   it("updates signatureCount after build based on existing signatures", async () => {
-    mockFromXDR.mockReturnValueOnce({ signatures: [{}, {}] });
+    // Return a tx with 2 signatures; use mockReturnValue (not Once) because
+    // computeSignatureWeight also calls fromXDR during re-render.
+    mockFromXDR.mockReturnValue({ signatures: [{}, {}] });
     const { result } = renderHook(() => useMultiSig());
 
     await act(async () => {
@@ -216,6 +218,18 @@ describe("useMultiSig", () => {
     });
 
     expect(result.current.signatureCount).toBe(2);
+  });
+
+  it("exposes signers, thresholds, meetsThreshold, and signatureWeight", async () => {
+    mockFromXDR.mockReturnValue({ signatures: [] });
+    const { result } = renderHook(() => useMultiSig());
+
+    // Default state before build
+    expect(Array.isArray(result.current.signers)).toBe(true);
+    expect(result.current.signers).toHaveLength(0);
+    expect(result.current.thresholds).toBeNull();
+    expect(result.current.meetsThreshold).toBe(false);
+    expect(result.current.signatureWeight).toBe(0);
   });
 });
 

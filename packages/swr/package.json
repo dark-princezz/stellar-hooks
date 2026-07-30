@@ -1,12 +1,21 @@
 {
   "name": "@stellar-hooks/swr",
   "version": "0.1.0",
+  "sideEffects": false,
   "description": "SWR adapter for stellar-hooks — use Stellar and Soroban React hooks with SWR caching and revalidation.",
   "main": "dist/index.js",
-  "module": "dist/index.esm.js",
+  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean",
@@ -49,7 +58,7 @@
     "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.57.0",
     "react": "^18.3.0",
-    "stellar-hooks": "workspace:*",
+    "stellar-hooks": "^0.2.0",
     "swr": "^2.2.0",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",

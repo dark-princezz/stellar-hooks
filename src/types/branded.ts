@@ -140,22 +140,34 @@ export function unsafeAsPublicKey(value: string): StellarPublicKey {
   return value as StellarPublicKey;
 }
 
-/** UNSAFE: Cast a string to StellarContractId without validation. */
+/**
+ * UNSAFE: Cast a string to StellarContractId without validation.
+ * Only use when you're 100% sure the value is valid (e.g., from a trusted API).
+ */
 export function unsafeAsContractId(value: string): StellarContractId {
   return value as StellarContractId;
 }
 
-/** UNSAFE: Cast a string to StellarXdrString without validation. */
+/**
+ * UNSAFE: Cast a string to StellarXdrString without validation.
+ * Only use when you're 100% sure the value is valid (e.g., from a trusted API).
+ */
 export function unsafeAsXdrString(value: string): StellarXdrString {
   return value as StellarXdrString;
 }
 
-/** UNSAFE: Cast a string to StellarTxHash without validation. */
+/**
+ * UNSAFE: Cast a string to StellarTxHash without validation.
+ * Only use when you're 100% sure the value is valid (e.g., from a trusted API).
+ */
 export function unsafeAsTxHash(value: string): StellarTxHash {
   return value as StellarTxHash;
 }
 
-/** UNSAFE: Cast a string to StellarAssetIssuer without validation. */
+/**
+ * UNSAFE: Cast a string to StellarAssetIssuer without validation.
+ * Only use when you're 100% sure the value is valid (e.g., from a trusted API).
+ */
 export function unsafeAsAssetIssuer(value: string): StellarAssetIssuer {
   return value as unknown as StellarAssetIssuer;
 }

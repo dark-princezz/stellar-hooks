@@ -14,6 +14,18 @@ export interface UseContractIdReturn {
   error: Error | null;
 }
 
+/**
+ * Derives a Soroban contract ID from a Stellar asset descriptor.
+ *
+ * @example
+ * ```tsx
+ * const { contractId, error } = useContractId({ code: "USDC", issuer: "G..." });
+ * // contractId: "CAAAA..."
+ *
+ * // Native XLM (no issuer needed)
+ * const { contractId } = useContractId({ code: "XLM" });
+ * ```
+ */
 export function useContractId(
   asset: AssetDescriptor | null | undefined,
   networkPassphrase?: string

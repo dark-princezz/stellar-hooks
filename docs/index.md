@@ -81,4 +81,5 @@ export function App() {
 
 - [Read the Getting Started guide](/getting-started)
 - [Browse the API reference](/api/provider)
+- [Learn the error handling patterns](/guides/error-handling)
 - [Check out the migration guide](/guides/migration-guide)

@@ -20,3 +20,6 @@ export type {
   StellarBalanceQueryData,
   UseLedgerEntryQueryOptions,
 } from "./types";
+
+// Package metadata helpers
+export const packageName = "@stellar-hooks/query";

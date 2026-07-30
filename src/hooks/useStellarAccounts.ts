@@ -150,13 +150,20 @@ export function useStellarAccounts(
       }
     }
     return { accounts, errors };
-  }, [fetchKey, config.horizonUrl, publicKeys]);
+    // publicKeys is intentionally omitted: fetchKey is its stable,
+    // order-independent, deduplicated proxy. Depending on the raw array
+    // reference here would re-create fetchBatch (and re-trigger the query
+    // effect) on every render whenever the caller passes a fresh array
+    // literal, causing a refetch loop.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchKey, config.horizonUrl]);
 
   const state = useStellarQuery<BatchedResult | null>(fetchBatch, {
-    enabled,
+    enabled: enabled && fetchKey !== "",
     refetchInterval,
     deduplicate,
     initialData: null,
+    debugLabel: "useStellarAccounts",
   });
 
   return useMemo(() => {

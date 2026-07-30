@@ -36,7 +36,11 @@ vi.mock("@stellar/stellar-sdk", () => {
       ...(typeof fields === "object" && fields !== null ? fields : {}),
     })),
     LedgerKey: {
-      contractData: vi.fn((inner: unknown) => ({ _kind: "LedgerKey.contractData", inner })),
+      contractData: vi.fn((inner: unknown) => ({
+        _kind: "LedgerKey.contractData",
+        inner,
+        toXDR: vi.fn().mockReturnValue("bW9ja0xlZGdlcktleQ=="),
+      })),
     },
   };
 

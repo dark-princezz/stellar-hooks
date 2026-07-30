@@ -1,0 +1,124 @@
+name: "🐞 Bug Report"
+description: "Create a report to help us improve stellar-hooks."
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug! Please fill out as much detail as possible to help us resolve it quickly.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Description"
+      description: "A clear and concise description of what the bug is."
+      placeholder: "When I use useFreighter with autoConnect, it..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: "Steps to reproduce"
+      description: "Detailed steps to reproduce the issue."
+      placeholder: |
+        1. Import useFreighter from 'stellar-hooks'
+        2. Call it with { autoConnect: true }
+        3. See error in browser console
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected behavior"
+      description: "A clear and concise description of what you expected to happen."
+      placeholder: "The hook should auto-connect without throwing an error."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: "Actual behavior"
+      description: "What actually happened instead."
+      placeholder: "The hook throws 'Cannot read properties of undefined'"
+    validations:
+      required: true
+
+  - type: textarea
+    id: code
+    attributes:
+      label: "Code snippet / reproduction"
+      description: "Please provide a minimal reproduction repository link or a code snippet that reproduces the issue."
+      render: tsx
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: "stellar-hooks version"
+      description: "Which version of stellar-hooks are you using?"
+      placeholder: "e.g. 0.2.0"
+    validations:
+      required: true
+
+  - type: input
+    id: stellar-sdk-version
+    attributes:
+      label: "@stellar/stellar-sdk version"
+      description: "Which version of @stellar/stellar-sdk are you using?"
+      placeholder: "e.g. 13.0.0"
+    validations:
+      required: false
+
+  - type: input
+    id: freighter-version
+    attributes:
+      label: "@stellar/freighter-api version"
+      description: "Which version of @stellar/freighter-api are you using?"
+      placeholder: "e.g. 6.0.1"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: "Environment"
+      description: "Where does this issue occur?"
+      multiple: true
+      options:
+        - Browser (Chrome)
+        - Browser (Firefox)
+        - Browser (Edge)
+        - Node.js
+        - React Native
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: "Operating system"
+      placeholder: "e.g. macOS 15.0, Windows 11"
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Relevant log output / stack trace"
+      description: "Copy and paste any relevant console logs or stack traces."
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "Additional context"
+      description: "Add any other context about the problem here (screenshots, related issues, etc.)."
+    validations:
+      required: false

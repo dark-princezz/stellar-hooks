@@ -95,6 +95,7 @@ export function useInflation(options: UseInflationOptions = {}): UseInflationRet
   const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
     timeoutSeconds,
+    debugLabel: "useInflation",
     ...(onSuccess && { onSuccess }),
     ...(onError && { onError }),
   });

@@ -16,6 +16,7 @@ import type {
   TransactionState,
   StellarTransactionError,
   ContractCallOptions,
+  SorobanSimulationEstimate,
   UseContractCallReturn,
   LedgerEntryState,
   StellarProviderProps,
@@ -306,7 +307,15 @@ describe("UseContractCallReturn", () => {
     expectTypeOf<UseContractCallReturn>().toMatchTypeOf<TransactionState>();
   });
 
-  test("has call, query, simulate, and reset methods", () => {
+  test("has simulation metadata plus call, query, simulate, and reset methods", () => {
+    expectTypeOf<UseContractCallReturn>().toHaveProperty("simulation");
+    expectTypeOf<UseContractCallReturn["simulation"]>().toEqualTypeOf<
+      import("@stellar/stellar-sdk/rpc").Api.SimulateTransactionResponse | null
+    >();
+    expectTypeOf<UseContractCallReturn>().toHaveProperty("estimatedCost");
+    expectTypeOf<UseContractCallReturn["estimatedCost"]>().toEqualTypeOf<
+      SorobanSimulationEstimate | null
+    >();
     expectTypeOf<UseContractCallReturn>().toHaveProperty("call");
     expectTypeOf<UseContractCallReturn>().toHaveProperty("query");
     expectTypeOf<UseContractCallReturn>().toHaveProperty("simulate");

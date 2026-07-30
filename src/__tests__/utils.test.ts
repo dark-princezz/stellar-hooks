@@ -12,7 +12,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { parseAccountResponse } from "../utils";       
+import { parseAccountResponse, parseBalance } from "../utils/index";       
 import { NETWORK_CONFIGS } from "../types";
 import type { StellarBalance } from "../types";
 import type { Horizon } from "@stellar/stellar-sdk";
@@ -255,5 +255,52 @@ describe("parseAccountResponse — native XLM extraction", () => {
 
     const result = parseAccountResponse(raw);
     expect(result.balances[0].balanceFloat).toBe(parseFloat(largeBalance));
+  });
+});
+
+// ─── parseBalance ─────────────────────────────────────────────────────────────
+
+describe("parseBalance", () => {
+  it("correctly parses simple integer balances", () => {
+    expect(parseBalance("100")).toBe(100);
+    expect(parseBalance("0")).toBe(0);
+    expect(parseBalance("50")).toBe(50);
+  });
+
+  it("correctly parses 7 decimal place balances", () => {
+    expect(parseBalance("100.1234567")).toBe(100.1234567);
+    expect(parseBalance("0.0000001")).toBe(0.0000001);
+    expect(parseBalance("99999999999.9999999")).toBe(99999999999.9999999);
+  });
+
+  it("handles balances with fewer than 7 decimal places", () => {
+    expect(parseBalance("100.1")).toBe(100.1);
+    expect(parseBalance("50.12")).toBe(50.12);
+    expect(parseBalance("25.123")).toBe(25.123);
+  });
+
+  it("handles balances with more than 7 decimal places (truncates)", () => {
+    expect(parseBalance("100.12345678")).toBe(100.1234567);
+    expect(parseBalance("50.99999999")).toBe(50.9999999);
+  });
+
+  it("avoids floating point precision errors with problematic values", () => {
+    // These values are known to cause issues with parseFloat
+    expect(parseBalance("0.1")).toBe(0.1);
+    expect(parseBalance("0.2")).toBe(0.2);
+    expect(parseBalance("0.3")).toBe(0.3);
+    expect(parseBalance("0.7")).toBe(0.7);
+    expect(parseBalance("1.1")).toBe(1.1);
+    expect(parseBalance("0.0000001")).toBe(0.0000001);
+  });
+
+  it("handles edge case values", () => {
+    expect(parseBalance("0.0000000")).toBe(0);
+    expect(parseBalance("999999999999.9999999")).toBe(999999999999.9999999);
+  });
+
+  it("handles whitespace", () => {
+    expect(parseBalance(" 100.1234567 ")).toBe(100.1234567);
+    expect(parseBalance("50 ")).toBe(50);
   });
 });

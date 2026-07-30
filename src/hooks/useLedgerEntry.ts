@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { xdr } from "@stellar/stellar-sdk";
 import * as rpc from "@stellar/stellar-sdk/rpc";
 import { useStellarContext } from "../context";
@@ -62,13 +62,19 @@ export function useLedgerEntry(
 ): LedgerEntryState {
   const { enabled = true, refetchInterval = 0, cacheTTL = 60000 } = options;
   const { config } = useStellarContext();
+  const bypassCacheRef = useRef(false);
 
-  const fetch = useCallback(async () => {
+  const fetch = useCallback(async (signal?: AbortSignal) => {
     if (!ledgerKey) return null;
 
     const cacheKey = `ledger-entry-${ledgerKey.toXDR("base64")}-${config.network}`;
-    const cached = getCache<rpc.Api.LedgerEntryResult>(cacheKey);
-    if (cached) return cached;
+
+    if (bypassCacheRef.current) {
+      bypassCacheRef.current = false;
+    } else {
+      const cached = getCache<rpc.Api.LedgerEntryResult>(cacheKey);
+      if (cached) return cached;
+    }
 
     const server = new rpc.Server(config.sorobanRpcUrl);
     const result = await server.getLedgerEntries(ledgerKey);
@@ -88,7 +94,17 @@ export function useLedgerEntry(
     enabled: enabled && Boolean(ledgerKey),
     refetchInterval,
     initialData: null,
+    debugLabel: "useLedgerEntry",
   });
+
+  const refetch = useCallback(async () => {
+    bypassCacheRef.current = true;
+    await state.refetch();
+    // `state` itself is intentionally omitted: `state.refetch` is the only
+    // stable field this callback needs, and depending on the whole object
+    // would re-create `refetch` on every data/loading update from useStellarQuery.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.refetch]);
 
   return useMemo(
     () => ({
@@ -97,8 +113,47 @@ export function useLedgerEntry(
       isRefetching: state.isRefetching,
       error: state.error,
       lastFetchedAt: state.lastFetchedAt,
-      refetch: state.refetch,
+      refetch,
     }),
-    [state.data, state.isLoading, state.isRefetching, state.error, state.lastFetchedAt, state.refetch]
+    [state.data, state.isLoading, state.isRefetching, state.error, state.lastFetchedAt, refetch]
   ) as LedgerEntryState;
+}
+
+/**
+ * React Suspense-compatible variant of {@link useLedgerEntry}.
+ * Throws a Promise during data fetching for `<Suspense>` boundaries
+ * and throws Errors for `<ErrorBoundary>` boundaries.
+ */
+export function useSuspenseLedgerEntry(
+  ledgerKey: xdr.LedgerKey | null | undefined,
+  options: UseLedgerEntryOptions = {},
+): LedgerEntryState {
+  const state = useLedgerEntry(ledgerKey, options);
+  const promiseRef = useRef<{ promise: Promise<void>; resolve: () => void } | null>(null);
+
+  if (!promiseRef.current) {
+    let resolveFn!: () => void;
+    const promise = new Promise<void>((resolve) => {
+      resolveFn = resolve;
+    });
+    promiseRef.current = { promise, resolve: resolveFn };
+  }
+
+  useEffect(() => {
+    if (!state.isLoading && promiseRef.current) {
+      promiseRef.current.resolve();
+      promiseRef.current = null;
+    }
+  }, [state.isLoading]);
+
+  if ((options.enabled ?? true) && Boolean(ledgerKey)) {
+    if (state.error) {
+      throw state.error;
+    }
+    if (state.isLoading && state.data === null && promiseRef.current) {
+      throw promiseRef.current.promise;
+    }
+  }
+
+  return state;
 }

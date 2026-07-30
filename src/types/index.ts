@@ -128,6 +128,61 @@ export interface CustomNetworkConfig {
   networkPassphrase: string;
 }
 
+/**
+ * Configuration options for the `useOffers` hook.
+ */
+export interface UseOffersOptions {
+  /** Whether the hook should actively fetch data. @default true */
+  enabled?: boolean;
+  /** Interval in milliseconds to automatically refetch offers. */
+  refetchInterval?: number;
+  /** Maximum number of offer records to fetch per page. */
+  limit?: number;
+}
+
+/**
+ * Return value of the `useOffers` hook.
+ */
+export interface UseOffersReturn {
+  /** Array of offer records from Horizon. */
+  offers: Horizon.ServerApi.OfferRecord[];
+  /** `true` while the initial fetch is in flight. */
+  isLoading: boolean;
+  /** Most recent fetch error, or `null`. */
+  error: Error | null;
+  /** Manually trigger a re-fetch of the current page. */
+  refetch: () => Promise<void>;
+  /** Fetch the next page of offers. */
+  nextPage: () => Promise<void>;
+  /** Fetch the previous page of offers. */
+  prevPage: () => Promise<void>;
+}
+
+// Re-export new hook types so consumers can import from "stellar-hooks"
+export type {
+  TradeRecord,
+  UseTradesOptions,
+  UseTradesReturn,
+} from "../hooks/useTrades";
+
+export type {
+  OrderBookLevel,
+  OrderBookRecord,
+  UseOrderBookOptions,
+  UseOrderBookReturn,
+} from "../hooks/useOrderBook";
+
+export type {
+  PathRecord,
+  UseStrictSendPathsOptions,
+  UseStrictSendPathsReturn,
+} from "../hooks/useStrictSendPaths";
+
+/**
+ * Pre-configured network settings for built-in Stellar networks.
+ * Use these to access Horizon URLs, Soroban RPC endpoints, and network passphrases
+ * for mainnet, testnet, and futurenet.
+ */
 export const NETWORK_CONFIGS: Record<Exclude<StellarNetwork, "custom">, NetworkConfig> = {
   mainnet: {
     network: "mainnet",
@@ -269,6 +324,9 @@ export interface FreighterState {
   error: Error | null;
 }
 
+/**
+ * Configuration options for the `useFreighter` hook.
+ */
 export interface UseFreighterOptions {
   /**
    * Expected Stellar network passphrase for this dApp.
@@ -283,6 +341,10 @@ export interface UseFreighterOptions {
   autoConnect?: boolean;
 }
 
+/**
+ * Return value of the `useFreighter` hook.
+ * Extends {@link FreighterState} with wallet interaction methods.
+ */
 export interface UseFreighterReturn extends FreighterState {
   /** `true` while a `signMessage()` call is in flight. */
   isSigningMessage: boolean;
@@ -311,6 +373,9 @@ export interface UseFreighterReturn extends FreighterState {
   signMessage: (message: string, opts?: { accountToSign?: string }) => Promise<string>;
 }
 
+/**
+ * Options for signing transactions with Freighter.
+ */
 export interface SignTransactionOptions {
   /** Override the network passphrase used for signing (defaults to the provider's network). */
   networkPassphrase?: string;
@@ -409,6 +474,9 @@ export interface TransactionState<TResult = unknown> {
 
 // ─── Soroban Contract ─────────────────────────────────────────────────────────
 
+/**
+ * Configuration options for invoking a Soroban contract method.
+ */
 export interface ContractCallOptions<TResult = unknown> {
   /** Soroban contract address (C...) */
   contractId: StellarContractId;
@@ -431,10 +499,28 @@ export interface ContractCallOptions<TResult = unknown> {
    * If not provided, the raw xdr.ScVal is returned (or tx hash as fallback).
    */
   parseResult?: (scVal: xdr.ScVal) => TResult;
+  /**
+   * Optional optimistic result value to display immediately while the contract call is processing.
+   * Automatically rolled back to previous result if the call fails.
+   */
+  optimisticResult?: TResult;
+}
+
+export interface SorobanSimulationEstimate {
+  /** Estimated resource fee from simulation, when provided by Soroban RPC. */
+  resourceFee: string | null;
+  /** Estimated CPU instruction count from simulation, when provided. */
+  instructions: string | number | null;
+  /** Raw `cost` payload returned by Soroban RPC for advanced inspection. */
+  cost: unknown | null;
 }
 
 export interface UseContractCallReturn<TResult = unknown>
   extends TransactionState<TResult> {
+  /** Most recent raw simulation response captured by the hook, or `null`. */
+  simulation: rpc.Api.SimulateTransactionResponse | null;
+  /** Normalized fee/instruction estimate derived from the latest simulation. */
+  estimatedCost: SorobanSimulationEstimate | null;
   /**
    * Execute the contract call (Simulation -> Signing -> Submission -> Polling).
    */
@@ -475,6 +561,10 @@ export interface UseContractCallReturn<TResult = unknown>
 
 // ─── Ledger Entry ─────────────────────────────────────────────────────────────
 
+/**
+ * State snapshot for ledger entry queries.
+ * Used by hooks that fetch Soroban ledger entries via RPC.
+ */
 export interface LedgerEntryState {
   /** The raw ledger entry result from Soroban RPC, or `null` if not yet fetched or not found. */
   data: rpc.Api.LedgerEntryResult | null;
@@ -492,6 +582,10 @@ export interface LedgerEntryState {
 
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
+/**
+ * Props for the `StellarProvider` component.
+ * Configures the Stellar network context for all child hooks.
+ */
 export interface StellarProviderProps {
   /** Built-in preset (`testnet`, `mainnet`, `futurenet`) or `"custom"` for a private network. @default "testnet" */
   network?: StellarNetwork;
@@ -503,6 +597,27 @@ export interface StellarProviderProps {
   children: React.ReactNode;
 }
 
+/**
+ * Props for the `StellarHooksProvider` component.
+ * Alternative provider with flexible network configuration options.
+ */
+export interface StellarHooksProviderProps {
+  /** Built-in preset (`testnet`, `mainnet`, `futurenet`) or `"custom"` for a private network. @default "testnet" */
+  network?: StellarNetwork | undefined;
+  /** Optional custom Horizon URL to override the network default or define custom. */
+  horizonUrl?: string | undefined;
+  /** Optional custom Soroban RPC URL to override the network default or define custom. */
+  sorobanRpcUrl?: string | undefined;
+  /** Optional custom network passphrase to override the network default or define custom. */
+  networkPassphrase?: string | undefined;
+  /** Backward compatible custom config object. */
+  customConfig?: CustomNetworkConfig | undefined;
+  children: React.ReactNode;
+}
+
+/**
+ * Context value provided by the Stellar provider to all child hooks.
+ */
 export interface StellarContextValue {
   /** Resolved network configuration (Horizon URL, Soroban RPC URL, passphrase). */
   config: NetworkConfig;
@@ -510,11 +625,32 @@ export interface StellarContextValue {
   network: StellarNetwork;
   /** Provider-scoped in-memory map for deduplicating in-flight requests. */
   requestCache: Map<string, Promise<unknown>>;
+  /**
+   * Monotonically increasing counter incremented on every network switch.
+   * Hooks compare the epoch at fetch-start vs fetch-end to discard stale
+   * responses from a previous network.
+   */
+  networkEpoch: number;
+}
+
+export interface HookActivitySnapshot {
+  /** Stable internal identifier for a mounted hook instance. */
+  id: string;
+  /** Hook name shown in the dev overlay. */
+  name: string;
+  /** Current lifecycle status for the hook instance. */
+  status: string;
+  /** Most recent error message, if any. */
+  lastError: string | null;
+  /** Timestamp of the most recent state update. */
+  updatedAt: Date;
 }
 
 // ─── Stellar Wallets Kit ──────────────────────────────────────────────────────
 
-/** Init params forwarded to StellarWalletsKit.init(). */
+/**
+ * Initialization options for the Stellar Wallets Kit.
+ */
 export interface WalletsKitOptions {
   /** List of wallet modules to support. Pass `defaultModules()` for all built-in wallets. */
   modules: unknown[];
@@ -524,6 +660,9 @@ export interface WalletsKitOptions {
   network?: string;
 }
 
+/**
+ * State snapshot for the Stellar Wallets Kit integration.
+ */
 export interface WalletsKitState {
   /** Active wallet public key, or `null` when not connected. */
   publicKey: string | null;
@@ -535,6 +674,10 @@ export interface WalletsKitState {
   error: Error | null;
 }
 
+/**
+ * Return value of the `useWalletsKit` hook.
+ * Extends {@link WalletsKitState} with wallet interaction methods.
+ */
 export interface UseWalletsKitReturn extends WalletsKitState {
   /**
    * Open the Stellar Wallets Kit auth modal so the user can pick a wallet.
@@ -562,10 +705,14 @@ export interface UseWalletsKitReturn extends WalletsKitState {
 
 // ─── WalletConnect v2 ─────────────────────────────────────────────────────────
 
-/** Stellar CAIP-2 chain IDs for WalletConnect namespaces. */
+/**
+ * Stellar CAIP-2 chain IDs for WalletConnect namespaces.
+ */
 export type WalletConnectChain = "stellar:pubnet" | "stellar:testnet";
 
-/** Init options for useWalletConnect. projectId is required (Reown/WalletConnect dashboard). */
+/**
+ * Initialization options for the `useWalletConnect` hook.
+ */
 export interface WalletConnectOptions {
   /** WalletConnect / Reown project ID from https://cloud.reown.com */
   projectId: string;
@@ -582,6 +729,9 @@ export interface WalletConnectOptions {
   relayUrl?: string;
 }
 
+/**
+ * State snapshot for the WalletConnect integration.
+ */
 export interface WalletConnectState {
   /** Connected Stellar public key, or `null` when not connected. */
   publicKey: string | null;
@@ -595,6 +745,10 @@ export interface WalletConnectState {
   error: Error | null;
 }
 
+/**
+ * Return value of the `useWalletConnect` hook.
+ * Extends {@link WalletConnectState} with wallet interaction methods.
+ */
 export interface UseWalletConnectReturn extends WalletConnectState {
   /**
    * Initiate a WalletConnect session. Resolves once the wallet approves.

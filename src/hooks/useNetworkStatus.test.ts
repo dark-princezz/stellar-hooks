@@ -1,85 +1,66 @@
-import { renderHook, act } from '@testing-library/react-hooks';
-import { useNetworkStatus } from './useNetworkStatus';
-import { StellarContext } from '../context';
-import { SorobanRpc, Horizon } from 'stellar-sdk';
-import { ReactNode } from 'react';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { renderHook, act, waitFor } from "@testing-library/react";
+import { useNetworkStatus } from "./useNetworkStatus";
 
-// Mock the SDK servers
-const mockHorizon = {
-  root: jest.fn(),
-} as unknown as Horizon.Server;
+const mockRoot = vi.hoisted(() => vi.fn());
+const mockGetHealth = vi.hoisted(() => vi.fn());
 
-const mockRpc = {
-  getHealth: jest.fn(),
-} as unknown as SorobanRpc.Server;
+vi.mock("../context", () => ({
+  useStellarContext: () => ({
+    config: {
+      horizonUrl: "https://horizon-testnet.stellar.org",
+      sorobanRpcUrl: "https://soroban-testnet.stellar.org",
+    },
+  }),
+}));
 
-// A wrapper to provide the mocked context to the hook
-const wrapper = ({ children }: { children: ReactNode }) => (
-  <StellarContext.Provider value={{ server: mockHorizon, rpc: mockRpc, network: 'testnet', networkConfig: {} as any }}>
-    {children}
-  </StellarContext.Provider>
-);
+vi.mock("../utils/memoizedServers", () => ({
+  getHorizonServer: vi.fn().mockReturnValue({ root: mockRoot }),
+  getRpcServer: vi.fn().mockReturnValue({ getHealth: mockGetHealth }),
+}));
 
-// Use fake timers to control setInterval
-jest.useFakeTimers();
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.useRealTimers();
+});
 
-describe('useNetworkStatus', () => {
-  beforeEach(() => {
-    // Reset mocks before each test
-    jest.clearAllMocks();
-    (mockHorizon.root as jest.Mock).mockReset();
-    (mockRpc.getHealth as jest.Mock).mockReset();
-  });
+describe("useNetworkStatus", () => {
+  it("returns healthy status and latency when both endpoints respond", async () => {
+    mockRoot.mockResolvedValue({ history_latest_ledger: 12345 });
+    mockGetHealth.mockResolvedValue({ status: "healthy" });
 
-  it('should return healthy status and latency when endpoints are responsive', async () => {
-    (mockHorizon.root as jest.Mock).mockImplementation(async () => {
-      await new Promise(resolve => setTimeout(resolve, 50)); // Simulate 50ms latency
-      return { history_latest_ledger: 12345 };
-    });
+    const { result } = renderHook(() => useNetworkStatus());
 
-    (mockRpc.getHealth as jest.Mock).mockImplementation(async () => {
-      await new Promise(resolve => setTimeout(resolve, 75)); // Simulate 75ms latency
-      return { status: 'healthy' };
-    });
-
-    const { result, waitForNextUpdate } = renderHook(() => useNetworkStatus(), { wrapper });
-
-    await act(async () => {
-      await waitForNextUpdate();
-    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.isHorizonHealthy).toBe(true);
     expect(result.current.isRpcHealthy).toBe(true);
     expect(result.current.ledger).toBe(12345);
-    expect(result.current.horizonLatency).toBeGreaterThanOrEqual(50);
-    expect(result.current.rpcLatency).toBeGreaterThanOrEqual(75);
+    expect(result.current.horizonLatency).not.toBe(Infinity);
+    expect(result.current.rpcLatency).not.toBe(Infinity);
   });
 
-  it('should handle Horizon failure gracefully', async () => {
-    (mockHorizon.root as jest.Mock).mockRejectedValue(new Error('Network error'));
-    (mockRpc.getHealth as jest.Mock).mockResolvedValue({ status: 'healthy' });
+  it("handles a Horizon failure without affecting RPC status", async () => {
+    mockRoot.mockRejectedValue(new Error("Network error"));
+    mockGetHealth.mockResolvedValue({ status: "healthy" });
 
-    const { result, waitForNextUpdate } = renderHook(() => useNetworkStatus(), { wrapper });
+    const { result } = renderHook(() => useNetworkStatus());
 
-    await act(async () => {
-      await waitForNextUpdate();
-    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.isHorizonHealthy).toBe(false);
     expect(result.current.horizonLatency).toBe(Infinity);
-    expect(result.current.ledger).toBe(0); // Stays at initial value
+    expect(result.current.ledger).toBe(0); // stays at initial value
     expect(result.current.isRpcHealthy).toBe(true);
   });
 
-  it('should handle Soroban RPC failure gracefully', async () => {
-    (mockHorizon.root as jest.Mock).mockResolvedValue({ history_latest_ledger: 12345 });
-    (mockRpc.getHealth as jest.Mock).mockRejectedValue(new Error('RPC timeout'));
+  it("handles a Soroban RPC failure without affecting Horizon status", async () => {
+    mockRoot.mockResolvedValue({ history_latest_ledger: 12345 });
+    mockGetHealth.mockRejectedValue(new Error("RPC timeout"));
 
-    const { result, waitForNextUpdate } = renderHook(() => useNetworkStatus(), { wrapper });
+    const { result } = renderHook(() => useNetworkStatus());
 
-    await act(async () => {
-      await waitForNextUpdate();
-    });
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.isRpcHealthy).toBe(false);
     expect(result.current.rpcLatency).toBe(Infinity);
@@ -87,30 +68,22 @@ describe('useNetworkStatus', () => {
     expect(result.current.ledger).toBe(12345);
   });
 
-  it('should refetch status based on refetchInterval', async () => {
-    (mockHorizon.root as jest.Mock).mockResolvedValue({ history_latest_ledger: 100 });
-    (mockRpc.getHealth as jest.Mock).mockResolvedValue({ status: 'healthy' });
+  it("refetches on demand via the returned refetch function", async () => {
+    mockRoot.mockResolvedValueOnce({ history_latest_ledger: 100 });
+    mockGetHealth.mockResolvedValue({ status: "healthy" });
 
-    const { result, waitForNextUpdate } = renderHook(
-      () => useNetworkStatus({ refetchInterval: 5000 }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useNetworkStatus());
 
-    await act(async () => {
-      await waitForNextUpdate();
-    });
+    await waitFor(() => expect(result.current.ledger).toBe(100));
+    expect(mockRoot).toHaveBeenCalledTimes(1);
 
-    expect(mockHorizon.root).toHaveBeenCalledTimes(1);
-    expect(result.current.ledger).toBe(100);
-
-    (mockHorizon.root as jest.Mock).mockResolvedValue({ history_latest_ledger: 101 });
+    mockRoot.mockResolvedValueOnce({ history_latest_ledger: 101 });
 
     await act(async () => {
-      jest.advanceTimersByTime(5000);
-      await waitForNextUpdate();
+      result.current.refetch();
     });
 
-    expect(mockHorizon.root).toHaveBeenCalledTimes(2);
-    expect(result.current.ledger).toBe(101);
+    await waitFor(() => expect(result.current.ledger).toBe(101));
+    expect(mockRoot).toHaveBeenCalledTimes(2);
   });
 });

@@ -86,6 +86,7 @@ export function useAccountFlags(options: UseAccountFlagsOptions = {}): UseAccoun
   const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
     timeoutSeconds,
+    debugLabel: "useAccountFlags",
     ...(onSuccess && { onSuccess }),
     ...(onError && { onError }),
   });

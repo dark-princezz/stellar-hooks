@@ -5,9 +5,13 @@ interface XBullApi {
   sign(xdr: string, opts?: { networkPassphrase?: string }): Promise<string>;
 }
 
+interface XBullWindow {
+  xBullSDK?: XBullApi;
+}
+
 function getXBullApi(): XBullApi | null {
   if (typeof window === "undefined") return null;
-  return (window as any).xBullSDK ?? null;
+  return (window as unknown as XBullWindow).xBullSDK ?? null;
 }
 
 export function createXBullAdapter(): WalletAdapter {

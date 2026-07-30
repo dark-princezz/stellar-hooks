@@ -20,6 +20,8 @@ export interface UseOperationsOptions {
   limit?: number;
   /** Sort order. Default: "desc" */
   order?: "asc" | "desc";
+  /** Include failed operations in the results. Default: false */
+  includeFailed?: boolean;
   /** Whether the hook should fetch. Default: true */
   enabled?: boolean;
   /** Polling interval in ms. Default: 0 (disabled) */
@@ -69,6 +71,7 @@ export function useOperations(
     cursor,
     limit = 10,
     order = "desc",
+    includeFailed = false,
     enabled = true,
     refetchInterval = 0,
   } = options;
@@ -81,16 +84,19 @@ export function useOperations(
   const [lastFetchedAt, setLastFetchedAt] = useState<Date | null>(null);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const fetchIdRef = useRef(0);
 
   const refetch = useCallback(async () => {
     if (!accountId && !transactionHash) return;
+
+    const id = ++fetchIdRef.current;
 
     setIsLoading(true);
     setError(null);
 
     try {
       const server = new Horizon.Server(config.horizonUrl);
-      let query = server.operations().order(order).limit(limit);
+      let query = server.operations().order(order).limit(limit).includeFailed(includeFailed);
 
       if (cursor) {
         query = query.cursor(cursor);
@@ -105,14 +111,19 @@ export function useOperations(
       }
 
       const response = await query.call();
+      if (id !== fetchIdRef.current) return;
       setOperations(response.records);
       setLastFetchedAt(new Date());
     } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
+      if (id === fetchIdRef.current) {
+        setError(err instanceof Error ? err : new Error(String(err)));
+      }
     } finally {
-      setIsLoading(false);
+      if (id === fetchIdRef.current) {
+        setIsLoading(false);
+      }
     }
-  }, [accountId, transactionHash, cursor, limit, order, config.horizonUrl]);
+  }, [accountId, transactionHash, cursor, limit, order, includeFailed, config.horizonUrl]);
 
   useEffect(() => {
     if (!enabled || (!accountId && !transactionHash)) return;
@@ -128,6 +139,7 @@ export function useOperations(
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      fetchIdRef.current += 1;
     };
   }, [enabled, accountId, transactionHash, refetch, refetchInterval]);
 

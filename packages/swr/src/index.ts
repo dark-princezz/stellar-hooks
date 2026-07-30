@@ -43,6 +43,7 @@ export type { AssetMetadata } from "./hooks/useAssetMetadata";
 // don't need to install the core package separately for these.
 export {
   StellarProvider,
+  StellarHooksProvider,
   useFreighter,
   useSorobanContract,
   useTransaction,
@@ -63,4 +64,7 @@ export type {
   ContractCallOptions,
   UseContractCallReturn,
   StellarContextValue,
+  StellarHooksProviderProps,
 } from "stellar-hooks";
+
+export const packageName = "@stellar-hooks/swr";

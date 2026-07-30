@@ -53,6 +53,7 @@ vi.mock("../context", () => ({
       networkPassphrase: "Test SDF Network ; September 2015",
     },
   }),
+  useOptionalStellarHookDebugContext: () => null,
 }));
 
 import { useFeeStats } from "../hooks/useFeeStats";
@@ -74,11 +75,40 @@ describe("useFeeStats", () => {
     });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      "https://horizon-testnet.stellar.org/fee_stats"
+      "https://horizon-testnet.stellar.org/fee_stats",
     );
     expect(result.current.feeStats).toEqual(mockFeeStats);
     expect(result.current.recommendedFee).toBe("600");
     expect(result.current.error).toBeNull();
+  });
+
+  it("normalizes Horizon snake_case fee_stats into camelCase FeeStats", async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          last_ledger: "24999",
+          last_ledger_base_fee: "100",
+          ledger_capacity_usage: "0.1",
+          fee_charged: mockFeeStats.feeCharged,
+          max_fee: mockFeeStats.maxFee,
+        }),
+    });
+
+    const { result } = renderHook(() => useFeeStats({ percentile: 95 }));
+
+    await vi.waitFor(() => {
+      expect(result.current.feeStats).not.toBeNull();
+    });
+
+    expect(result.current.feeStats).toEqual({
+      lastLedger: "24999",
+      lastLedgerBaseFee: "100",
+      ledgerCapacityUsage: "0.1",
+      feeCharged: mockFeeStats.feeCharged,
+      maxFee: mockFeeStats.maxFee,
+    });
+    expect(result.current.recommendedFee).toBe("1000");
   });
 
   it("returns 50th percentile when configured", async () => {

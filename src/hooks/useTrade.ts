@@ -97,6 +97,7 @@ export function useTrade(options: UseTradeOptions = {}): UseTradeReturn {
   const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
     timeoutSeconds,
+    debugLabel: "useTrade",
     ...(onSuccess && { onSuccess }),
     ...(onError && { onError }),
   });

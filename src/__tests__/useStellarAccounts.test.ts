@@ -11,7 +11,7 @@ import { useStellarAccounts } from "../hooks/useStellarAccounts";
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-const mockLoadAccount = vi.fn();
+const mockLoadAccount = vi.hoisted(() => vi.fn());
 
 vi.mock("../utils/memoizedServers", () => ({
   getHorizonServer: vi.fn().mockReturnValue({ loadAccount: mockLoadAccount }),

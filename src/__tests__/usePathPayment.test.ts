@@ -18,7 +18,22 @@ vi.mock("react", async () => {
   };
 });
 
-// â”€â”€â”€ Mock @stellar/stellar-sdk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const mockLoadAccount = vi.hoisted(() => vi.fn().mockResolvedValue({ id: "GSOURCE" }));
+const mockHorizonServer = vi.hoisted(() => vi.fn().mockImplementation(() => ({
+  loadAccount: mockLoadAccount,
+})));
+
+const mockAddOperation = vi.hoisted(() => vi.fn());
+const mockSetTimeout = vi.hoisted(() => vi.fn());
+const mockBuild = vi.hoisted(() => vi.fn().mockReturnValue({ toXDR: () => "built-xdr" }));
+mockAddOperation.mockReturnValue({ setTimeout: mockSetTimeout });
+mockSetTimeout.mockReturnValue({ build: mockBuild });
+const mockTransactionBuilder = vi.hoisted(() => vi.fn());
+mockTransactionBuilder.mockImplementation(() => ({
+  addOperation: mockAddOperation,
+}));
+
+// ─── Mock @stellar/stellar-sdk ─────────────────────────────────────────────────
 
 vi.mock("@stellar/stellar-sdk", () => ({
   StrKey: {
@@ -31,18 +46,17 @@ vi.mock("@stellar/stellar-sdk", () => ({
   Operation: {
     pathPaymentStrictSend: vi.fn().mockReturnValue({ type: "pathPaymentStrictSend" }),
     pathPaymentStrictReceive: vi.fn().mockReturnValue({ type: "pathPaymentStrictReceive" }),
-  }
+  },
+  Horizon: { Server: mockHorizonServer },
+  TransactionBuilder: mockTransactionBuilder,
 }));
 
 // â”€â”€â”€ Mock context and hooks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-const mockSubmitTx = vi.fn().mockResolvedValue(undefined);
-const mockReset = vi.fn();
+const mockSubmitXdr = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
+const mockReset = vi.hoisted(() => vi.fn());
 
-vi.mock("../hooks/useStellarTransaction", () => ({
-  useStellarTransaction: () => ({
-    submit: mockSubmitTx,
-const mockSignTransaction = vi.fn().mockResolvedValue("signed-xdr");
+const mockSignTransaction = vi.hoisted(() => vi.fn().mockResolvedValue("signed-xdr"));
 const mockPublicKey = vi.hoisted(() => ({ value: "GPUBLICKEY" }));
 
 vi.mock("../context", () => ({
@@ -125,7 +139,7 @@ describe("usePathPayment", () => {
         destMin: "9",
       })
     );
-    expect(mockSubmitTx).toHaveBeenCalledWith([{ type: "pathPaymentStrictSend" }]);
+    expect(mockSubmitXdr).toHaveBeenCalledWith("signed-xdr");
     expect(Operation.pathPaymentStrictReceive).not.toHaveBeenCalled();
   });
 
@@ -141,14 +155,10 @@ describe("usePathPayment", () => {
         destAmount: "9",
       })
     );
-    expect(mockSubmitTx).toHaveBeenCalledWith([{ type: "pathPaymentStrictReceive" }]);
+    expect(mockSubmitXdr).toHaveBeenCalledWith("signed-xdr");
     expect(Operation.pathPaymentStrictSend).not.toHaveBeenCalled();
   });
 
-  it("passes options to useStellarTransaction", async () => {
-    const { useStellarTransaction } = await import("../hooks/useStellarTransaction");
-    const hook = getHook();
-    expect(useStellarTransaction).toHaveBeenCalledWith(expect.objectContaining({ fee: 100, timeoutSeconds: 60 }));
   it("signs and submits the built transaction", async () => {
     const hook = useHook();
     await hook.submit();
@@ -205,7 +215,6 @@ describe("usePathPayment", () => {
       })
     );
   });
-});
 
   it("passes an empty path array by default", async () => {
     const { Operation } = await import("@stellar/stellar-sdk");

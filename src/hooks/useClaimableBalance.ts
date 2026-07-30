@@ -5,10 +5,6 @@
  */
 
 import { useCallback, useReducer } from "react";
-import { Horizon, Operation } from "@stellar/stellar-sdk";
-import { useStellarContext } from "../context";
-import { useStellarTransaction } from "./useStellarTransaction";
-import type { TransactionStatus } from "../types";
 import {
   Asset,
   Claimant,
@@ -118,11 +114,6 @@ export interface UseClaimableBalancesReturn extends ClaimableBalancesState {
  * return <button onClick={() => claim(balance.id)}>Claim</button>;
  * ```
  */
-export interface UseClaimBalanceOptions {
-  onSuccess?: (hash: string) => void;
-  onError?: (error: StellarTransactionError) => void;
-}
-
 export interface UseClaimBalanceReturn {
   claim: (balanceId: string) => Promise<void>;
   status: TransactionStatus;
@@ -132,15 +123,6 @@ export interface UseClaimBalanceReturn {
   isSuccess: boolean;
   isError: boolean;
   reset: () => void;
-}
-
-export interface UseClaimBalanceOptions {
-  /** Polling timeout in seconds. Default: 60 */
-  timeoutSeconds?: number;
-  /** Callback fired when the transaction is successfully confirmed. */
-  onSuccess?: (hash: string) => void;
-  /** Callback fired when the transaction fails or an error occurs. */
-  onError?: (error: Error) => void;
 }
 
 // ─── List hook reducer ────────────────────────────────────────────────────────
@@ -220,7 +202,9 @@ export function useClaimableBalances(
     } catch (err) {
       dispatch({
         type: "ERROR",
-        payload: err instanceof Error ? err : new Error(String(err)),
+        payload: err instanceof Error
+          ? err
+          : new Error(String(err)),
       });
     }
   }, [publicKey, config.horizonUrl]);
@@ -246,26 +230,24 @@ export function useClaimableBalances(
 export function useClaimBalance(
   options: UseClaimBalanceOptions = {}
 ): UseClaimBalanceReturn {
-  const { timeoutSeconds, onSuccess, onError } = options;
-  const { submit: submitTx, ...txState } = useStellarTransaction({
-    timeoutSeconds,
-    onSuccess,
-    onError,
   const { onSuccess, onError } = options;
   const { config } = useStellarContext();
   const { signTransaction, publicKey } = useFreighter();
   const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
+    debugLabel: "useClaimBalance",
     ...(onSuccess && { onSuccess }),
     ...(onError && { onError }),
   });
 
   const claim = useCallback(
     async (balanceId: string) => {
-      const operation = Operation.claimClaimableBalance({ balanceId });
-      await submitTx([operation]);
       if (!publicKey) {
-        throw new Error("Freighter is not connected. Call connect() first.");
+        const err: StellarTransactionError = {
+          type: "network",
+          message: "Freighter is not connected. Call connect() first.",
+        };
+        throw err;
       }
 
       // 1. Load source account for sequence number
@@ -293,12 +275,13 @@ export function useClaimBalance(
       // 4. Submit and poll via useTransaction internals
       await submitXdr(signedXdr);
     },
-    [submitTx]
+    [publicKey, config, signTransaction, submitXdr]
   );
 
   return {
     ...txState,
     claim,
+    reset,
     status: txState.status,
     hash: txState.hash,
     error: txState.error,
@@ -379,6 +362,7 @@ export function useCreateClaimableBalance(
   const { signTransaction, publicKey } = useFreighter();
   const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
+    debugLabel: "useCreateClaimableBalance",
     ...(onSuccess && { onSuccess }),
     ...(onError && { onError }),
   });
@@ -386,11 +370,20 @@ export function useCreateClaimableBalance(
   const create = useCallback(
     async ({ asset, amount, claimants }: CreateClaimableBalanceParams) => {
       if (!publicKey) {
-        throw new Error("Freighter is not connected. Call connect() first.");
+        const err: StellarTransactionError = {
+          type: "network",
+          message: "Freighter is not connected. Call connect() first.",
+        };
+        throw err;
       }
 
       if (claimants.length === 0) {
-        throw new Error("At least one claimant is required.");
+        const claimantErr: StellarTransactionError = {
+          type: "transaction",
+          resultCode: "invalid_claimants",
+          message: "At least one claimant is required.",
+        };
+        throw claimantErr;
       }
 
       // 1. Load source account for sequence number

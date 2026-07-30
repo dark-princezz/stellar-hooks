@@ -70,6 +70,7 @@ export function useBumpSequence(options: UseBumpSequenceOptions): UseBumpSequenc
   const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
     timeoutSeconds,
+    debugLabel: "useBumpSequence",
     ...(onSuccess && { onSuccess }),
     ...(onError && { onError }),
   });

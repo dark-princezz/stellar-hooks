@@ -5,12 +5,18 @@ interface LobstrApi {
   signTransaction(xdr: string): Promise<string>;
 }
 
+interface LobstrWindow {
+  lobstrGetPublicKey?: () => Promise<string>;
+  lobstrSignTransaction?: (xdr: string) => Promise<string>;
+}
+
 function getLobstrApi(): LobstrApi | null {
   if (typeof window === "undefined") return null;
-  return (window as any).lobstrSignTransaction
+  const w = window as unknown as LobstrWindow;
+  return w.lobstrSignTransaction
     ? {
-        getPublicKey: () => (window as any).lobstrGetPublicKey(),
-        signTransaction: (xdr: string) => (window as any).lobstrSignTransaction(xdr),
+        getPublicKey: () => w.lobstrGetPublicKey!(),
+        signTransaction: (xdr: string) => w.lobstrSignTransaction!(xdr),
       }
     : null;
 }

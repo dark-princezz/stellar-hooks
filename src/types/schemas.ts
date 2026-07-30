@@ -254,8 +254,10 @@ export const TransactionSubmissionResponseSchema = z
 /**
  * Schema for a claimant predicate (recursive, simplified as passthrough).
  */
-export const ClaimantPredicateSchema: z.ZodType<Record<string, unknown>> = z
-  .record(z.unknown());
+export const ClaimantPredicateSchema: z.ZodType<Record<string, unknown>> = z.record(
+  z.string(),
+  z.unknown()
+);
 
 /**
  * Schema for a claimant entry in a claimable balance record.
@@ -299,7 +301,7 @@ export const ParsedClaimableBalanceRecordSchema = z.object({
   claimants: z.array(
     z.object({
       destination: StellarAddressSchema,
-      predicate: z.record(z.unknown()),
+      predicate: z.record(z.string(), z.unknown()),
     })
   ),
 });
@@ -452,7 +454,7 @@ export function validateHorizonResponse<T>(
 export function safeValidateHorizonResponse<T>(
   schema: z.ZodType<T>,
   data: unknown
-): z.SafeParseReturnType<unknown, T> {
+): ReturnType<z.ZodType<T>["safeParse"]> {
   return schema.safeParse(data);
 }
 
@@ -460,14 +462,68 @@ export function safeValidateHorizonResponse<T>(
 // These types are derived directly from the schemas and can be used
 // interchangeably with the manually-defined interfaces.
 
+/**
+ * Inferred type from AccountResponseSchema.
+ * Represents a validated Horizon AccountResponse JSON structure.
+ */
 export type AccountResponseParsed = z.infer<typeof AccountResponseSchema>;
+
+/**
+ * Inferred type from BalanceLineSchema.
+ * Represents a validated balance line from a Horizon account.
+ */
 export type BalanceLineParsed = z.infer<typeof BalanceLineSchema>;
+
+/**
+ * Inferred type from StellarBalanceSchema.
+ * Represents a validated parsed Stellar balance.
+ */
 export type StellarBalanceParsed = z.infer<typeof StellarBalanceSchema>;
+
+/**
+ * Inferred type from StellarAccountDataSchema.
+ * Represents a validated parsed Stellar account data structure.
+ */
 export type StellarAccountDataParsed = z.infer<typeof StellarAccountDataSchema>;
+
+/**
+ * Inferred type from OfferRecordSchema.
+ * Represents a validated offer record from Horizon.
+ */
 export type OfferRecordParsed = z.infer<typeof OfferRecordSchema>;
+
+/**
+ * Inferred type from OrderbookRecordSchema.
+ * Represents a validated orderbook record from Horizon.
+ */
 export type OrderbookRecordParsed = z.infer<typeof OrderbookRecordSchema>;
+
+/**
+ * Inferred type from ClaimableBalanceRecordSchema.
+ * Represents a validated claimable balance record from Horizon.
+ */
 export type ClaimableBalanceRecordParsed = z.infer<typeof ClaimableBalanceRecordSchema>;
+
+/**
+ * Inferred type from TransactionSubmissionResponseSchema.
+ * Represents a validated Horizon transaction submission response.
+ */
 export type TransactionSubmissionParsed = z.infer<typeof TransactionSubmissionResponseSchema>;
+
+/**
+ * Inferred type from SendTransactionResponseSchema.
+ * Represents a validated Soroban RPC sendTransaction response.
+ */
 export type SendTransactionParsed = z.infer<typeof SendTransactionResponseSchema>;
+
+/**
+ * Inferred type from GetTransactionResponseSchema.
+ * Represents a validated Soroban RPC getTransaction response.
+ */
 export type GetTransactionParsed = z.infer<typeof GetTransactionResponseSchema>;
+
+/**
+ * Inferred type from NetworkConfigSchema.
+ * Represents a validated network configuration object.
+ */
 export type NetworkConfigParsed = z.infer<typeof NetworkConfigSchema>;

@@ -53,9 +53,12 @@ export function useStellarOffers(
   const [lastFetchedAt, setLastFetchedAt] = useState<Date | null>(null);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const fetchIdRef = useRef(0);
 
   const refetch = useCallback(async () => {
     if (!publicKey) return;
+
+    const id = ++fetchIdRef.current;
 
     setIsLoading(true);
     setError(null);
@@ -64,12 +67,17 @@ export function useStellarOffers(
       validatePublicKey(publicKey);
       const server = new Horizon.Server(config.horizonUrl);
       const response = await server.offers().forAccount(publicKey).call();
+      if (id !== fetchIdRef.current) return;
       setOffers(response.records);
       setLastFetchedAt(new Date());
     } catch (err) {
-      setError(err instanceof Error ? err : new Error(String(err)));
+      if (id === fetchIdRef.current) {
+        setError(err instanceof Error ? err : new Error(String(err)));
+      }
     } finally {
-      setIsLoading(false);
+      if (id === fetchIdRef.current) {
+        setIsLoading(false);
+      }
     }
   }, [publicKey, config.horizonUrl]);
 
@@ -87,6 +95,7 @@ export function useStellarOffers(
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      fetchIdRef.current += 1;
     };
   }, [enabled, publicKey, refetch, refetchInterval]);
 

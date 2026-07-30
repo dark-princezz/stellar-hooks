@@ -1,6 +1,6 @@
 /**
  * @file useAccountMerge.ts
- * @description Hook for building and submitting a Stellar account merge.
+ * @description Hook for merging a Stellar account into a destination account.
  * @package stellar-hooks
  * @license MIT
  */
@@ -13,20 +13,14 @@ import {
   TransactionBuilder,
 } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
-import { useTransactionCore } from "./useTransactionCore";
 import { useFreighter } from "./useFreighter";
-import type { TransactionStatus, StellarTransactionError } from "../types";
-import { unsafeAsXdrString } from "../types";
-
-// ─── Types ───────────────────────────────────────────────────────────────────
+import { useTransactionCore } from "./useTransactionCore";
+import { unsafeAsXdrString, type TransactionStatus, type StellarTransactionError } from "../types";
 
 export interface UseAccountMergeOptions {
-  /**
-   * Destination Stellar address (G...) that receives the merged account's
-   * entire XLM balance. The source account is deleted on success.
-   */
+  /** Destination Stellar address that will receive the merged account's balance. */
   destination: string;
-  /** Optional memo text (max 28 bytes) */
+  /** Optional memo text (max 28 bytes) attached to the merge transaction. */
   memo?: string;
   /** Fee in stroops. Default: 100 */
   fee?: number;
@@ -38,27 +32,8 @@ export interface UseAccountMergeOptions {
   onError?: (error: StellarTransactionError) => void;
 }
 
-/**
- * @example
- * ```tsx
- * const {
- *   submit,    // () => Promise<void> — build, sign, and submit the merge
- *   status,    // "idle" | "submitting" | "polling" | "success" | "error"
- *   hash,      // string | null — transaction hash on success
- *   isLoading, // boolean
- *   isSuccess, // boolean
- *   isError,   // boolean
- *   error,     // Error | null
- *   reset,     // () => void
- * } = useAccountMerge({
- *   destination: "GBXXX...",
- * });
- *
- * return <button onClick={submit} disabled={isLoading}>Merge account</button>;
- * ```
- */
 export interface UseAccountMergeReturn {
-  /** Call this to build, sign, and submit the account merge */
+  /** Build, sign, and submit the account merge. */
   submit: () => Promise<void>;
   status: TransactionStatus;
   hash: string | null;
@@ -69,71 +44,50 @@ export interface UseAccountMergeReturn {
   reset: () => void;
 }
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-
 /**
- * Builds a classic Stellar `accountMerge` operation, signs it via Freighter,
- * and submits it through Horizon with polling for confirmation.
- *
- * The connected Freighter account is the source: its entire XLM balance is
- * transferred to `destination` and the source account is removed from the
- * ledger. The source must hold no other assets, offers, or trustlines for the
- * merge to succeed.
- *
- * Wraps `useTransaction({ mode: "classic" })` for submission and polling.
+ * Merge the connected account into `destination`, permanently closing the
+ * source account and transferring its entire XLM balance. This operation is
+ * irreversible — the source account ceases to exist on-ledger once the
+ * transaction succeeds.
  *
  * @example
  * ```tsx
  * const { submit, status, hash, error } = useAccountMerge({
- *   destination: "GBXXX...",
+ *   destination: "GDEST...",
  * });
  *
- * return <button onClick={submit}>Merge account</button>;
+ * await submit();
  * ```
  */
 export function useAccountMerge(
   options: UseAccountMergeOptions
 ): UseAccountMergeReturn {
-  const {
-    destination,
-    memo,
-    fee = 100,
-    timeoutSeconds = 60,
-    onSuccess,
-    onError,
-  } = options;
-
+  const { destination, memo, fee = 100, timeoutSeconds = 60, onSuccess, onError } = options;
   const { config } = useStellarContext();
-  const { signTransaction, publicKey } = useFreighter();
+  const { publicKey, signTransaction } = useFreighter();
   const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
-    timeoutSeconds,
     ...(onSuccess && { onSuccess }),
+    debugLabel: "useAccountMerge",
     ...(onError && { onError }),
   });
+
 
   const submit = useCallback(async () => {
     if (!publicKey) {
       throw new Error("Freighter is not connected. Call connect() first.");
     }
 
-    // 1. Load the source account from Horizon to get the sequence number
     const server = new Horizon.Server(config.horizonUrl);
     const sourceAccount = await server.loadAccount(publicKey);
 
-    // 2. Build the transaction
     const builder = new TransactionBuilder(sourceAccount, {
       fee: String(fee),
       networkPassphrase: config.networkPassphrase,
     })
-      .addOperation(
-        Operation.accountMerge({
-          destination,
-        })
-      )
+      .addOperation(Operation.accountMerge({ destination }))
       .setTimeout(timeoutSeconds);
 
-    // 3. Attach memo if provided
     if (memo) {
       builder.addMemo(Memo.text(memo));
     }
@@ -141,23 +95,12 @@ export function useAccountMerge(
     const builtTx = builder.build();
     const builtXdr = builtTx.toXDR();
 
-    // 4. Sign via Freighter
     const signedXdr = await signTransaction(unsafeAsXdrString(builtXdr), {
       networkPassphrase: config.networkPassphrase,
     });
 
-    // 5. Submit and poll via useTransaction internals
     await submitXdr(signedXdr);
-  }, [
-    destination,
-    memo,
-    fee,
-    timeoutSeconds,
-    config,
-    publicKey,
-    signTransaction,
-    submitXdr,
-  ]);
+  }, [destination, memo, fee, timeoutSeconds, config, publicKey, signTransaction, submitXdr]);
 
   return {
     submit,

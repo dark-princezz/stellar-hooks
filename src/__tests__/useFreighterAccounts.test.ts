@@ -11,8 +11,8 @@ import { useFreighterAccounts } from "../hooks/useFreighterAccounts";
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
 
-const mockRequestAccess = vi.fn();
-const mockUseFreighter = vi.fn();
+const mockRequestAccess = vi.hoisted(() => vi.fn());
+const mockUseFreighter = vi.hoisted(() => vi.fn());
 
 vi.mock("@stellar/freighter-api", async () => {
   const actual = await vi.importActual("@stellar/freighter-api") as Record<string, unknown>;

@@ -1,6 +1,7 @@
 name: CI
 
 permissions:
+  contents: read
   pull-requests: write
 
 on:
@@ -10,8 +11,11 @@ on:
 
 jobs:
   lint:
-    name: Lint & Type-check
+    name: Lint & Type-check (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["18", "20", "22"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,11 +23,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Check for case-only path collisions
+        run: node scripts/check-case-collisions.mjs
 
       - name: Lint
         run: npm run lint
@@ -32,8 +39,12 @@ jobs:
         run: npm run type-check
 
   test:
-    name: Test suite
+    name: Test (React ${{ matrix.react-version }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["18", "20", "22"]
+        react-version: ["18", "19"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,17 +52,19 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
  
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
-        run: npm test
+
   size:
-    name: Bundle size
+    name: Bundle size (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["18", "20", "22"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,8 +72,20 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
+
+      - name: Build
+        run: npm run build
+
+      - name: Check for duplicate exports in barrel
+        run: node scripts/check-duplicate-exports.mjs
+
+      - name: Test tree-shaking
+        run: npm run test:tree-shaking
+
+      - name: Test
+        run: npm run test
 
       - name: Install dependencies
         run: npm ci

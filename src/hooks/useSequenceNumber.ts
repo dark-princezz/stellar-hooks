@@ -15,6 +15,22 @@ export interface UseSequenceNumberReturn {
   refresh: () => Promise<void>;
 }
 
+/**
+ * Fetches the current sequence number for a Stellar account, with optional
+ * auto-increment for building multiple transactions in a single session.
+ *
+ * @example
+ * ```tsx
+ * // Basic usage — get the current sequence number
+ * const { sequence, isLoading, error, refresh } = useSequenceNumber(publicKey);
+ * // sequence: "1234567890"
+ *
+ * // With autoIncrement — each call to refresh() increments locally
+ * // so you can build multiple transactions without re-fetching
+ * const { sequence, refresh } = useSequenceNumber(publicKey, { autoIncrement: true });
+ * // sequence: "1234567890" → refresh() → "1234567891" → refresh() → "1234567892"
+ * ```
+ */
 export function useSequenceNumber(
   publicKey: string | null | undefined,
   options: UseSequenceNumberOptions = {}
@@ -23,7 +39,7 @@ export function useSequenceNumber(
   const { config } = useStellarContext();
   const [incrementCount, setIncrementCount] = useState(0);
 
-  const fetcher = useCallback(async () => {
+  const fetcher = useCallback(async (signal?: AbortSignal) => {
     if (!publicKey) return null;
     const server = getHorizonServer(config.horizonUrl);
     const account = await server.loadAccount(publicKey);
@@ -33,11 +49,16 @@ export function useSequenceNumber(
   const state = useStellarQuery<string | null>(fetcher, {
     enabled: enabled && Boolean(publicKey),
     initialData: null,
+    debugLabel: "useSequenceNumber",
   });
 
   const refresh = useCallback(async () => {
     setIncrementCount(0);
     await state.refetch();
+    // `state` itself is intentionally omitted: `state.refetch` is the only
+    // stable field this callback needs, and depending on the whole object
+    // would re-create `refresh` on every data/loading update from useStellarQuery.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.refetch]);
 
   const sequence = useMemo(() => {

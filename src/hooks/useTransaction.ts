@@ -22,7 +22,11 @@ import { validatePublicKey } from "../utils";
 
 // ─── Options ──────────────────────────────────────────────────────────────────
 
+import type { RetryStrategy } from "./useTransactionCore";
+
 export interface UseTransactionOptions {
+  /** Configuration for handling network failures during polling */
+  retryStrategy?: RetryStrategy;
   /**
    * "classic" submits through Horizon; "soroban" submits through the RPC server.
    * Default: "classic"
@@ -137,6 +141,7 @@ export function useTransaction(
   } = useTransactionCore({
     mode,
     timeoutSeconds,
+    debugLabel: "useTransaction",
     ...(onSuccess && { onSuccess }),
     ...(onError && { onError }),
   });

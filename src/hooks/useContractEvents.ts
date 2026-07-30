@@ -80,6 +80,7 @@ export function useContractEvents(options: UseContractEventsOptions) {
 
   const cursorRef = useRef<string | undefined>();
   const isMounted = useRef(true);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchEvents = useCallback(async () => {
     try {
@@ -128,14 +129,16 @@ export function useContractEvents(options: UseContractEventsOptions) {
     isMounted.current = true;
     fetchEvents();
 
-    let intervalId: ReturnType<typeof setInterval>;
     if (interval > 0) {
-      intervalId = setInterval(fetchEvents, interval);
+      intervalRef.current = setInterval(fetchEvents, interval);
     }
 
     return () => {
       isMounted.current = false;
-      if (intervalId) clearInterval(intervalId);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
   }, [fetchEvents, interval, mode]);
 

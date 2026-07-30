@@ -113,6 +113,7 @@ export function useTrustline(options: UseTrustlineOptions): UseTrustlineReturn {
   const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
     timeoutSeconds,
+    debugLabel: "useTrustline",
     ...(onSuccess && { onSuccess }),
     ...(onError && { onError }),
   });

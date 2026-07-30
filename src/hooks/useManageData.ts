@@ -95,6 +95,7 @@ export function useManageData(
   const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
     timeoutSeconds,
+    debugLabel: "useManageData",
     ...(onSuccess && { onSuccess }),
     ...(onError && { onError }),
   });

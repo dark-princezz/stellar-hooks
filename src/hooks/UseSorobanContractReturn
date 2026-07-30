@@ -1,8 +1,0 @@
-export interface UseSorobanContractReturn<TResult = xdr.ScVal> {
-  call: () => Promise<void>;
-  status: TransactionStatus;
-  result: TResult | null;
-  hash: string | null;
-  error: Error | null;
-  reset: () => void;
-}
