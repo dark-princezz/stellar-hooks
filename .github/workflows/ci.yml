@@ -37,7 +37,6 @@ jobs:
 
   test:
     name: Test (React ${{ matrix.react-version }})
-    name: Test suite
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -62,10 +61,15 @@ jobs:
       - name: Type-check
         run: npm run typecheck
 
+      - name: Test with coverage
+        run: npm run test:coverage
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
 
   size:
     name: Bundle size
