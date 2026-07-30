@@ -219,6 +219,39 @@
         "default": "./dist/hooks/useFreighterAccounts.js"
       }
     },
+    "./useRabet": {
+      "types": "./dist/hooks/useRabet.d.ts",
+      "import": {
+        "types": "./dist/hooks/useRabet.d.mts",
+        "default": "./dist/hooks/useRabet.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useRabet.d.ts",
+        "default": "./dist/hooks/useRabet.js"
+      }
+    },
+    "./useWallet": {
+      "types": "./dist/hooks/useWallet.d.ts",
+      "import": {
+        "types": "./dist/hooks/useWallet.d.mts",
+        "default": "./dist/hooks/useWallet.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useWallet.d.ts",
+        "default": "./dist/hooks/useWallet.js"
+      }
+    },
+    "./useXBull": {
+      "types": "./dist/hooks/useXBull.d.ts",
+      "import": {
+        "types": "./dist/hooks/useXBull.d.mts",
+        "default": "./dist/hooks/useXBull.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useXBull.d.ts",
+        "default": "./dist/hooks/useXBull.js"
+      }
+    },
     "./useHorizonServer": {
       "types": "./dist/hooks/useHorizonServer.d.ts",
       "import": {

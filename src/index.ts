@@ -23,6 +23,23 @@ export type {
   SignAlbedoMessageOptions,
   UseAlbedoReturn,
 } from "./hooks/useAlbedo";
+export { useWallet } from "./hooks/useWallet";
+export type {
+  UseWalletOptions,
+  UseWalletReturn,
+} from "./hooks/useWallet";
+export { useXBull } from "./hooks/useXBull";
+export type {
+  XBullState,
+  UseXBullOptions,
+  UseXBullReturn,
+} from "./hooks/useXBull";
+export { useRabet } from "./hooks/useRabet";
+export type {
+  RabetState,
+  UseRabetOptions,
+  UseRabetReturn,
+} from "./hooks/useRabet";
 export { useFreighterAccounts } from "./hooks/useFreighterAccounts";
 export type {
   UseFreighterAccountsOptions,
@@ -225,6 +242,8 @@ export {
   createFreighterAdapter,
   createLobstrAdapter,
   createXBullAdapter,
+  createAlbedoAdapter,
+  createRabetAdapter,
   createAllAdapters,
 } from "./wallets";
 

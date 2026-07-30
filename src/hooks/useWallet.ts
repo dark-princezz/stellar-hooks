@@ -4,40 +4,24 @@ import { createAllAdapters } from "../wallets";
 import { asPublicKey, type StellarPublicKey } from "../types";
 
 export interface UseWalletOptions {
-  /** Specific wallet ID to use. If not provided, will auto-detect available wallets. */
   walletId?: WalletId;
-  /** Auto-connect on mount if a wallet was previously connected. */
   autoConnect?: boolean;
 }
 
 export interface UseWalletReturn {
-  /** IDs of installed and available wallets. */
   availableWallets: WalletId[];
-  /** Currently active wallet ID. */
   activeWallet: WalletId | null;
-  /** Connected wallet's Stellar public key (G...), or `null` when not connected. */
   publicKey: StellarPublicKey | null;
-  /** Whether the user has connected their wallet. */
   isConnected: boolean;
-  /** `true` while a connect or sign action is in progress. */
   isLoading: boolean;
-  /** `true` while a connection popup is active. */
   isConnecting: boolean;
-  /** `true` while a message signing request is active. */
   isSigningMessage: boolean;
-  /** Most recent error from a wallet interaction, or `null`. */
   error: Error | null;
-  /** Set the active wallet by ID. */
   setActiveWallet: (id: WalletId) => void;
-  /** Request access/public key from the active wallet. */
   connect: (walletId?: WalletId) => Promise<StellarPublicKey | null>;
-  /** Disconnect and reset active wallet state. */
   disconnect: () => void;
-  /** Sign a Stellar transaction XDR using the active wallet. */
   signTransaction: (xdr: string, opts?: { networkPassphrase?: string }) => Promise<string>;
-  /** Sign an arbitrary message string using the active wallet. */
   signMessage: (message: string, opts?: { accountToSign?: string }) => Promise<string>;
-  /** Sign an auth entry using the active wallet (if supported). */
   signAuthEntry: (entryPreimageXdr: string) => Promise<string>;
 }
 
@@ -106,22 +90,6 @@ const initial: State = {
   error: null,
 };
 
-/**
- * Unified wallet hook that provides a common interface for multiple Stellar wallets
- * (Freighter, Albedo, xBull, Lobstr, Rabet) behind a single adapter pattern.
- *
- * @example
- * ```tsx
- * const { availableWallets, connect, publicKey, signTransaction } = useWallet();
- *
- * if (!publicKey) {
- *   return availableWallets.map(id => (
- *     <button key={id} onClick={() => connect(id)}>{id}</button>
- *   ));
- * }
- * return <p>Connected: {publicKey}</p>;
- * ```
- */
 export function useWallet(options?: UseWalletOptions): UseWalletReturn {
   const [state, dispatch] = useReducer(reducer, initial);
   const adapters = useMemo<WalletAdapter[]>(() => createAllAdapters(), []);
@@ -131,7 +99,6 @@ export function useWallet(options?: UseWalletOptions): UseWalletReturn {
     dispatch({ type: "SET_AVAILABLE", wallets: installed });
   }, [adapters]);
 
-  // Set initial active wallet from options
   useEffect(() => {
     if (options?.walletId && state.availableWallets.includes(options.walletId)) {
       dispatch({ type: "SET_ACTIVE", walletId: options.walletId });
