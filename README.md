@@ -89,7 +89,7 @@ Every hook listed below is implemented and exported from the package entry point
 | `useEffects()` | Stream account effects from Horizon. |
 | `useAssets()` | Fetch and list Stellar assets via Horizon. |
 | `useAssetMetadata()` | Fetch asset metadata from a domain's `stellar.toml`. |
-| `useStellarToml()` | Fetch and parse a domain's `stellar.toml`. |
+| [`useStellarToml()`](#usestellartomldomain-options) ↓ | Fetch and parse a domain's `stellar.toml` (SEP-1); surfaces the federation server, signing key, currencies, and other well-known fields. |
 | `useOffers()` | Fetch open offers for a Stellar account with pagination helpers. |
 | `useStellarOffers()` | Fetch open offers for a Stellar account. |
 | [`useOrderBook()`](#useorderbookselling-buying-options) ↓ | Query the Stellar DEX order book for any asset pair; supports live polling. |
@@ -788,6 +788,39 @@ This repository uses Changesets for automated changelog generation, version bump
 - After a changeset is merged into `main`, the GitHub Actions release workflow will publish the package automatically.
 - To enable automated publishing, add `NPM_TOKEN` to repository secrets.
 
+---
+
+## Roadmap
+
+Shipped:
+
+- [x] `useFreighter()` — Freighter wallet connection, signing, and `signMessage`
+- [x] `useWalletKit()` / `useWalletsKit()` / `useWalletConnect()` — multi-wallet adapters (Freighter, Lobstr, xBull, Albedo)
+- [x] `useStellarAccount()` / `useStellarAccounts()` / `useStellarBalance()` — account and balance reads
+- [x] `useTransaction()` / `useStellarTransaction()` — submit and poll transactions
+- [x] `usePayment()` — build, sign, and submit classic payments
+- [x] `usePathPayment()` — strict send / strict receive path payments
+- [x] `useClaimableBalance()` — claim and create claimable balances
+- [x] `useTrustline()` / `useTrustlines()` — trustline reads and management
+- [x] `useSorobanContract()` / `useLedgerEntry()` / `useSorobanServer()` — Soroban contract calls and raw ledger reads
+- [x] `useContractEvents()` — poll Soroban contract events from RPC
+- [x] `useContractId()` — derive a contract ID from an asset descriptor
+- [x] `useOrderBook()` / `useOffers()` / `useTrades()` / `useStrictSendPaths()` — DEX data
+- [x] `useLiquidityPool()` / `useAccountLiquidityPositions()` — liquidity pool data
+- [x] `useStellarToml()` — SEP-1 `stellar.toml` fetching and parsing
+- [x] `useMultiSig()` — multi-sig signature collection and submission
+- [x] `useNetworkStatus()` / `useFeeStats()` — network health and fee statistics
+- [x] React Query and SWR adapter packages
+- [x] Devtools hook-activity overlay
+
+Planned:
+
+- [ ] `useFederation()` — SEP-2 federated address resolution
+- [ ] `useWebAuth()` — SEP-10 challenge/response authentication
+- [ ] `useAnchorTransfer()` — SEP-6 / SEP-24 deposit and withdrawal flows
+- [ ] `useAnchorQuote()` — SEP-38 firm quotes
+- [ ] Streaming (SSE) variants for account, operation, and effect hooks
+- [ ] React Native support for the wallet hooks
 
 ## FAQ
 
@@ -953,3 +986,67 @@ function SwapRatePreview({ sendAmount }: { sendAmount: string }) {
 | `isLoading` | `boolean` | `true` while a query is in flight |
 | `error` | `Error \| null` | Last fetch error |
 | `lastFetchedAt` | `Date \| null` | Timestamp of last successful fetch |
+
+---
+
+### `useStellarToml(domain, options?)`
+
+Fetch and parse a domain's `stellar.toml` file via the [SEP-1](https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0001.md)
+resolver. The full parsed document is returned as `data`, with the most-used well-known fields lifted
+to the top level. Results are cached per domain for **5 minutes** by default.
+
+```tsx
+import { useStellarToml } from "stellar-hooks";
+
+function AnchorInfo() {
+  const {
+    data,
+    federationServer,
+    signingKey,
+    currencies,
+    documentation,
+    isLoading,
+    error,
+  } = useStellarToml("stellar.org");
+
+  if (isLoading) return <p>Loading stellar.toml…</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  return (
+    <div>
+      <h3>{documentation?.ORG_NAME ?? "Unknown org"}</h3>
+      <p>Federation: {federationServer ?? "not published"}</p>
+      <p>Signing key: {signingKey ?? "none"}</p>
+      <ul>
+        {currencies.map((c) => (
+          <li key={`${c.code}-${c.issuer}`}>{c.code}</li>
+        ))}
+      </ul>
+      <p>Version: {data?.VERSION}</p>
+    </div>
+  );
+}
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `cacheTTL` | `number` | `300000` | Cache lifetime in ms for the resolved document |
+| `allowHttp` | `boolean` | `false` | Allow resolving over plain HTTP instead of HTTPS |
+| `timeout` | `number` | SDK default | Request timeout in ms passed to the resolver |
+
+| Return value | Type | Description |
+|---|---|---|
+| `data` | `StellarTomlData \| null` | Full parsed document; unlisted fields via index signature |
+| `federationServer` | `string \| null` | `FEDERATION_SERVER` (SEP-2) |
+| `signingKey` | `string \| null` | `SIGNING_KEY` used to verify the domain's signatures |
+| `webAuthEndpoint` | `string \| null` | `WEB_AUTH_ENDPOINT` (SEP-10) |
+| `transferServer` | `string \| null` | `TRANSFER_SERVER` (SEP-6) |
+| `kycServer` | `string \| null` | `KYC_SERVER` (SEP-12) |
+| `networkPassphrase` | `string \| null` | `NETWORK_PASSPHRASE` the domain operates on |
+| `currencies` | `StellarTomlCurrency[]` | `[[CURRENCIES]]` entries, empty array when absent |
+| `documentation` | `StellarTomlDocumentation \| null` | `[DOCUMENTATION]` organisation metadata |
+| `isLoading` | `boolean` | `true` while the document is being resolved |
+| `error` | `Error \| null` | Last resolve error |
+| `refetch` | `() => Promise<void>` | Force a refetch, bypassing the cache |
+
+Passing `null` or `undefined` as the domain keeps the hook idle and clears any previous result.
