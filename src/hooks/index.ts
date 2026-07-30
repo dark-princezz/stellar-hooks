@@ -36,6 +36,18 @@ export type {
   UseWalletOptions,
   UseWalletReturn,
 } from "./useWallet";
+export { useXBull } from "./useXBull";
+export type {
+  XBullState,
+  UseXBullOptions,
+  UseXBullReturn,
+} from "./useXBull";
+export { useRabet } from "./useRabet";
+export type {
+  RabetState,
+  UseRabetOptions,
+  UseRabetReturn,
+} from "./useRabet";
 
 export { useFreighterAccounts } from "./useFreighterAccounts";
 export type {
@@ -228,4 +240,4 @@ export type {
   UseIntersectionObserverOptions,
   UseIntersectionObserverReturn,
 } from "./useIntersectionObserver";
-export { useLobstr } from './hooks/useLobstr';
+export { useLobstr } from './useLobstr';

@@ -8,7 +8,6 @@ export function createAlbedoAdapter(): WalletAdapter {
     name: "Albedo",
 
     isInstalled(): boolean {
-      // Albedo is web-based and doesn't require extension installation
       return true;
     },
 
