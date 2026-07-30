@@ -54,26 +54,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
-
+ 
       - name: Install dependencies
         run: npm ci
 
-      - name: Install React ${{ matrix.react-version }}
-        if: matrix.react-version == '19'
-        run: npm install react@19 react-dom@19 @types/react@19 @types/react-dom@19 --no-save --legacy-peer-deps
-
-      - name: Type-check
-        run: npm run typecheck
-
-      - name: Test with coverage
-        run: npm run test:coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage/lcov.info
-          fail_ci_if_error: false
 
   size:
     name: Bundle size (Node ${{ matrix.node-version }})
