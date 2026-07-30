@@ -11,8 +11,11 @@ on:
 
 jobs:
   lint:
-    name: Lint & Type-check
+    name: Lint & Type-check (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["18", "20", "22"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,7 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       - name: Install dependencies
@@ -36,11 +39,11 @@ jobs:
         run: npm run type-check
 
   test:
-    name: Test (React ${{ matrix.react-version }})
-    name: Test suite
+    name: Test (Node ${{ matrix.node-version }}, React ${{ matrix.react-version }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        node-version: ["18", "20", "22"]
         react-version: ["18", "19"]
     steps:
       - name: Checkout
@@ -49,7 +52,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       - name: Install dependencies
@@ -68,8 +71,11 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   size:
-    name: Bundle size
+    name: Bundle size (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: ["18", "20", "22"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -77,7 +83,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       - name: Build
