@@ -53,7 +53,7 @@ describe("useFreighter — Freighter not installed", () => {
     vi.mocked(requestAccess).mockResolvedValue({
       address: "",
       error: { message: "Extension not found", code: -1 },
-    });
+    } as any);
 
     const { result } = renderHook(() => useFreighter());
     await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -70,8 +70,9 @@ describe("useFreighter — Freighter not installed", () => {
   it("signTransaction() throws when the wallet returns an error", async () => {
     vi.mocked(signTransaction).mockResolvedValue({
       signedTxXdr: "",
+      signerAddress: "",
       error: { message: "Wallet not available" },
-    });
+    } as any);
 
     const { result } = renderHook(() => useFreighter());
     await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -117,7 +118,8 @@ describe("useFreighter — signMessage (#254)", () => {
     mockFreighterConnected();
     vi.mocked(signMessage).mockResolvedValue({
       signedMessage: "deadbeef",
-      error: null,
+      signerAddress: "",
+      error: null as any,
     });
 
     const { result } = renderHook(() => useFreighter());
@@ -155,7 +157,8 @@ describe("useFreighter — signMessage (#254)", () => {
     mockFreighterConnected();
     vi.mocked(signMessage).mockResolvedValue({
       signedMessage: "sig",
-      error: null,
+      signerAddress: "",
+      error: null as any,
     });
 
     const { result } = renderHook(() => useFreighter());
@@ -186,7 +189,7 @@ describe("useFreighter — autoConnect (#257)", () => {
     vi.mocked(isAllowed).mockResolvedValue({ isAllowed: true });
     vi.mocked(requestAccess).mockResolvedValue({
       address: "GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UQ",
-      error: null,
+      error: null as any,
     });
     vi.mocked(getNetworkDetails).mockResolvedValue({
       network: "TESTNET",
