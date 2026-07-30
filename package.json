@@ -669,6 +669,17 @@
         "types": "./dist/hooks/useWalletsKit.d.ts",
         "default": "./dist/hooks/useWalletsKit.js"
       }
+    },
+    "./useXdrDecoder": {
+      "types": "./dist/hooks/useXdrDecoder.d.ts",
+      "import": {
+        "types": "./dist/hooks/useXdrDecoder.d.mts",
+        "default": "./dist/hooks/useXdrDecoder.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useXdrDecoder.d.ts",
+        "default": "./dist/hooks/useXdrDecoder.js"
+      }
     }
   },
   "files": [

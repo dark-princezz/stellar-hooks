@@ -230,6 +230,8 @@ export {
 
 // Utilities
 export { parseAccountResponse, getCache, setCache } from "./utils";
+export { decodeXdr, formatXdrResult, detectXdrType } from "./utils/xdr";
+export type { XdrDecodeResult } from "./utils/xdr";
 
 export { useOfferBook } from "./hooks/useOfferBook";
 export type { UseOfferBookOptions } from "./hooks/useOfferBook";
@@ -310,3 +312,9 @@ export type {
   UseAssetSearchOptions,
   UseAssetSearchReturn,
 } from "./hooks/useAssetSearch";
+
+export { useXdrDecoder } from "./hooks/useXdrDecoder";
+export type {
+  UseXdrDecoderOptions,
+  UseXdrDecoderReturn,
+} from "./hooks/useXdrDecoder";

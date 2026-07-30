@@ -222,4 +222,10 @@ export type {
   UseIntersectionObserverOptions,
   UseIntersectionObserverReturn,
 } from "./useIntersectionObserver";
-export { useLobstr } from './hooks/useLobstr';
+export { useLobstr } from './useLobstr';
+
+export { useXdrDecoder } from "./useXdrDecoder";
+export type {
+  UseXdrDecoderOptions,
+  UseXdrDecoderReturn,
+} from "./useXdrDecoder";

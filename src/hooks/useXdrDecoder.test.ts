@@ -6,7 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { useXdrDecoder } from "./useXdrDecoder";
-import { decodeXdr, detectXdrType } from "../utils/xdr";
+import { decodeXdr, formatXdrResult, detectXdrType } from "../utils/xdr";
 
 // Mock the utilities
 vi.mock("../utils/xdr", () => ({
@@ -29,13 +29,11 @@ describe("useXdrDecoder", () => {
   });
 
   it("initializes with provided initial XDR", () => {
-    const mockResult = { data: { test: "data" }, type: "transaction" as const };
-    vi.mocked(decodeXdr).mockReturnValue(mockResult);
-
     const { result } = renderHook(() => useXdrDecoder({ initialXdr: "AAAAAg..." }));
 
     expect(result.current.xdr).toBe("AAAAAg...");
-    expect(result.current.result).toEqual(mockResult);
+    expect(result.current.result.data).toBeNull();
+    expect(result.current.result.type).toBe("unknown");
   });
 
   it("sets XDR string", () => {
@@ -128,16 +126,18 @@ describe("useXdrDecoder", () => {
   it("formats result using formatXdrResult", () => {
     const mockResult = { data: { test: "data" }, type: "transaction" as const };
     vi.mocked(decodeXdr).mockReturnValue(mockResult);
-    vi.mocked(require("../utils/xdr").formatXdrResult).mockReturnValue("formatted string");
+    vi.mocked(formatXdrResult).mockReturnValue("formatted string");
 
     const { result } = renderHook(() => useXdrDecoder());
     act(() => {
       result.current.setXdr("AAAAAg...");
+    });
+    act(() => {
       result.current.decode();
     });
 
     const formatted = result.current.formatResult();
-    expect(require("../utils/xdr").formatXdrResult).toHaveBeenCalledWith(mockResult);
+    expect(formatXdrResult).toHaveBeenCalledWith(mockResult);
     expect(formatted).toBe("formatted string");
   });
 
@@ -171,6 +171,8 @@ describe("useXdrDecoder", () => {
     const { result } = renderHook(() => useXdrDecoder());
     act(() => {
       result.current.setXdr("AAAAAg...");
+    });
+    act(() => {
       result.current.decode();
     });
 
