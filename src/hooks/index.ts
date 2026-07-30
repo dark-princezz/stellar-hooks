@@ -45,7 +45,13 @@ export type {
 
 
 export { useStellarToml } from "./useStellarToml";
-export type { UseStellarTomlOptions, UseStellarTomlReturn } from "./useStellarToml";
+export type {
+  StellarTomlCurrency,
+  StellarTomlData,
+  StellarTomlDocumentation,
+  UseStellarTomlOptions,
+  UseStellarTomlReturn,
+} from "./useStellarToml";
 
 export { useAssetMetadata } from "./useAssetMetadata";
 export type { UseAssetMetadataReturn } from "./useAssetMetadata";

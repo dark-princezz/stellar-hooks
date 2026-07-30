@@ -201,7 +201,13 @@ export type {
 } from "./types";
 
 // Hook-specific Types
-export type { StellarTomlData, UseStellarTomlReturn } from "./hooks/useStellarToml";
+export type {
+  StellarTomlCurrency,
+  StellarTomlData,
+  StellarTomlDocumentation,
+  UseStellarTomlOptions,
+  UseStellarTomlReturn,
+} from "./hooks/useStellarToml";
 export type { AssetMetadata, UseAssetMetadataReturn } from "./hooks/useAssetMetadata";
 export type { UseNetworkStatusArgs, NetworkStatus } from "./hooks/useNetworkStatus";
 export type {
