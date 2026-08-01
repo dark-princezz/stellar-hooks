@@ -247,3 +247,10 @@ export type {
   UseXdrDecoderOptions,
   UseXdrDecoderReturn,
 } from "./useXdrDecoder";
+
+export { useWebAuth } from "./useWebAuth";
+export type {
+  WebAuthStatus,
+  UseWebAuthOptions,
+  UseWebAuthReturn,
+} from "./useWebAuth";
