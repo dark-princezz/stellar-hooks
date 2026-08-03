@@ -343,3 +343,10 @@ export type {
   UseXdrDecoderOptions,
   UseXdrDecoderReturn,
 } from "./hooks/useXdrDecoder";
+
+export { useWebAuth } from "./hooks/useWebAuth";
+export type {
+  WebAuthStatus,
+  UseWebAuthOptions,
+  UseWebAuthReturn,
+} from "./hooks/useWebAuth";
