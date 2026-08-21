@@ -78,6 +78,7 @@ describe("useFeeStats", () => {
 
     expect(mockFetch).toHaveBeenCalledWith(
       "https://horizon-testnet.stellar.org/fee_stats",
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
     );
     expect(result.current.feeStats).toEqual(mockFeeStats);
     expect(result.current.recommendedFee).toBe("600");

@@ -8,10 +8,20 @@
 import { useCallback, useEffect, useState } from "react";
 import { useStellarContext } from "../context";
 import { useHookActivityDebug } from "../devtools/useHookActivityDebug";
-import type { StellarTransactionError } from "../types";
 
 export interface UseLobstrOptions {
   debugLabel?: string;
+}
+
+interface LobstrProvider {
+  getPublicKey(): Promise<string | { publicKey: string }>;
+  signTransaction(xdr: string, opts?: { networkPassphrase?: string }): Promise<string | { signedTxXdr: string }>;
+}
+
+function getLobstrProvider(): LobstrProvider | undefined {
+  return typeof window !== "undefined"
+    ? (window as unknown as { lobstr?: LobstrProvider }).lobstr
+    : undefined;
 }
 
 export interface UseLobstrReturn {
@@ -41,7 +51,7 @@ export function useLobstr(options: UseLobstrOptions = {}): UseLobstrReturn {
   useEffect(() => {
     // Check if LOBSTR extension provider is present on window
     const checkLobstr = () => {
-      const hasLobstr = typeof window !== "undefined" && (window as any).lobstr !== undefined;
+      const hasLobstr = getLobstrProvider() !== undefined;
       setIsInstalled(hasLobstr);
     };
     checkLobstr();
@@ -59,7 +69,7 @@ export function useLobstr(options: UseLobstrOptions = {}): UseLobstrReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const lobstrProvider = (window as any).lobstr;
+      const lobstrProvider = getLobstrProvider();
       if (!lobstrProvider) {
         throw new Error("LOBSTR extension is not installed. Please install LOBSTR to continue.");
       }
@@ -92,7 +102,7 @@ export function useLobstr(options: UseLobstrOptions = {}): UseLobstrReturn {
 
   const signTransaction = useCallback(
     async (xdr: string, opts?: { networkPassphrase?: string }): Promise<string> => {
-      const lobstrProvider = (window as any).lobstr;
+      const lobstrProvider = getLobstrProvider();
       if (!lobstrProvider) {
         throw new Error("LOBSTR extension is not installed.");
       }

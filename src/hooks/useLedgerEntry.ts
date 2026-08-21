@@ -64,7 +64,7 @@ export function useLedgerEntry(
   const { config } = useStellarContext();
   const bypassCacheRef = useRef(false);
 
-  const fetch = useCallback(async (signal?: AbortSignal) => {
+  const fetch = useCallback(async (_signal?: AbortSignal) => {
     if (!ledgerKey) return null;
 
     const cacheKey = `ledger-entry-${ledgerKey.toXDR("base64")}-${config.network}`;

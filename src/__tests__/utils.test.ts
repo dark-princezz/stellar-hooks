@@ -270,7 +270,7 @@ describe("parseBalance", () => {
   it("correctly parses 7 decimal place balances", () => {
     expect(parseBalance("100.1234567")).toBe(100.1234567);
     expect(parseBalance("0.0000001")).toBe(0.0000001);
-    expect(parseBalance("99999999999.9999999")).toBe(99999999999.9999999);
+    expect(parseBalance("99999999999.9999999")).toBe(Number("99999999999.9999999"));
   });
 
   it("handles balances with fewer than 7 decimal places", () => {
@@ -296,7 +296,7 @@ describe("parseBalance", () => {
 
   it("handles edge case values", () => {
     expect(parseBalance("0.0000000")).toBe(0);
-    expect(parseBalance("999999999999.9999999")).toBe(999999999999.9999999);
+    expect(parseBalance("999999999999.9999999")).toBe(Number("999999999999.9999999"));
   });
 
   it("handles whitespace", () => {

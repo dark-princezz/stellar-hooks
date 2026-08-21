@@ -7,21 +7,32 @@
 
 import type { WalletAdapter, WalletId } from "../types";
 
+interface LobstrProvider {
+  getPublicKey(): Promise<string | { publicKey: string }>;
+  signTransaction(xdr: string, opts?: { networkPassphrase?: string }): Promise<string | { signedTxXdr: string }>;
+}
+
+function getLobstrProvider(): LobstrProvider | undefined {
+  return typeof window !== "undefined"
+    ? (window as unknown as { lobstr?: LobstrProvider }).lobstr
+    : undefined;
+}
+
 export class LobstrWalletAdapter implements WalletAdapter {
   id: WalletId = "lobstr";
   name = "LOBSTR";
 
   isInstalled(): boolean {
-    return typeof window !== "undefined" && (window as any).lobstr !== undefined;
+    return getLobstrProvider() !== undefined;
   }
 
   async connect(): Promise<string> {
-    const lobstrProvider = (window as any).lobstr;
+    const lobstrProvider = getLobstrProvider();
     if (!lobstrProvider) {
       throw new Error("LOBSTR extension is not installed.");
     }
     const res = await lobstrProvider.getPublicKey();
-    return typeof res === "string" ? res : res?.publicKey;
+    return typeof res === "string" ? res : res.publicKey;
   }
 
   disconnect(): void {
@@ -29,11 +40,11 @@ export class LobstrWalletAdapter implements WalletAdapter {
   }
 
   async signTransaction(xdr: string, opts?: { networkPassphrase?: string }): Promise<string> {
-    const lobstrProvider = (window as any).lobstr;
+    const lobstrProvider = getLobstrProvider();
     if (!lobstrProvider) {
       throw new Error("LOBSTR extension is not installed.");
     }
     const signed = await lobstrProvider.signTransaction(xdr, opts);
-    return typeof signed === "string" ? signed : signed?.signedTxXdr;
+    return typeof signed === "string" ? signed : signed.signedTxXdr;
   }
 }

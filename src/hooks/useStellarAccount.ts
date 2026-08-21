@@ -67,7 +67,7 @@ export function useStellarAccount(
   const { enabled = true, refetchInterval = 0, deduplicate = true } = options;
   const { config } = useStellarContext();
 
-  const fetchAccount = useCallback(async (signal?: AbortSignal): Promise<StellarAccountData | null> => {
+  const fetchAccount = useCallback(async (_signal?: AbortSignal): Promise<StellarAccountData | null> => {
     if (!publicKey) return null;
     validatePublicKey(publicKey);
     const server = getHorizonServer(config.horizonUrl);
