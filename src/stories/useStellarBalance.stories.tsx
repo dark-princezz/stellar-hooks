@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useStellarBalance } from "../hooks/useStellarBalance";
+import { asPublicKey } from "../types";
 
 function BalanceDemo({ defaultAddress }: { defaultAddress: string }) {
   const [address, setAddress] = useState(defaultAddress);
-  const { xlmBalance, balances, isLoading, error, refetch } = useStellarBalance(address);
+  const { xlmBalance, balances, isLoading, error, refetch } = useStellarBalance(asPublicKey(address));
 
   return (
     <div style={{ border: "1px solid #ccc", padding: "1rem", borderRadius: 8 }}>

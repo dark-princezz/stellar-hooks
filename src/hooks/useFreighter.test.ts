@@ -16,7 +16,6 @@ import {
 import { UserRejectedError } from "../utils/errors";
 
 beforeEach(() => {
-  vi.resetModules();
   vi.clearAllMocks();
   resetFreighterMocks();
 });

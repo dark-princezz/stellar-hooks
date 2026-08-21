@@ -4,13 +4,15 @@ import { useStellarOffers } from "./useStellarOffers";
 
 const mockCall = vi.hoisted(() => vi.fn());
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: { horizonUrl: "https://horizon-testnet.stellar.org" },
   }),
 }));
 
-vi.mock("@stellar/stellar-sdk", () => ({
+vi.mock("@stellar/stellar-sdk", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@stellar/stellar-sdk")>()),
   Horizon: {
     Server: vi.fn().mockImplementation(() => ({
       offers: vi.fn().mockReturnThis(),
@@ -24,7 +26,7 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-const mockPublicKey = "GCABC...XYZ";
+const mockPublicKey = "GA57IIQ2I5FBWRJL7G3E7ZWTZTADSARHQ7PBWGSWL4Q4ZR5ILKTBEEQW";
 
 describe("useStellarOffers", () => {
   it("should fetch and return offers for the given public key", async () => {

@@ -96,6 +96,7 @@ export function StellarHooksProvider({
   const switchNetwork = useCallback((newNetwork: StellarNetwork, newCustomConfig?: CustomNetworkConfig) => {
     setNetwork(newNetwork);
     setNetworkVersion((v) => v + 1); // Increment version to invalidate in-flight requests
+    setNetworkEpoch((e) => e + 1); // Increment epoch to invalidate in-flight query hooks
     localStorage.setItem(NETWORK_STORAGE_KEY, newNetwork);
 
     if (newNetwork === "custom" && newCustomConfig) {
@@ -131,8 +132,8 @@ export function StellarHooksProvider({
   }, [network, customHorizonUrl, customSorobanRpcUrl, customPassphrase]);
 
   const value = useMemo<StellarContextInternalValue>(
-    () => ({ config, network, switchNetwork, networkVersion, requestCache }),
-    [config, network, switchNetwork, networkVersion, requestCache]
+    () => ({ config, network, switchNetwork, networkVersion, networkEpoch, requestCache }),
+    [config, network, switchNetwork, networkVersion, networkEpoch, requestCache]
   );
 
   const registerHookActivity = useCallback(

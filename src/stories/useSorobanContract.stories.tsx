@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useSorobanContract } from "../hooks/useSorobanContract";
+import { asContractId } from "../types";
 
 function ContractDemo({ contractId: initialContractId, method: initialMethod }: { contractId: string; method: string }) {
   const [contractId, setContractId] = useState(initialContractId);
   const [method, setMethod] = useState(initialMethod);
 
-  const { call, status, result, error, isLoading, reset } = useSorobanContract({
-    contractId,
+  const { call, status, result, error, isLoading, reset } = useSorobanContract(asContractId(contractId), {
     method,
     args: [],
   });

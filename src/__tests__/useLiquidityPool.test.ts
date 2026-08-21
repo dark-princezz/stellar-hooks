@@ -22,7 +22,8 @@ const mockFetch = vi.fn().mockResolvedValue({
 
 vi.stubGlobal("fetch", mockFetch);
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: {
       horizonUrl: "https://horizon-testnet.stellar.org",
@@ -64,6 +65,7 @@ import { useLiquidityPool } from "../hooks/useLiquidityPool";
 describe("useLiquidityPool", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal("fetch", mockFetch);
     mockFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockPoolResponse),

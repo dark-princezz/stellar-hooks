@@ -16,7 +16,7 @@ export interface LedgerStreamData {
   hash: string;
   feeRecipient: string;
   operationCount: number;
-  raw: Horizon.LedgerRecord;
+  raw: Horizon.ServerApi.LedgerRecord;
 }
 
 export interface UseLedgerStreamOptions {
@@ -85,13 +85,13 @@ export function useLedgerStream(options: UseLedgerStreamOptions = {}): UseLedger
       closeStream = server.ledgers()
         .cursor("now")
         .stream({
-          onmessage: (ledger: Horizon.LedgerRecord) => {
+          onmessage: (ledger: Horizon.ServerApi.LedgerRecord) => {
             if (isCancelled) return;
             const parsed: LedgerStreamData = {
               sequence: ledger.sequence,
               closedAt: ledger.closed_at,
               hash: ledger.hash,
-              feeRecipient: ledger.fee_pool_account,
+              feeRecipient: ledger.fee_pool,
               operationCount: ledger.successful_transaction_count + ledger.failed_transaction_count,
               raw: ledger,
             };
@@ -101,7 +101,7 @@ export function useLedgerStream(options: UseLedgerStreamOptions = {}): UseLedger
             setError(null);
             onLedger?.(parsed);
           },
-          onerror: (err: any) => {
+          onerror: (err: unknown) => {
             if (isCancelled) return;
             const wrappedErr = err instanceof Error ? err : new Error(String(err));
             setError(wrappedErr);

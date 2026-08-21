@@ -91,11 +91,13 @@ export function useIntersectionObserver(
 
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [entry, setEntry] = useState<IntersectionObserverEntry | null>(null);
-  const elementRef = useRef<Element | null>(null);
+  const [element, setElement] = useState<Element | null>(null);
   const hasTriggered = useRef(false);
 
   const handleIntersect = useCallback(
     (entries: IntersectionObserverEntry[]) => {
+      if (triggerOnce && hasTriggered.current) return;
+
       const targetEntry = entries[0];
       if (!targetEntry) return;
 
@@ -103,21 +105,18 @@ export function useIntersectionObserver(
       setEntry(targetEntry);
       setIsIntersecting(intersecting);
 
-      if (triggerOnce && intersecting && !hasTriggered.current) {
+      if (triggerOnce && intersecting) {
         hasTriggered.current = true;
-        // If triggerOnce is true, we keep the state but stop observing
-        // The observer cleanup will handle this
       }
     },
     [triggerOnce]
   );
 
   const ref = useCallback((node: Element | null) => {
-    elementRef.current = node;
+    setElement(node);
   }, []);
 
   useEffect(() => {
-    const element = elementRef.current;
     if (!element) return;
 
     // If triggerOnce is enabled and already triggered, don't observe again
@@ -136,7 +135,7 @@ export function useIntersectionObserver(
     return () => {
       observer.disconnect();
     };
-  }, [handleIntersect, threshold, rootMargin, root, triggerOnce]);
+  }, [element, handleIntersect, threshold, rootMargin, root, triggerOnce]);
 
   return {
     ref,

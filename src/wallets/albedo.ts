@@ -12,7 +12,7 @@ export function createAlbedoAdapter(): WalletAdapter {
     },
 
     async connect(): Promise<string> {
-      const res = await albedo.publicKey();
+      const res = await albedo.publicKey({});
       if (!res.pubkey) {
         throw new Error("No public key returned from Albedo");
       }
@@ -45,7 +45,7 @@ export function createAlbedoAdapter(): WalletAdapter {
     },
 
     async signMessage(message: string, opts?: { accountToSign?: string }): Promise<string> {
-      let res: { signature?: string };
+      let res: { message_signature?: string };
       try {
         res = await albedo.signMessage({
           message,
@@ -58,10 +58,10 @@ export function createAlbedoAdapter(): WalletAdapter {
         }
         throw err;
       }
-      if (!res.signature) {
+      if (!res.message_signature) {
         throw new Error("No signature returned from Albedo");
       }
-      return res.signature;
+      return res.message_signature;
     },
   };
 }

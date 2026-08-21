@@ -13,15 +13,29 @@ export interface UseXBullOptions {
   debugLabel?: string;
 }
 
-export interface UseXBullReturn {
+export interface XBullState {
   isInstalled: boolean;
   isConnected: boolean;
   publicKey: string | null;
   isLoading: boolean;
   error: Error | null;
+}
+
+export interface UseXBullReturn extends XBullState {
   connect: () => Promise<string | null>;
   disconnect: () => void;
   signTransaction: (xdr: string, opts?: { networkPassphrase?: string }) => Promise<string>;
+}
+
+interface XBullSDK {
+  connect(): Promise<string>;
+  sign(opts: { xdr: string; network?: string }): Promise<string | { signedXdr: string }>;
+}
+
+function getXBullSDK(): XBullSDK | undefined {
+  return typeof window !== "undefined"
+    ? (window as unknown as { xBullSDK?: XBullSDK }).xBullSDK
+    : undefined;
 }
 
 /**
@@ -39,7 +53,7 @@ export function useXBull(options: UseXBullOptions = {}): UseXBullReturn {
 
   useEffect(() => {
     const checkXBull = () => {
-      const hasXBull = typeof window !== "undefined" && (window as any).xBullSDK !== undefined;
+      const hasXBull = getXBullSDK() !== undefined;
       setIsInstalled(hasXBull);
     };
     checkXBull();
@@ -57,7 +71,7 @@ export function useXBull(options: UseXBullOptions = {}): UseXBullReturn {
     setIsLoading(true);
     setError(null);
     try {
-      const xbull = (window as any).xBullSDK;
+      const xbull = getXBullSDK();
       if (!xbull) {
         throw new Error("xBull extension is not installed. Please install xBull to continue.");
       }
@@ -87,7 +101,7 @@ export function useXBull(options: UseXBullOptions = {}): UseXBullReturn {
 
   const signTransaction = useCallback(
     async (xdr: string, opts?: { networkPassphrase?: string }): Promise<string> => {
-      const xbull = (window as any).xBullSDK;
+      const xbull = getXBullSDK();
       if (!xbull) {
         throw new Error("xBull extension is not installed.");
       }

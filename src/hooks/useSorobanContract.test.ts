@@ -36,7 +36,8 @@ vi.mock("./useFreighter", () => ({
   }),
 }));
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: {
       sorobanRpcUrl: "https://rpc.example.com",

@@ -42,7 +42,8 @@ vi.mock("./useFreighter", () => ({
   }),
 }));
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useOptionalStellarContext: () => ({
     config: { networkPassphrase: "Test SDF Network ; September 2015" },
   }),
@@ -91,13 +92,13 @@ function makeJsonResponse(body: unknown, ok = true, status = 200) {
  */
 function setupHappyPathFetch() {
   mockFetch
-    .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
     .mockResolvedValueOnce(
       makeJsonResponse({
         transaction: MOCK_CHALLENGE_XDR,
         network_passphrase: MOCK_PASSPHRASE,
       })
     )
+    .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
     .mockResolvedValueOnce(makeJsonResponse({ token: MOCK_JWT }));
 }
 
@@ -116,6 +117,7 @@ function renderWebAuth(overrides: Partial<Parameters<typeof useWebAuth>[0]> = {}
 describe("useWebAuth", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal("fetch", mockFetch);
     mockFreighterPublicKey = MOCK_PUBLIC_KEY;
     // Restore default signTransaction behaviour after each test
     mockSignTransaction.mockResolvedValue(MOCK_SIGNED_XDR);
@@ -214,13 +216,13 @@ describe("useWebAuth", () => {
   it("uses server-returned network_passphrase when present", async () => {
     const serverPassphrase = "Public Global Stellar Network ; September 2015";
     mockFetch
-      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
       .mockResolvedValueOnce(
         makeJsonResponse({
           transaction: MOCK_CHALLENGE_XDR,
           network_passphrase: serverPassphrase,
         })
       )
+      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
       .mockResolvedValueOnce(makeJsonResponse({ token: MOCK_JWT }));
 
     const { result } = renderWebAuth();
@@ -286,9 +288,16 @@ describe("useWebAuth", () => {
 
   it("sets error state when the signing-key fetch returns non-OK status", async () => {
     const onError = vi.fn();
-    mockFetch.mockResolvedValueOnce(
-      makeJsonResponse({ error: "server error" }, false, 500)
-    );
+    mockFetch
+      .mockResolvedValueOnce(
+        makeJsonResponse({
+          transaction: MOCK_CHALLENGE_XDR,
+          network_passphrase: MOCK_PASSPHRASE,
+        })
+      )
+      .mockResolvedValueOnce(
+        makeJsonResponse({ error: "server error" }, false, 500)
+      );
 
     const { result } = renderWebAuth({ onError });
 
@@ -303,7 +312,14 @@ describe("useWebAuth", () => {
   });
 
   it("sets error state when the signing key is missing from server info", async () => {
-    mockFetch.mockResolvedValueOnce(makeJsonResponse({ version: "1.0" })); // no signing_key
+    mockFetch
+      .mockResolvedValueOnce(
+        makeJsonResponse({
+          transaction: MOCK_CHALLENGE_XDR,
+          network_passphrase: MOCK_PASSPHRASE,
+        })
+      )
+      .mockResolvedValueOnce(makeJsonResponse({ version: "1.0" })); // no signing_key
 
     const { result } = renderWebAuth();
 
@@ -317,11 +333,9 @@ describe("useWebAuth", () => {
 
   it("sets error state when the challenge fetch fails with a non-OK status", async () => {
     const onError = vi.fn();
-    mockFetch
-      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
-      .mockResolvedValueOnce(
-        makeJsonResponse({ error: "account not found" }, false, 404)
-      );
+    mockFetch.mockResolvedValueOnce(
+      makeJsonResponse({ error: "account not found" }, false, 404)
+    );
 
     const { result } = renderWebAuth({ onError });
 
@@ -336,9 +350,7 @@ describe("useWebAuth", () => {
   });
 
   it("sets error state when the challenge response is missing the transaction field", async () => {
-    mockFetch
-      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
-      .mockResolvedValueOnce(makeJsonResponse({ network_passphrase: MOCK_PASSPHRASE }));
+    mockFetch.mockResolvedValueOnce(makeJsonResponse({ network_passphrase: MOCK_PASSPHRASE }));
 
     const { result } = renderWebAuth();
 
@@ -351,9 +363,7 @@ describe("useWebAuth", () => {
   });
 
   it("sets error state when the server returns an error in the challenge body", async () => {
-    mockFetch
-      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
-      .mockResolvedValueOnce(makeJsonResponse({ error: "invalid account" }));
+    mockFetch.mockResolvedValueOnce(makeJsonResponse({ error: "invalid account" }));
 
     const { result } = renderWebAuth();
 
@@ -367,13 +377,13 @@ describe("useWebAuth", () => {
 
   it("sets error state when WebAuth.readChallengeTx throws", async () => {
     mockFetch
-      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
       .mockResolvedValueOnce(
         makeJsonResponse({
           transaction: MOCK_CHALLENGE_XDR,
           network_passphrase: MOCK_PASSPHRASE,
         })
-      );
+      )
+      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }));
     mockReadChallengeTx.mockImplementationOnce(() => {
       throw new Error("Invalid challenge: home domain mismatch");
     });
@@ -391,13 +401,13 @@ describe("useWebAuth", () => {
 
   it("sets error state when the user rejects signing in Freighter", async () => {
     mockFetch
-      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
       .mockResolvedValueOnce(
         makeJsonResponse({
           transaction: MOCK_CHALLENGE_XDR,
           network_passphrase: MOCK_PASSPHRASE,
         })
-      );
+      )
+      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }));
     mockSignTransaction.mockRejectedValueOnce(new Error("User rejected the request"));
 
     const { result } = renderWebAuth();
@@ -412,13 +422,13 @@ describe("useWebAuth", () => {
 
   it("sets error state when the token POST returns a non-OK status", async () => {
     mockFetch
-      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
       .mockResolvedValueOnce(
         makeJsonResponse({
           transaction: MOCK_CHALLENGE_XDR,
           network_passphrase: MOCK_PASSPHRASE,
         })
       )
+      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
       .mockResolvedValueOnce(
         makeJsonResponse({ error: "signature invalid" }, false, 400)
       );
@@ -435,13 +445,13 @@ describe("useWebAuth", () => {
 
   it("sets error state when the token response is missing the token field", async () => {
     mockFetch
-      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
       .mockResolvedValueOnce(
         makeJsonResponse({
           transaction: MOCK_CHALLENGE_XDR,
           network_passphrase: MOCK_PASSPHRASE,
         })
       )
+      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
       .mockResolvedValueOnce(makeJsonResponse({ other_field: "unexpected" }));
 
     const { result } = renderWebAuth();
@@ -456,13 +466,13 @@ describe("useWebAuth", () => {
 
   it("sets error state when the server returns an error in the token body", async () => {
     mockFetch
-      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
       .mockResolvedValueOnce(
         makeJsonResponse({
           transaction: MOCK_CHALLENGE_XDR,
           network_passphrase: MOCK_PASSPHRASE,
         })
       )
+      .mockResolvedValueOnce(makeJsonResponse({ signing_key: MOCK_SIGNING_KEY }))
       .mockResolvedValueOnce(makeJsonResponse({ error: "signature_verification_failed" }));
 
     const { result } = renderWebAuth();
@@ -521,13 +531,13 @@ describe("useWebAuth", () => {
 
   it("accepts camelCase `signingKey` in addition to snake_case `signing_key`", async () => {
     mockFetch
-      .mockResolvedValueOnce(makeJsonResponse({ signingKey: MOCK_SIGNING_KEY }))
       .mockResolvedValueOnce(
         makeJsonResponse({
           transaction: MOCK_CHALLENGE_XDR,
           network_passphrase: MOCK_PASSPHRASE,
         })
       )
+      .mockResolvedValueOnce(makeJsonResponse({ signingKey: MOCK_SIGNING_KEY }))
       .mockResolvedValueOnce(makeJsonResponse({ token: MOCK_JWT }));
 
     const { result } = renderWebAuth();

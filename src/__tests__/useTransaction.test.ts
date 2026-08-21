@@ -60,7 +60,8 @@ const mockSubmitXdr = vi.fn().mockResolvedValue(undefined);
 const mockReset = vi.fn();
 const mockSignTransaction = vi.fn().mockResolvedValue("signed-xdr");
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: {
       horizonUrl: "https://horizon-testnet.stellar.org",

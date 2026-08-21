@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { renderHook, act, waitFor } from "@testing-library/react";
 import { useAlbedo } from "./useAlbedo";
 import albedo, {
   resetAlbedoMocks,
@@ -9,7 +9,6 @@ import albedo, {
 } from "@albedo-link/intent";
 
 beforeEach(() => {
-  vi.resetModules();
   vi.clearAllMocks();
   resetAlbedoMocks();
 });
@@ -78,7 +77,7 @@ describe("useAlbedo", () => {
     vi.mocked(tx).mockResolvedValue({
       xdr: "orig-xdr",
       tx_hash: "hash",
-      signed_envelope: "signed-env-xdr",
+      signed_envelope_xdr: "signed-env-xdr",
       pubkey: "GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UQ",
     });
 
@@ -103,9 +102,11 @@ describe("useAlbedo", () => {
 
     const { result } = renderHook(() => useAlbedo());
 
-    await expect(
-      act(() => result.current.signTransaction("xdr" as any))
-    ).rejects.toThrow("Signing rejected");
+    await act(async () => {
+      await expect(
+        result.current.signTransaction("xdr" as any)
+      ).rejects.toThrow("Signing rejected");
+    });
 
     expect(result.current.error?.message).toBe("Signing rejected");
   });
@@ -114,7 +115,7 @@ describe("useAlbedo", () => {
     vi.mocked(signMessage).mockResolvedValue({
       message: "hello",
       pubkey: "GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UQ",
-      signature: "signature-bytes",
+      message_signature: "signature-bytes",
     });
 
     const { result } = renderHook(() => useAlbedo());
@@ -131,7 +132,7 @@ describe("useAlbedo", () => {
     vi.mocked(signMessage).mockResolvedValue({
       message: "hello",
       pubkey: "GAAZI4BCE7Y5L7S25K2LJKBJHW7X2UHLW4XY5R2DZPHFBUHE5PQ7L2UQ",
-      signature: "",
+      message_signature: "",
     });
 
     const { result } = renderHook(() => useAlbedo());

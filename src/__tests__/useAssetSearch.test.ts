@@ -69,6 +69,7 @@ const MOCK_EMPTY_RESPONSE = {
 describe("useAssetSearch", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    global.fetch = mockFetch;
   });
 
   afterEach(() => {

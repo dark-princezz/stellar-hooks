@@ -44,7 +44,9 @@ export function createFreighterAdapter(): WalletAdapter {
 
     async signMessage(message: string, opts?: { accountToSign?: string }): Promise<string> {
       const address = opts?.accountToSign;
-      const { signedMessage, error } = await freighterSignMessage(message, { address });
+      const { signedMessage, error } = await freighterSignMessage(message, {
+        ...(address && { address }),
+      });
       if (error) {
         throw isUserRejectionMessage(error.message)
           ? new UserRejectedError(error.message, { cause: error, walletId: "freighter", operation: "signMessage" })

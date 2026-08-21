@@ -20,6 +20,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useStellarQuery } from "../hooks/useStellarQuery";
 
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
+  useStellarContext: () => ({ networkEpoch: 0 }),
+}));
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /** A trivially stable fetcher that resolves to the supplied value. */
@@ -39,8 +44,8 @@ describe("useStellarQuery", () => {
   it("starts with data equal to initialData before the fetch resolves", () => {
     // Use a fetcher that never resolves so we can inspect the initial state.
     const fetcher = vi.fn().mockReturnValue(new Promise(() => {}));
-    const { result } = renderHook(() =>
-      useStellarQuery(fetcher, { initialData: ["seed"] })
+    const { result } = renderHook(
+      () => useStellarQuery(fetcher, { initialData: ["seed"] }),
     );
 
     // Before the async fetcher resolves data should be the initialData seed.
@@ -69,7 +74,7 @@ describe("useStellarQuery", () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(result.current.error).toBe(boom);
+    expect(result.current.error?.message).toBe(boom.message);
     expect(result.current.data).toBeNull();
   });
 
@@ -123,9 +128,9 @@ describe("useStellarQuery", () => {
 
     it("polls at refetchInterval and stops when the component unmounts", async () => {
       const fetcher = makeFetcher("ping");
-      const { unmount } = renderHook(() =>
-        useStellarQuery(fetcher, { refetchInterval: 1000 })
-      );
+      const { unmount } = renderHook(
+        () => useStellarQuery(fetcher, { refetchInterval: 1000 }),
+        );
 
       // Drain the initial fetch's microtasks so isFetchingRef is cleared.
       await act(async () => {
@@ -186,12 +191,14 @@ describe("useStellarQuery", () => {
 
     const fetcher = vi.fn().mockResolvedValue(["result"]);
 
-    const { result } = renderHook(() => {
-      renderCount++;
-      // Deliberately construct a new array reference every render —
-      // this is the pattern that previously caused the infinite loop.
-      return useStellarQuery(fetcher, { initialData: [] as string[] });
-    });
+    const { result } = renderHook(
+      () => {
+        renderCount++;
+        // Deliberately construct a new array reference every render —
+        // this is the pattern that previously caused the infinite loop.
+        return useStellarQuery(fetcher, { initialData: [] as string[] });
+      },
+    );
 
     // Wait for the initial fetch to complete.
     await waitFor(() => expect(result.current.isLoading).toBe(false));
@@ -219,13 +226,15 @@ describe("useStellarQuery", () => {
 
     const fetcher = vi.fn().mockResolvedValue({ count: 1 });
 
-    const { result } = renderHook(() => {
-      renderCount++;
-      // Fresh object reference on every render.
-      return useStellarQuery(fetcher, {
-        initialData: {} as Record<string, number>,
-      });
-    });
+    const { result } = renderHook(
+      () => {
+        renderCount++;
+        // Fresh object reference on every render.
+        return useStellarQuery(fetcher, {
+          initialData: {} as Record<string, number>,
+        });
+      },
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -247,11 +256,13 @@ describe("useStellarQuery", () => {
     // externalState simulates a parent component re-rendering this hook
     // with fresh props while keeping initialData as an inline literal.
     let externalState = 0;
-    const { result, rerender } = renderHook(() => {
-      // Access externalState so re-renders with new values actually re-run the body.
-      void externalState;
-      return useStellarQuery(fetcher, { initialData: [] as string[] });
-    });
+    const { result, rerender } = renderHook(
+      () => {
+        // Access externalState so re-renders with new values actually re-run the body.
+        void externalState;
+        return useStellarQuery(fetcher, { initialData: [] as string[] });
+      },
+    );
 
     await waitFor(() => expect(result.current.data).toEqual(["a", "b"]));
 

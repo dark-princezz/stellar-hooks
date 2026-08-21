@@ -27,7 +27,8 @@ vi.mock("@creit-tech/stellar-wallets-kit/sdk", () => {
   return { StellarWalletsKit, KitEventType };
 });
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: {
       network: "testnet",

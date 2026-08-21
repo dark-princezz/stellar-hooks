@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { usePayment } from "../hooks/usePayment";
+import { asPublicKey } from "../types";
 
 function PaymentDemo({ defaultDestination, defaultAmount }: { defaultDestination: string; defaultAmount: string }) {
   const [destination, setDestination] = useState(defaultDestination);
   const [amount, setAmount] = useState(defaultAmount);
 
   const { submit, status, hash, error, isLoading, reset } = usePayment({
-    destination,
+    destination: asPublicKey(destination),
+    asset: { type: "native" },
     amount,
   });
 

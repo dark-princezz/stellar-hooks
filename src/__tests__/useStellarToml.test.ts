@@ -48,7 +48,7 @@ describe("useStellarToml", () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(mockResolve).toHaveBeenCalledWith("stellar.org");
+    expect(mockResolve).toHaveBeenCalledWith("stellar.org", {});
     expect(result.current.data).toEqual(SAMPLE_TOML);
     expect(result.current.error).toBeNull();
   });
@@ -81,7 +81,7 @@ describe("useStellarToml", () => {
       await result.current.refetch();
     });
 
-    expect(mockResolve).toHaveBeenCalledWith("stellar.org");
+    expect(mockResolve).toHaveBeenCalledWith("stellar.org", {});
     expect(result.current.data).toEqual(refreshed);
     expect(result.current.error).toBeNull();
   });

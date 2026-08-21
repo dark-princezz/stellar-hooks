@@ -99,7 +99,7 @@ function computeSignatureWeight(
 
     let totalWeight = 0;
     for (const sig of tx.signatures) {
-      const hint = sig.hint.toString("hex");
+      const hint = sig.hint().toString("hex");
       for (const [key, weight] of signerMap) {
         const keyHint = key.slice(-8).toLowerCase();
         if (hint === keyHint) {

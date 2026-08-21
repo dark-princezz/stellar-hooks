@@ -161,7 +161,7 @@ export function useLiquidityPool(
           maxAmountB: params.maxAmountB,
           minPrice: params.minPrice,
           maxPrice: params.maxPrice,
-          source: params.source,
+          ...(params.source && { source: params.source }),
         })
       );
 
@@ -202,7 +202,7 @@ export function useLiquidityPool(
           amount: params.amount,
           minAmountA: params.minAmountA,
           minAmountB: params.minAmountB,
-          source: params.source,
+          ...(params.source && { source: params.source }),
         })
       );
 

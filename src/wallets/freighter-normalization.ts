@@ -5,46 +5,20 @@
  * This module detects the version and normalizes responses to a consistent shape.
  */
 
-import type { AddressResponse, NetworkDetailsResponse } from "@stellar/freighter-api";
+import type { getAddress } from "@stellar/freighter-api";
+
+type AddressResponse = Awaited<ReturnType<typeof getAddress>>;
 
 // ─── Version Detection ─────────────────────────────────────────────────────────
-
-let cachedApiVersion: "legacy" | "modern" | null = null;
-
-/**
- * Detects the Freighter API version by calling getAddress and checking the response shape.
- * Legacy versions return a string directly; modern versions return { address, error }.
- */
-async function detectApiVersion(): Promise<"legacy" | "modern"> {
-  if (cachedApiVersion) return cachedApiVersion;
-
-  try {
-    // Dynamically import to avoid issues with mocking
-    const { getAddress } = await import("@stellar/freighter-api");
-    const result = await getAddress();
-
-    // Check if result is an object with address/error fields (modern) or a string (legacy)
-    if (typeof result === "object" && result !== null && ("address" in result || "error" in result)) {
-      cachedApiVersion = "modern";
-    } else if (typeof result === "string") {
-      cachedApiVersion = "legacy";
-    } else {
-      // Default to modern if we can't determine
-      cachedApiVersion = "modern";
-    }
-  } catch (error) {
-    // If detection fails, assume modern API
-    cachedApiVersion = "modern";
-  }
-
-  return cachedApiVersion;
-}
+// NOTE: the version-detection cache this once backed (`detectApiVersion`) was
+// dead code and has been removed. `resetApiVersionCache` is kept as a no-op
+// since it's part of the public API and exercised by existing tests.
 
 /**
  * Resets the cached API version (useful for testing).
  */
 export function resetApiVersionCache(): void {
-  cachedApiVersion = null;
+  // Intentionally a no-op — see note above.
 }
 
 // ─── Address Normalization ───────────────────────────────────────────────────────
@@ -116,8 +90,13 @@ export async function normalizeGetNetworkDetails(): Promise<{
     }
 
     // Legacy API shape with different field names
-    if ("networkDetails" in result) {
-      const details = result.networkDetails as any;
+    if ("networkDetails" in (result as Record<string, unknown>)) {
+      const details = (result as unknown as Record<string, unknown>).networkDetails as {
+        network?: string;
+        networkPassphrase?: string;
+        networkUrl?: string;
+        sorobanRpcUrl?: string;
+      };
       return {
         network: details.network ?? null,
         networkPassphrase: details.networkPassphrase ?? null,

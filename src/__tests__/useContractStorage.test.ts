@@ -59,7 +59,8 @@ vi.mock("@stellar/stellar-sdk", () => {
   };
 });
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: {
       network: "testnet",

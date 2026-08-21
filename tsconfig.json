@@ -16,6 +16,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "types": ["node", "react", "react-dom"],
     "paths": {
       "@creit-tech/stellar-wallets-kit/sdk": ["./src/__mocks__/@creit-tech/stellar-wallets-kit-sdk.ts"]
     }

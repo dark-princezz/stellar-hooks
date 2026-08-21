@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw';
+import { http, HttpResponse, type PathParams } from 'msw';
 
 /**
  * MSW handlers for common Horizon API endpoints.
@@ -98,7 +98,7 @@ export const handlers = [
    * GET /accounts/:account_id
    * Returns mock account details.
    */
-  http.get(`${HORIZON_BASE}/accounts/:accountId`, ({ params }) => {
+  http.get(`${HORIZON_BASE}/accounts/:accountId`, ({ params }: { params: PathParams<'accountId'> }) => {
     const { accountId } = params;
     if (accountId === MOCK_ACCOUNT_ID) {
       return HttpResponse.json(mockAccount);
@@ -117,7 +117,7 @@ export const handlers = [
    * GET /accounts/:account_id/transactions
    * Returns paginated transaction list for the account.
    */
-  http.get(`${HORIZON_BASE}/accounts/:accountId/transactions`, ({ params }) => {
+  http.get(`${HORIZON_BASE}/accounts/:accountId/transactions`, ({ params }: { params: PathParams<'accountId'> }) => {
     const { accountId } = params;
     if (accountId === MOCK_ACCOUNT_ID) {
       return HttpResponse.json(mockTransactionsList);
@@ -136,7 +136,7 @@ export const handlers = [
    * GET /accounts/:account_id/operations
    * Returns paginated operations list for the account.
    */
-  http.get(`${HORIZON_BASE}/accounts/:accountId/operations`, ({ params }) => {
+  http.get(`${HORIZON_BASE}/accounts/:accountId/operations`, ({ params }: { params: PathParams<'accountId'> }) => {
     const { accountId } = params;
     if (accountId === MOCK_ACCOUNT_ID) {
       return HttpResponse.json(mockOperationsList);
@@ -155,7 +155,7 @@ export const handlers = [
    * GET /transactions/:hash
    * Returns a single transaction by hash.
    */
-  http.get(`${HORIZON_BASE}/transactions/:hash`, ({ params }) => {
+  http.get(`${HORIZON_BASE}/transactions/:hash`, ({ params }: { params: PathParams<'hash'> }) => {
     const { hash } = params;
     const tx = mockTransactionsList._embedded.records.find((t) => t.hash === hash);
     if (tx) return HttpResponse.json(tx);

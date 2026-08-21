@@ -10,7 +10,8 @@ import TestRenderer, { act } from "react-test-renderer";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { useStellarAccount } from "../hooks/useStellarAccount";
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: { horizonUrl: "https://horizon-testnet.stellar.org" },
     network: "testnet",

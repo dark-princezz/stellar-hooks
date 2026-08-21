@@ -178,30 +178,21 @@ export function useFreighter(options?: UseFreighterOptions): UseFreighterReturn 
   const connect = useCallback(async () => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
-      try {
-        const { address, error } = await normalizeRequestAccess();
-        if (error) {
-          dispatch({ type: "SET_ERROR", payload: error });
-          return;
-        }
-        if (!address) {
-          dispatch({ type: "SET_ERROR", payload: new Error("Failed to get address") });
-          return;
-        }
-
-        const networkDetails = await normalizeGetNetworkDetails();
-        dispatch({
-          type: "SET_CONNECTED",
-          publicKey: asPublicKey(address),
-          network: networkDetails.network ?? "",
-          networkPassphrase: networkDetails.networkPassphrase ?? "",
-        });
-      } catch (innerErr) {
-        dispatch({ type: "SET_ERROR", payload: innerErr instanceof Error ? innerErr : new Error(String(innerErr)) });
+      const { address, error } = await normalizeRequestAccess();
+      if (error) {
+        setState((prev) => ({ ...prev, isLoading: false, error }));
+        return;
+      }
+      if (!address) {
+        setState((prev) => ({
+          ...prev,
+          isLoading: false,
+          error: new Error("Failed to get address"),
+        }));
         return;
       }
 
-      const networkDetails = await getNetworkDetails();
+      const networkDetails = await normalizeGetNetworkDetails();
       setState({
         isInstalled: true,
         isConnected: true,

@@ -4,7 +4,8 @@ import { useTransactionHistory } from "./useTransactionHistory";
 
 const mockCall = vi.hoisted(() => vi.fn());
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: { horizonUrl: "https://horizon-testnet.stellar.org" },
   }),

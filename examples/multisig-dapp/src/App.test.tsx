@@ -35,7 +35,7 @@ const mockSubmit = vi.fn();
 const mockReset = vi.fn();
 
 vi.mock("stellar-hooks", () => {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require("react");
 
   function StellarProvider({ children }: { children: any }) {
@@ -102,7 +102,7 @@ describe("multisig-dapp App", () => {
     const destInput = screen.getByLabelText(/Recipient Public Key:/i);
     const amountInput = screen.getByLabelText(/Amount \(XLM\):/i);
 
-    fireEvent.change(destInput, { target: { value: "GDESTINATION1234567890ABCDEFGHIJKLMNOPQRSTUVW" } });
+    fireEvent.change(destInput, { target: { value: "GCUJKSODLHRFQ22DHTW6BNB75UOFDFU6VJZHAG2Y2KWW6HON4YTOSG7T" } });
     fireEvent.change(amountInput, { target: { value: "25" } });
 
     const buildBtn = screen.getByRole("button", { name: /Build Unsigned XDR/i });

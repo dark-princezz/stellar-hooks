@@ -59,7 +59,8 @@ const mockReset = vi.hoisted(() => vi.fn());
 const mockSignTransaction = vi.hoisted(() => vi.fn().mockResolvedValue("signed-xdr"));
 const mockPublicKey = vi.hoisted(() => ({ value: "GPUBLICKEY" }));
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: {
       horizonUrl: "https://horizon-testnet.stellar.org",

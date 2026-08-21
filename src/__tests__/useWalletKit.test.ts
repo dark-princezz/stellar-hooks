@@ -18,10 +18,10 @@ beforeEach(() => {
 });
 
 describe("useWalletKit", () => {
-  it("detects no wallets when none are installed", () => {
+  it("detects Albedo as always available when no browser-extension wallets are installed", () => {
     const { result } = renderHook(() => useWalletKit());
 
-    expect(result.current.availableWallets).toEqual([]);
+    expect(result.current.availableWallets).toEqual(["albedo"]);
     expect(result.current.activeWallet).toBeNull();
     expect(result.current.publicKey).toBeNull();
   });
@@ -57,17 +57,17 @@ describe("useWalletKit", () => {
     });
   });
 
-  it("connect() returns null and sets error when no wallet is available", async () => {
+  it("connect() falls back to Albedo when no browser-extension wallet is installed", async () => {
     const { result } = renderHook(() => useWalletKit());
 
-    let pubKey: string | null = "sentinel";
+    let pubKey: string | null = null;
     await act(async () => {
       pubKey = await result.current.connect();
     });
 
-    expect(pubKey).toBeNull();
-    expect(result.current.error).toBeInstanceOf(Error);
-    expect(result.current.error?.message).toContain("No wallet available");
+    expect(pubKey).not.toBeNull();
+    expect(result.current.activeWallet).toBe("albedo");
+    expect(result.current.error).toBeNull();
   });
 
   it("setActiveWallet updates the activeWallet field", () => {

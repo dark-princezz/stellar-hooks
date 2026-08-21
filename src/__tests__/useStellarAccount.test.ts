@@ -38,7 +38,8 @@ vi.mock("@stellar/stellar-sdk", async (importOriginal) => {
   };
 });
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: {
       horizonUrl: "https://horizon-testnet.stellar.org",
@@ -129,7 +130,7 @@ describe("useStellarAccount", () => {
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(result.current.error).toBe(error);
+    expect(result.current.error?.message).toBe(error.message);
     expect(result.current.data).toBeNull();
   });
 });

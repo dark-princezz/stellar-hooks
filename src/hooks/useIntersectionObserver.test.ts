@@ -30,7 +30,11 @@ afterEach(() => {
 
 describe("useIntersectionObserver", () => {
   it("creates an observer with default options when no options provided", () => {
-    renderHook(() => useIntersectionObserver());
+    const { result } = renderHook(() => useIntersectionObserver());
+
+    act(() => {
+      result.current.ref(document.createElement("div"));
+    });
 
     expect(IntersectionObserver).toHaveBeenCalledWith(
       expect.any(Function),
@@ -40,7 +44,7 @@ describe("useIntersectionObserver", () => {
 
   it("passes custom options to IntersectionObserver", () => {
     const root = document.createElement("div");
-    renderHook(() =>
+    const { result } = renderHook(() =>
       useIntersectionObserver({
         threshold: 0.5,
         rootMargin: "10px",
@@ -48,6 +52,10 @@ describe("useIntersectionObserver", () => {
         triggerOnce: true,
       }),
     );
+
+    act(() => {
+      result.current.ref(document.createElement("div"));
+    });
 
     expect(IntersectionObserver).toHaveBeenCalledWith(
       expect.any(Function),
@@ -100,7 +108,7 @@ describe("useIntersectionObserver", () => {
   });
 
   it("disconnects observer on unmount", () => {
-    const { unmount } = renderHook(() => useIntersectionObserver());
+    const { result, unmount } = renderHook(() => useIntersectionObserver());
 
     act(() => {
       result.current.ref(document.createElement("div"));

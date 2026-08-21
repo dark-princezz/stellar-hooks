@@ -46,7 +46,8 @@ const mockFetch = vi.fn().mockResolvedValue({
 
 vi.stubGlobal("fetch", mockFetch);
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: {
       horizonUrl: "https://horizon-testnet.stellar.org",
@@ -61,6 +62,7 @@ import { useFeeStats } from "../hooks/useFeeStats";
 describe("useFeeStats", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal("fetch", mockFetch);
     mockFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve(mockFeeStats),

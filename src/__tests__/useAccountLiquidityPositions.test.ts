@@ -37,7 +37,8 @@ const mockFetch = vi.fn().mockResolvedValue({
 
 vi.stubGlobal("fetch", mockFetch);
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: {
       horizonUrl: "https://horizon-testnet.stellar.org",
@@ -55,6 +56,7 @@ import { useAccountLiquidityPositions } from "../hooks/useAccountLiquidityPositi
 describe("useAccountLiquidityPositions", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.stubGlobal("fetch", mockFetch);
     mockFetch.mockResolvedValue({
       ok: true,
       json: () => Promise.resolve({ _embedded: { records: mockPositions } }),
@@ -71,7 +73,8 @@ describe("useAccountLiquidityPositions", () => {
     });
 
     expect(mockFetch).toHaveBeenCalledWith(
-      "https://horizon-testnet.stellar.org/liquidity_pools?account=GABC...&limit=200"
+      "https://horizon-testnet.stellar.org/liquidity_pools?account=GABC...&limit=200",
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
     );
     expect(result.current.positions[0].id).toBe("pool1");
     expect(result.current.positions[1].id).toBe("pool2");

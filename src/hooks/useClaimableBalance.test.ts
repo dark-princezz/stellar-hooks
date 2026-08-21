@@ -23,7 +23,8 @@ const {
   mockSubmit: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock("../context", () => ({
+vi.mock("../context", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../context")>()),
   useStellarContext: () => ({
     config: {
       horizonUrl: "https://horizon-testnet.stellar.org",
@@ -151,7 +152,9 @@ describe("useClaimBalance", () => {
     const { result } = renderHook(() => useClaimBalance());
 
     await act(async () => {
-      await result.current.claim("balance-1");
+      await result.current.claim(
+        "00000000a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4a1b2c3d4"
+      );
     });
 
     expect(mockLoadAccount).toHaveBeenCalledWith(mockPublicKey);
@@ -187,7 +190,7 @@ describe("useCreateClaimableBalance", () => {
       await result.current.create({
         asset: { type: "native" },
         amount: "10",
-        claimants: [{ destination: "GDEST123" }],
+        claimants: [{ destination: mockPublicKey }],
       });
     });
 

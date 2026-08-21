@@ -9,11 +9,12 @@ import { StellarProvider } from "../context";
 vi.mock("../utils/memoizedServers", () => ({
   getHorizonServer: vi.fn().mockReturnValue({
     loadAccount: vi.fn().mockImplementation((key: string) => {
-      if (key === "GERR") {
+      if (key === "GDJNNECG3O4S7CU6QLZU6KJUEZG4HZBOY4AEWEJ6MMYEPGPLVBV6XWEN") {
         return Promise.reject(new Error("Account not found"));
       }
       return Promise.resolve({
         id: key,
+        account_id: key,
         sequence: "100",
         balances: [{ asset_type: "native", balance: "100.0000000" }],
         signers: [],
@@ -45,7 +46,7 @@ vi.mock("@stellar/stellar-sdk/rpc", async () => {
 
 function AccountTestComponent({ publicKey }: { publicKey: string }) {
   const { account } = useSuspenseStellarAccount(publicKey);
-  return <div data-testid="account-id">{account?.id}</div>;
+  return <div data-testid="account-id">{account?.accountId}</div>;
 }
 
 function LedgerTestComponent({ ledgerKey }: { ledgerKey: any }) {
@@ -75,7 +76,7 @@ describe("useSuspenseStellarAccount", () => {
   });
 
   it("suspends with loading fallback then renders data", async () => {
-    const validKey = "GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCC5N7";
+    const validKey = "GDYJKKZKSCSDFKH74ECQ7JBUZFPT7HSV574N7FPKRMTBRVL5DW3FTRTK";
 
     render(
       <StellarProvider>
@@ -97,7 +98,7 @@ describe("useSuspenseStellarAccount", () => {
       <StellarProvider>
         <ErrorBoundary>
           <Suspense fallback={<div>Loading...</div>}>
-            <AccountTestComponent publicKey="GERR" />
+            <AccountTestComponent publicKey="GDJNNECG3O4S7CU6QLZU6KJUEZG4HZBOY4AEWEJ6MMYEPGPLVBV6XWEN" />
           </Suspense>
         </ErrorBoundary>
       </StellarProvider>
