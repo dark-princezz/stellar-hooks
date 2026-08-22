@@ -23,6 +23,7 @@ try {
 
 // Match all top-level export names:
 // export { Foo, Bar } from ...
+// export { local as Public, ... } from ...
 // export type { Baz } from ...
 // export declare function/class/const/type/interface Identifier
 const EXPORT_RE =
@@ -36,7 +37,13 @@ for (const match of content.matchAll(EXPORT_RE)) {
     ? [match[1]]
     : match[2]
         .split(",")
-        .map((s) => s.trim().replace(/\s+as\s+\S+/, "").trim())
+        .map((s) => {
+          const trimmed = s.trim();
+          // For "local as Public", the actual exported (public) identifier
+          // is the one after "as" — not the local alias before it.
+          const asMatch = trimmed.match(/\bas\s+(\S+)$/);
+          return asMatch ? asMatch[1] : trimmed;
+        })
         .filter(Boolean);
 
   for (const name of names) {
