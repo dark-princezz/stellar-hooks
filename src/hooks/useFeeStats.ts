@@ -42,6 +42,12 @@ export interface FeeStats {
   };
 }
 
+export interface FeeTiers {
+  low: string;
+  medium: string;
+  high: string;
+}
+
 export interface UseFeeStatsOptions {
   percentile?: FeePercentile;
   refetchInterval?: number;
@@ -51,6 +57,7 @@ export interface UseFeeStatsOptions {
 export interface UseFeeStatsReturn {
   feeStats: FeeStats | null;
   recommendedFee: string | null;
+  feeTiers: FeeTiers | null;
   isLoading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
@@ -145,9 +152,19 @@ export function useFeeStats(
     return state.data.maxFee[key];
   }, [state.data, percentile]);
 
+  const feeTiers = useMemo<FeeTiers | null>(() => {
+    if (!state.data) return null;
+    return {
+      low: state.data.maxFee.p50,
+      medium: state.data.maxFee.p80, // Using p80 as medium fee (75th percentile map)
+      high: state.data.maxFee.p99,
+    };
+  }, [state.data]);
+
   return {
     feeStats: state.data,
     recommendedFee,
+    feeTiers,
     isLoading: state.isLoading,
     error: state.error,
     refetch: state.refetch,
