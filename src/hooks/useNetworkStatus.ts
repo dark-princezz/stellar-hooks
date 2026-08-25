@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useStellarContext } from "../context";
 import { getHorizonServer, getRpcServer } from "../utils/memoizedServers";
+import type { StellarNetwork } from "../types";
 
 export interface UseNetworkStatusArgs {
   /** Poll interval in ms. 0 (default) disables polling — status is fetched once. */
@@ -15,6 +16,8 @@ export interface UseNetworkStatusArgs {
 }
 
 export interface NetworkStatus {
+  /** Current network identifier (testnet/futurenet/mainnet/custom) */
+  network: StellarNetwork;
   isHorizonHealthy: boolean;
   isRpcHealthy: boolean;
   /** Latest known ledger from Horizon. Retains its last value if Horizon is unreachable. */
@@ -29,26 +32,29 @@ export interface NetworkStatus {
 
 /**
  * Poll Horizon and Soroban RPC health/latency independently, so a failure on
- * one endpoint never masks the status of the other.
+ * one endpoint never masks the status of the other. Also exposes the current
+ * network identifier and latest ledger information.
  *
  * @example
  * ```tsx
- * const { isHorizonHealthy, isRpcHealthy, ledger } = useNetworkStatus({
+ * const { network, isHorizonHealthy, isRpcHealthy, ledger } = useNetworkStatus({
  *   refetchInterval: 10000,
  * });
+ * console.log(`Connected to ${network}, latest ledger: ${ledger}`);
  * ```
  */
 export function useNetworkStatus(
   args: UseNetworkStatusArgs = {},
 ): NetworkStatus {
   const { refetchInterval = 0 } = args;
-  const { config } = useStellarContext();
+  const { config, network } = useStellarContext();
   const horizonServer = getHorizonServer(config.horizonUrl);
   const rpcServer = getRpcServer(config.sorobanRpcUrl);
 
   const [state, setState] = useState<
     Omit<NetworkStatus, "isLoading" | "refetch">
   >({
+    network,
     isHorizonHealthy: false,
     isRpcHealthy: false,
     ledger: 0,
@@ -92,6 +98,7 @@ export function useNetworkStatus(
 
     if (!cancelledRef.current) {
       setState((prev) => ({
+        network,
         isHorizonHealthy,
         isRpcHealthy,
         // Keep the last known ledger if this check couldn't reach Horizon.
@@ -103,7 +110,7 @@ export function useNetworkStatus(
     if (!cancelledRef.current) {
       setIsLoading(false);
     }
-  }, [horizonServer, rpcServer]);
+  }, [horizonServer, rpcServer, network]);
 
   useEffect(() => {
     cancelledRef.current = false;
@@ -116,7 +123,7 @@ export function useNetworkStatus(
       cancelledRef.current = true;
       clearInterval(id);
     };
-  }, [check, refetchInterval]);
+  }, [check, refetchInterval, network]);
 
   return { ...state, isLoading, refetch: check };
 }

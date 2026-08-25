@@ -86,13 +86,31 @@ export type {
   UseBumpSequenceReturn,
 } from "./hooks/useBumpSequence";
 export { usePathPayment } from "./hooks/usePathPayment";
-export { useNetworkStatus } from "./hooks/useNetworkStatus";
-export { useTransactionHistory } from "./hooks/useTransactionHistory";
 export type {
   PathPaymentAsset,
   UsePathPaymentOptions,
   UsePathPaymentReturn,
 } from "./hooks/usePathPayment";
+export { useNetworkStatus } from "./hooks/useNetworkStatus";
+export type { NetworkStatus, UseNetworkStatusArgs } from "./hooks/useNetworkStatus";
+export { useTransactionHistory } from "./hooks/useTransactionHistory";
+export type {
+  UseTransactionHistoryOptions,
+  UseTransactionHistoryReturn,
+} from "./hooks/useTransactionHistory";
+export { useTransactionLifecycle } from "./hooks/useTransactionLifecycle";
+export type {
+  TransactionLifecycleStatus,
+  TransactionLifecycleState,
+  UseTransactionLifecycleOptions,
+  UseTransactionLifecycleReturn,
+} from "./hooks/useTransactionLifecycle";
+export { useAccountSubscription, useSuspenseAccountSubscription } from "./hooks/useAccountSubscription";
+export type {
+  UseAccountSubscriptionOptions,
+  UseAccountSubscriptionReturn,
+  AccountSubscriptionData,
+} from "./hooks/useAccountSubscription";
 export { useInflation } from "./hooks/useInflation";
 export type {
   UseInflationOptions,
@@ -226,11 +244,7 @@ export type {
   UseStellarTomlReturn,
 } from "./hooks/useStellarToml";
 export type { AssetMetadata, UseAssetMetadataReturn } from "./hooks/useAssetMetadata";
-export type { UseNetworkStatusArgs, NetworkStatus } from "./hooks/useNetworkStatus";
-export type {
-  UseTransactionHistoryOptions,
-  UseTransactionHistoryReturn,
-} from "./hooks/useTransactionHistory";
+
 export type { UseStellarOffersOptions, UseStellarOffersReturn } from "./hooks/useStellarOffers";
 export type { UseEffectsOptions, UseEffectsReturn } from "./hooks/useEffects";
 export { useOperations } from "./hooks/useOperations";
