@@ -53,6 +53,11 @@ export type {
 } from "./hooks/useStellarAccounts";
 export { useStellarBalance } from "./hooks/useStellarBalance";
 export { useSorobanContract } from "./hooks/useSorobanContract";
+export { useSorobanRead } from "./hooks/useSorobanRead";
+export type {
+  UseSorobanReadOptions,
+  UseSorobanReadReturn,
+} from "./hooks/useSorobanRead";
 export { useTransaction } from "./hooks/useTransaction";
 export type {
   UseTransactionOptions,

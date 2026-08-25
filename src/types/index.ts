@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-import type { Horizon, xdr } from "@stellar/stellar-sdk";
+import type { Horizon, xdr, Contract } from "@stellar/stellar-sdk";
 import type * as rpc from "@stellar/stellar-sdk/rpc";
 
 // ─── Network ──────────────────────────────────────────────────────────────────
@@ -517,6 +517,26 @@ export interface SorobanSimulationEstimate {
 
 export interface UseContractCallReturn<TResult = unknown>
   extends TransactionState<TResult> {
+  /** Instantiated Stellar SDK Contract instance for this contractId, or null if invalid */
+  contract: Contract | null;
+  /** Execute a read-only / simulate contract call for a given method */
+  read: (
+    method: string,
+    args?: unknown[],
+    overrides?: Partial<Omit<ContractCallOptions<TResult>, "contractId">>
+  ) => Promise<TResult | null>;
+  /** Execute a write contract call with signing and on-chain submission */
+  write: (
+    method: string,
+    args?: unknown[],
+    overrides?: Partial<Omit<ContractCallOptions<TResult>, "contractId">>
+  ) => Promise<TResult | null>;
+  /** Alias to write method */
+  invoke: (
+    method: string,
+    args?: unknown[],
+    overrides?: Partial<Omit<ContractCallOptions<TResult>, "contractId">>
+  ) => Promise<TResult | null>;
   /** Most recent raw simulation response captured by the hook, or `null`. */
   simulation: rpc.Api.SimulateTransactionResponse | null;
   /** Normalized fee/instruction estimate derived from the latest simulation. */

@@ -472,6 +472,17 @@
         "default": "./dist/hooks/useSorobanContract.js"
       }
     },
+    "./useSorobanRead": {
+      "types": "./dist/hooks/useSorobanRead.d.ts",
+      "import": {
+        "types": "./dist/hooks/useSorobanRead.d.mts",
+        "default": "./dist/hooks/useSorobanRead.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useSorobanRead.d.ts",
+        "default": "./dist/hooks/useSorobanRead.js"
+      }
+    },
     "./useSorobanServer": {
       "types": "./dist/hooks/useSorobanServer.d.ts",
       "import": {
