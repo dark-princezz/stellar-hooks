@@ -56,6 +56,15 @@ body:
       required: false
 
   - type: input
+    id: hook-name
+    attributes:
+      label: "Affected hook(s)"
+      description: "Which hook(s) are affected by this bug?"
+      placeholder: "e.g. useFreighter, usePayment, useSorobanContract"
+    validations:
+      required: true
+
+  - type: input
     id: version
     attributes:
       label: "stellar-hooks version"

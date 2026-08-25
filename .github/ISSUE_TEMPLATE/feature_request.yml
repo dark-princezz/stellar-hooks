@@ -50,6 +50,15 @@ body:
     validations:
       required: false
 
+  - type: input
+    id: hook-name
+    attributes:
+      label: "Related hook(s)"
+      description: "Which hook(s) would this feature affect or add?"
+      placeholder: "e.g. useFreighter, new hook: useAlbedo"
+    validations:
+      required: true
+
   - type: dropdown
     id: hook-category
     attributes:
@@ -57,6 +66,7 @@ body:
       multiple: false
       options:
         - Freighter / wallet interaction
+        - New wallet adapter (Albedo, xBull, Lobstr, etc.)
         - Stellar account / balance
         - Soroban / smart contracts
         - Transaction building / signing
