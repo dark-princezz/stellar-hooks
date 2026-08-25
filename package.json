@@ -417,6 +417,17 @@
         "default": "./dist/hooks/useOffers.js"
       }
     },
+    "./useOffer": {
+      "types": "./dist/hooks/useOffer.d.ts",
+      "import": {
+        "types": "./dist/hooks/useOffer.d.mts",
+        "default": "./dist/hooks/useOffer.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useOffer.d.ts",
+        "default": "./dist/hooks/useOffer.js"
+      }
+    },
     "./useOperations": {
       "types": "./dist/hooks/useOperations.d.ts",
       "import": {

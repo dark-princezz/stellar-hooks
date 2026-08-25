@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import type { Operation } from "@stellar/stellar-sdk";
 
@@ -231,6 +231,7 @@ describe("useMultiSig", () => {
     expect(result.current.thresholds).toBeNull();
     expect(result.current.meetsThreshold).toBe(false);
     expect(result.current.signatureWeight).toBe(0);
+    expect(result.current.signedBy).toEqual([]);
   });
 });
 

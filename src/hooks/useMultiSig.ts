@@ -55,6 +55,8 @@ export interface UseMultiSigReturn {
   meetsThreshold: boolean;
   /** Total weight of all current signatures against the signer entries. */
   signatureWeight: number;
+  /** List of signer public keys that have signed the current transaction. */
+  signedBy: string[];
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -111,6 +113,29 @@ function computeSignatureWeight(
     return totalWeight;
   } catch {
     return 0;
+  }
+}
+
+function getSignedBy(
+  xdr: string,
+  signers: SignerEntry[],
+  networkPassphrase: string
+): string[] {
+  try {
+    const tx = TransactionBuilder.fromXDR(xdr, networkPassphrase);
+    const signedKeys: string[] = [];
+    for (const sig of tx.signatures) {
+      const hint = sig.hint().toString("hex");
+      for (const s of signers) {
+        const keyHint = s.key.slice(-8).toLowerCase();
+        if (hint === keyHint && !signedKeys.includes(s.key)) {
+          signedKeys.push(s.key);
+        }
+      }
+    }
+    return signedKeys;
+  } catch {
+    return [];
   }
 }
 
@@ -256,9 +281,11 @@ export function useMultiSig(options: UseMultiSigOptions = {}): UseMultiSigReturn
     txReset();
   }, [txReset]);
 
+
   const currentXdr = unsignedXdr ?? "";
   const signatureWeight = computeSignatureWeight(currentXdr, signers, config.networkPassphrase);
   const meetsThreshold = thresholds !== null && signatureWeight >= thresholds.medium;
+  const signedBy = getSignedBy(currentXdr, signers, config.networkPassphrase);
 
   return {
     build,
@@ -277,5 +304,6 @@ export function useMultiSig(options: UseMultiSigOptions = {}): UseMultiSigReturn
     thresholds,
     meetsThreshold,
     signatureWeight,
+    signedBy,
   };
 }
