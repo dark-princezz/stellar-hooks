@@ -19,6 +19,8 @@ export interface UseTransactionHistoryReturn {
   fetchNextPage: () => void;
   /** Fetches the previous page of transactions (newer in desc order, older in asc order). */
   fetchPreviousPage: () => void;
+  /** Simple loadMore function that loads more transactions in the forward direction (alias for fetchNextPage). */
+  loadMore: () => void;
   /** Whether there are more transactions available in the forward direction. */
   hasNext: boolean;
   /** Whether there are more transactions available in the backward direction. */
@@ -27,6 +29,10 @@ export interface UseTransactionHistoryReturn {
   isLoading: boolean;
   /** An error object if the fetch fails. */
   error: Error | null;
+  /** Current cursor for the next page (useful for external cursor management). */
+  cursor: string | null;
+  /** Reset the transaction history to initial state. */
+  reset: () => void;
 }
 
 const DEFAULT_LIMIT = 10;
@@ -35,7 +41,7 @@ const DEFAULT_ORDER = 'desc';
 /**
  * `useTransactionHistory` is a hook that fetches a paginated list of transactions
  * for a given Stellar account from Horizon, with support for forward and backward
- * cursor-based pagination.
+ * cursor-based pagination. Includes loadMore for infinite scroll patterns.
  *
  * @param {string} publicKey - The public key of the account to fetch history for.
  * @param {UseTransactionHistoryOptions} [options] - Options for the query.
@@ -45,12 +51,16 @@ const DEFAULT_ORDER = 'desc';
  * ```tsx
  * const {
  *   transactions,
- *   fetchNextPage,
- *   fetchPreviousPage,
+ *   loadMore,
  *   hasNext,
- *   hasPrevious,
  *   isLoading,
+ *   reset,
  * } = useTransactionHistory('G...', { limit: 20, includeFailed: true });
+ *
+ * // For infinite scroll
+ * <button onClick={loadMore} disabled={!hasNext || isLoading}>
+ *   Load More
+ * </button>
  * ```
  */
 export function useTransactionHistory(
@@ -70,6 +80,7 @@ export function useTransactionHistory(
   const [prevCursor, setPrevCursor] = useState<string | undefined>(undefined);
   const [hasNext, setHasNext] = useState<boolean>(true);
   const [hasPrevious, setHasPrevious] = useState<boolean>(false);
+  const [resetKey, setResetKey] = useState(0);
 
   const fetchIdRef = useRef(0);
 
@@ -153,11 +164,12 @@ export function useTransactionHistory(
     setPrevCursor(undefined);
     setHasNext(true);
     setHasPrevious(false);
+    setError(null);
     fetchTransactions();
     return () => {
       fetchIdRef.current += 1;
     };
-  }, [fetchTransactions]);
+  }, [fetchTransactions, resetKey]);
 
   const fetchNextPage = useCallback(() => {
     if (!isLoading && hasNext && nextCursor) {
@@ -171,13 +183,34 @@ export function useTransactionHistory(
     }
   }, [isLoading, hasPrevious, prevCursor, fetchTransactions]);
 
+  const loadMore = useCallback(() => {
+    fetchNextPage();
+  }, [fetchNextPage]);
+
+  const reset = useCallback(() => {
+    // Cancel any in-flight request by incrementing the fetch ID
+    fetchIdRef.current += 1;
+    // Reset state to initial values
+    setTransactions([]);
+    setNextCursor(undefined);
+    setPrevCursor(undefined);
+    setHasNext(true);
+    setHasPrevious(false);
+    setError(null);
+    // Trigger a fresh fetch by incrementing the reset key
+    setResetKey(k => k + 1);
+  }, []);
+
   return {
     transactions,
     fetchNextPage,
     fetchPreviousPage,
+    loadMore,
     hasNext,
     hasPrevious,
     isLoading,
     error,
+    cursor: nextCursor ?? null,
+    reset,
   };
 }
