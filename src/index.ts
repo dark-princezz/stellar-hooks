@@ -77,6 +77,14 @@ export { useAssetMetadata } from "./hooks/useAssetMetadata";
 export { useStellarOffers } from "./hooks/useStellarOffers";
 export { useOffers } from "./hooks/useOffers";
 export type { UseOffersOptions, UseOffersReturn } from "./hooks/useOffers";
+export { useOffer } from "./hooks/useOffer";
+export type {
+  OfferAsset,
+  CreateOfferOptions,
+  CancelOfferOptions,
+  UseOfferHookOptions,
+  UseOfferReturn,
+} from "./hooks/useOffer";
 export { useNetworkConfig } from "./hooks/useNetworkConfig";
 export { useHorizonServer } from "./hooks/useHorizonServer";
 export { useEffects } from "./hooks/useEffects";
@@ -143,8 +151,12 @@ export type { UseAccountMergeOptions, UseAccountMergeReturn } from "./hooks/useA
 
 export {
   useClaimableBalances,
+  useClaimableBalance,
   useClaimBalance,
+  useClaimableBalanceClaim,
   useCreateClaimableBalance,
+  parsePredicate,
+  isClaimableNow,
 } from "./hooks/useClaimableBalance";
 export type {
   ClaimableBalanceRecord,
@@ -157,6 +169,8 @@ export type {
   UseClaimableBalancesReturn,
   UseCreateClaimableBalanceOptions,
   UseCreateClaimableBalanceReturn,
+  PredicateType,
+  ParsedPredicate,
 } from "./hooks/useClaimableBalance";
 
 export { useSorobanTokenBalance } from "./hooks/useSorobanTokenBalance";

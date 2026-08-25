@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file useClaimableBalance.test.ts
  * @description Unit tests for the useClaimableBalance hook.
  * @package stellar-hooks
@@ -257,3 +257,35 @@ describe("useCreateClaimableBalance", () => {
     ).rejects.toThrow("At least one claimant is required.");
   });
 });
+
+describe("useClaimableBalanceClaim & parsePredicate", () => {
+  it("useClaimableBalanceClaim is an alias for useClaimBalance", () => {
+    expect(useClaimableBalanceClaim).toBe(useClaimBalance);
+  });
+
+  it("parses unconditional, time-bound, and conditional predicates correctly", () => {
+    const { parsePredicate, isClaimableNow } = require("../hooks/useClaimableBalance");
+    
+    // Unconditional
+    const p1 = parsePredicate({ unconditional: true });
+    expect(p1.type).toBe("unconditional");
+    expect(p1.isClaimable).toBe(true);
+
+    // Abs before (future)
+    const futureDate = new Date(Date.now() + 100000).toISOString();
+    const p2 = parsePredicate({ abs_before: futureDate });
+    expect(p2.type).toBe("time-bound");
+    expect(p2.isClaimable).toBe(true);
+
+    // Abs before (past)
+    const pastDate = new Date(Date.now() - 100000).toISOString();
+    const p3 = parsePredicate({ abs_before: pastDate });
+    expect(p3.type).toBe("time-bound");
+    expect(p3.isClaimable).toBe(false);
+
+    // isClaimableNow helper
+    expect(isClaimableNow({ unconditional: true })).toBe(true);
+    expect(isClaimableNow({ abs_before: pastDate })).toBe(false);
+  });
+});
+

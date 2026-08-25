@@ -21,6 +21,115 @@ import { validatePublicKey } from "../utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+export type PredicateType =
+  | "unconditional"
+  | "time-bound"
+  | "conditional"
+  | "unknown";
+
+export interface ParsedPredicate {
+  type: PredicateType;
+  unconditional?: boolean;
+  absBefore?: string;
+  absBeforeEpoch?: number;
+  relBefore?: number;
+  and?: ParsedPredicate[];
+  or?: ParsedPredicate[];
+  not?: ParsedPredicate;
+  isClaimable: boolean;
+}
+
+export function parsePredicate(
+  pred: Record<string, unknown> | null | undefined,
+  nowUnixSeconds: number = Math.floor(Date.now() / 1000)
+): ParsedPredicate {
+  if (!pred) {
+    return { type: "unconditional", unconditional: true, isClaimable: true };
+  }
+
+  if (pred.unconditional === true) {
+    return { type: "unconditional", unconditional: true, isClaimable: true };
+  }
+
+  if (pred.abs_before !== undefined || pred.absBefore !== undefined) {
+    const val = String(pred.abs_before ?? pred.absBefore);
+    const dateEpoch = Math.floor(new Date(val).getTime() / 1000);
+    const isClaimable = !isNaN(dateEpoch) ? nowUnixSeconds < dateEpoch : true;
+    return {
+      type: "time-bound",
+      absBefore: val,
+      isClaimable,
+    };
+  }
+
+  if (pred.abs_before_epoch !== undefined || pred.absBeforeEpoch !== undefined) {
+    const epoch = Number(pred.abs_before_epoch ?? pred.absBeforeEpoch);
+    const isClaimable = !isNaN(epoch) ? nowUnixSeconds < epoch : true;
+    return {
+      type: "time-bound",
+      absBeforeEpoch: epoch,
+      isClaimable,
+    };
+  }
+
+  if (pred.rel_before !== undefined || pred.relBefore !== undefined) {
+    const relSec = Number(pred.rel_before ?? pred.relBefore);
+    return {
+      type: "time-bound",
+      relBefore: relSec,
+      isClaimable: true,
+    };
+  }
+
+  if (Array.isArray(pred.and)) {
+    const parsedAnd = pred.and.map((p) =>
+      parsePredicate(p as Record<string, unknown>, nowUnixSeconds)
+    );
+    const isClaimable = parsedAnd.every((p) => p.isClaimable);
+    return {
+      type: "conditional",
+      and: parsedAnd,
+      isClaimable,
+    };
+  }
+
+  if (Array.isArray(pred.or)) {
+    const parsedOr = pred.or.map((p) =>
+      parsePredicate(p as Record<string, unknown>, nowUnixSeconds)
+    );
+    const isClaimable = parsedOr.some((p) => p.isClaimable);
+    return {
+      type: "conditional",
+      or: parsedOr,
+      isClaimable,
+    };
+  }
+
+  if (pred.not && typeof pred.not === "object") {
+    const parsedNot = parsePredicate(
+      pred.not as Record<string, unknown>,
+      nowUnixSeconds
+    );
+    return {
+      type: "conditional",
+      not: parsedNot,
+      isClaimable: !parsedNot.isClaimable,
+    };
+  }
+
+  return { type: "unknown", isClaimable: true };
+}
+
+export function isClaimableNow(
+  pred: Record<string, unknown> | ParsedPredicate,
+  nowUnixSeconds?: number
+): boolean {
+  if ("type" in pred && typeof pred.type === "string" && "isClaimable" in pred) {
+    return (pred as ParsedPredicate).isClaimable;
+  }
+  return parsePredicate(pred as Record<string, unknown>, nowUnixSeconds).isClaimable;
+}
+
 export interface ClaimableBalanceRecord {
   id: string;
   asset: string;
@@ -30,7 +139,10 @@ export interface ClaimableBalanceRecord {
   claimants: Array<{
     destination: string;
     predicate: Record<string, unknown>;
+    parsedPredicate?: ParsedPredicate;
+    isClaimable?: boolean;
   }>;
+  isClaimableNow?: boolean;
 }
 
 export interface ClaimableBalancesState {
@@ -95,6 +207,7 @@ export type UseCreateClaimableBalanceOptions = UseClaimBalanceOptions;
  */
 export interface UseClaimableBalancesReturn extends ClaimableBalancesState {
   refetch: () => Promise<void>;
+  claim: (balanceId: string) => Promise<void>;
 }
 
 /**
@@ -162,7 +275,7 @@ const listInitial: ClaimableBalancesState = {
  *
  * @example
  * ```tsx
- * const { balances, isLoading, refetch } = useClaimableBalances(publicKey);
+ * const { balances, isLoading, refetch, claim } = useClaimableBalances(publicKey);
  * ```
  */
 export function useClaimableBalances(
@@ -170,6 +283,7 @@ export function useClaimableBalances(
 ): UseClaimableBalancesReturn {
   const { config } = useStellarContext();
   const [state, dispatch] = useReducer(listReducer, listInitial);
+  const { claim } = useClaimBalance();
 
   const refetch = useCallback(async () => {
     if (!publicKey) return;
@@ -185,17 +299,30 @@ export function useClaimableBalances(
         .call();
 
       const balances: ClaimableBalanceRecord[] = response.records.map(
-        (r: Horizon.ServerApi.ClaimableBalanceRecord) => ({
-          id: r.id,
-          asset: r.asset,
-          amount: r.amount,
-          sponsor: r.sponsor ?? "",
-          lastModifiedLedger: r.last_modified_ledger,
-          claimants: r.claimants.map((c) => ({
-            destination: c.destination,
-            predicate: c.predicate as Record<string, unknown>,
-          })),
-        })
+        (r: Horizon.ServerApi.ClaimableBalanceRecord) => {
+          const claimants = r.claimants.map((c) => {
+            const rawPred = c.predicate as Record<string, unknown>;
+            const parsedPredicate = parsePredicate(rawPred);
+            return {
+              destination: c.destination,
+              predicate: rawPred,
+              parsedPredicate,
+              isClaimable: parsedPredicate.isClaimable,
+            };
+          });
+          const userClaimant = claimants.find((c) => c.destination === publicKey);
+          const isClaimable = userClaimant ? userClaimant.isClaimable : claimants.some((c) => c.isClaimable);
+
+          return {
+            id: r.id,
+            asset: r.asset,
+            amount: r.amount,
+            sponsor: r.sponsor ?? "",
+            lastModifiedLedger: r.last_modified_ledger,
+            claimants,
+            isClaimableNow: isClaimable,
+          };
+        }
       );
 
       dispatch({ type: "SUCCESS", payload: balances });
@@ -209,7 +336,7 @@ export function useClaimableBalances(
     }
   }, [publicKey, config.horizonUrl]);
 
-  return { ...state, refetch };
+  return { ...state, refetch, claim };
 }
 
 // ─── useClaimBalance ──────────────────────────────────────────────────────────
@@ -444,3 +571,10 @@ export function useCreateClaimableBalance(
     isError: txState.isError,
   };
 }
+
+/** Helper alias for claiming a claimable balance */
+export const useClaimableBalanceClaim = useClaimBalance;
+
+/** Alias for useClaimableBalances */
+export const useClaimableBalance = useClaimableBalances;
+
