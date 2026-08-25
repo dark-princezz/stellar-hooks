@@ -70,7 +70,8 @@ export type {
   UseMultiOperationTransactionOptions,
   UseMultiOperationTransactionReturn,
 } from "./hooks/useMultiOperationTransaction";
-export { useLedgerEntry } from "./hooks/useLedgerEntry";
+export { useLedgerEntry, useSuspenseLedgerEntry } from "./hooks/useLedgerEntry";
+export { useLedgerEntries, useSuspenseLedgerEntries } from "./hooks/useLedgerEntries";
 export { useStellarToml } from "./hooks/useStellarToml";
 export { useAssetMetadata } from "./hooks/useAssetMetadata";
 export { useStellarOffers } from "./hooks/useStellarOffers";
@@ -224,6 +225,8 @@ export type {
   UseContractCallReturn,
   // Ledger
   LedgerEntryState,
+} from "./types";
+export type { UseLedgerEntriesOptions, LedgerEntriesState } from "./hooks/useLedgerEntries";
   // Provider
   StellarProviderProps,
   StellarHooksProviderProps,
@@ -273,7 +276,8 @@ export {
 } from "./wallets";
 
 // Utilities
-export { parseAccountResponse, getCache, setCache } from "./utils";
+export { parseAccountResponse, getCache, setCache, getSandboxUrls, HOOK_SANDBOXES } from "./utils";
+export type { HookSandboxInfo } from "./utils";
 export { decodeXdr, formatXdrResult, detectXdrType } from "./utils/xdr";
 export type { XdrDecodeResult } from "./utils/xdr";
 

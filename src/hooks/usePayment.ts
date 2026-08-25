@@ -15,8 +15,10 @@ import {
 } from "@stellar/stellar-sdk";
 import { useStellarContext } from "../context";
 import { useTransactionCore } from "./useTransactionCore";
+import type { WalletId } from "../wallets/types";
+import { useWallet } from "./useWallet";
 import { useFreighter } from "./useFreighter";
-import type { TransactionStatus, StellarPublicKey, StellarAssetIssuer, StellarTransactionError } from "../types";
+import type { TransactionStatus, StellarPublicKey, StellarAssetIssuer, StellarTransactionError, SignTransactionOptions } from "../types";
 import { unsafeAsXdrString } from "../types";
 import { validatePublicKey } from "../utils";
 
@@ -44,6 +46,8 @@ export interface UsePaymentOptions {
   fee?: number;
   /** Polling timeout in seconds. Default: 60 */
   timeoutSeconds?: number;
+  /** Optional wallet ID to sign with (e.g. "albedo", "freighter", "xbull"). Default: active wallet or freighter */
+  walletId?: WalletId;
   /** Callback fired when the transaction is successfully confirmed. */
   onSuccess?: (hash: string) => void;
   /** Callback fired when the transaction fails or an error occurs. */
@@ -87,7 +91,7 @@ export interface UsePaymentReturn {
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 /**
- * Builds a classic Stellar payment operation, signs it via Freighter,
+ * Builds a classic Stellar payment operation, signs it via connected wallet (Freighter, Albedo, etc.),
  * and submits it through Horizon with polling for confirmation.
  *
  * Wraps `useTransaction({ mode: "classic" })` for submission and polling.
@@ -99,6 +103,7 @@ export interface UsePaymentReturn {
  *   asset: { type: "native" },
  *   amount: "10",
  *   memo: "Thanks!",
+ *   walletId: "albedo",
  * });
  *
  * return <button onClick={submit}>Send XLM</button>;
@@ -112,12 +117,17 @@ export function usePayment(options: UsePaymentOptions): UsePaymentReturn {
     memo,
     fee = 100,
     timeoutSeconds = 60,
+    walletId,
     onSuccess,
     onError,
   } = options;
 
   const { config } = useStellarContext();
-  const { signTransaction, publicKey } = useFreighter();
+  const freighter = useFreighter();
+  const wallet = useWallet(walletId ? { walletId } : undefined);
+
+  const publicKey = wallet.publicKey ?? freighter.publicKey;
+
   const { submit: submitXdr, reset, ...txState } = useTransactionCore({
     mode: "classic",
     timeoutSeconds,
@@ -128,7 +138,7 @@ export function usePayment(options: UsePaymentOptions): UsePaymentReturn {
 
   const submit = useCallback(async () => {
     if (!publicKey) {
-      throw new Error("Freighter is not connected. Call connect() first.");
+      throw new Error("Wallet is not connected. Call connect() first.");
     }
 
     validatePublicKey(destination, "destination");
@@ -168,13 +178,20 @@ export function usePayment(options: UsePaymentOptions): UsePaymentReturn {
     const builtTx = builder.build();
     const builtXdr = builtTx.toXDR();
 
-    // 5. Sign via Freighter
-    const signedXdr = await signTransaction(unsafeAsXdrString(builtXdr), {
-      networkPassphrase: config.networkPassphrase,
-    });
+    // 5. Sign via active wallet (Albedo / Freighter / xBull / etc)
+    let signedXdr: string;
+    if (wallet.isConnected) {
+      signedXdr = await wallet.signTransaction(builtXdr, {
+        networkPassphrase: config.networkPassphrase,
+      });
+    } else {
+      signedXdr = await freighter.signTransaction(unsafeAsXdrString(builtXdr), {
+        networkPassphrase: config.networkPassphrase,
+      });
+    }
 
     await submitXdr(signedXdr);
-  }, [destination, asset, amount, memo, fee, timeoutSeconds, config, publicKey, signTransaction, submitXdr]);
+  }, [destination, asset, amount, memo, fee, timeoutSeconds, config, publicKey, wallet, freighter, submitXdr]);
 
   return {
     ...txState,

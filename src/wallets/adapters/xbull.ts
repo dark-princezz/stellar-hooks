@@ -6,47 +6,41 @@
  */
 
 import type { WalletAdapter, WalletId } from "../types";
-
-interface XBullSDK {
-  connect(): Promise<string>;
-  sign(opts: { xdr: string; network?: string }): Promise<string | { signedXdr: string }>;
-}
-
-function getXBullSDK(): XBullSDK | undefined {
-  return typeof window !== "undefined"
-    ? (window as unknown as { xBullSDK?: XBullSDK }).xBullSDK
-    : undefined;
-}
+import { createXBullAdapter } from "../xbull";
 
 export class XBullWalletAdapter implements WalletAdapter {
   id: WalletId = "xbull";
   name = "xBull";
+  private adapter: WalletAdapter;
+
+  constructor() {
+    this.adapter = createXBullAdapter();
+  }
 
   isInstalled(): boolean {
-    return getXBullSDK() !== undefined;
+    return this.adapter.isInstalled();
   }
 
   async connect(): Promise<string> {
-    const xbull = getXBullSDK();
-    if (!xbull) {
-      throw new Error("xBull extension is not installed.");
-    }
-    return await xbull.connect();
+    return this.adapter.connect();
   }
 
   disconnect(): void {
-    // Stateless disconnect
+    this.adapter.disconnect();
   }
 
   async signTransaction(xdr: string, opts?: { networkPassphrase?: string }): Promise<string> {
-    const xbull = getXBullSDK();
-    if (!xbull) {
-      throw new Error("xBull extension is not installed.");
-    }
-    const signed = await xbull.sign({
-      xdr,
-      ...(opts?.networkPassphrase && { network: opts.networkPassphrase }),
-    });
-    return typeof signed === "string" ? signed : signed.signedXdr;
+    return this.adapter.signTransaction(xdr, opts);
+  }
+
+  async signMessage(message: string, opts?: { accountToSign?: string }): Promise<string> {
+    if (!this.adapter.signMessage) throw new Error("signMessage is not supported by xBull adapter");
+    return this.adapter.signMessage(message, opts);
+  }
+
+  async signAuthEntry(entryPreimageXdr: string): Promise<string> {
+    if (!this.adapter.signAuthEntry) throw new Error("signAuthEntry is not supported by xBull adapter");
+    return this.adapter.signAuthEntry(entryPreimageXdr);
   }
 }
+

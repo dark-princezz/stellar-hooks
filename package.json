@@ -296,6 +296,17 @@
         "default": "./dist/hooks/useLedgerEntry.js"
       }
     },
+    "./useLedgerEntries": {
+      "types": "./dist/hooks/useLedgerEntries.d.ts",
+      "import": {
+        "types": "./dist/hooks/useLedgerEntries.d.mts",
+        "default": "./dist/hooks/useLedgerEntries.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useLedgerEntries.d.ts",
+        "default": "./dist/hooks/useLedgerEntries.js"
+      }
+    },
     "./useLiquidityPool": {
       "types": "./dist/hooks/useLiquidityPool.d.ts",
       "import": {
