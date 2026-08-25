@@ -69,6 +69,11 @@ export { useAssetMetadata } from "./useAssetMetadata";
 export type { UseAssetMetadataReturn } from "./useAssetMetadata";
 
 export { useSorobanContract } from "./useSorobanContract";
+export { useSorobanRead } from "./useSorobanRead";
+export type {
+  UseSorobanReadOptions,
+  UseSorobanReadReturn,
+} from "./useSorobanRead";
 export type {
   ContractCallOptions,
   SorobanSimulationEstimate,

@@ -5,7 +5,7 @@
  * @license MIT
  */
 
-import { useCallback, useEffect, useReducer, useRef } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import {
   Contract,
   TransactionBuilder,
@@ -131,30 +131,21 @@ function createReducer<TResult>() {
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 /**
- * Invoke a Soroban smart-contract method. Handles simulation, auth, submission,
- * and status polling in one hook.
+ * Wrap contract instantiation + invocation (read and write) behind a single hook,
+ * similar to wagmi's useContract.
+ * Handles simulation, auth, submission, and status polling in one hook.
  *
  * @returns {UseContractCallReturn}
  * @example
  * ```tsx
- * const { call, query, status, result } = useSorobanContract(
- *   "CABC...XYZ",
- *   {
- *     method: "increment",
- *     args: [nativeToScVal(1, { type: "u32" })],
- *   }
- * );
- *
- * return (
- *   <button onClick={() => call()} disabled={status !== "idle" && status !== "error"}>
- *     {status === "success" ? `Done! Hash: ${hash}` : "Increment"}
- *   </button>
- * );
+ * const { contract, read, write } = useSorobanContract(contractId);
+ * const balance = await read("balance", [userAddress]);
+ * const txHash = await write("transfer", [to, amount]);
  * ```
  */
 export function useSorobanContract<TResult = unknown>(
   contractId: StellarContractId,
-  options: Omit<ContractCallOptions<TResult>, "contractId">
+  options: Partial<Omit<ContractCallOptions<TResult>, "contractId">> = {}
 ): UseContractCallReturn<TResult> {
   const { config } = useStellarContext();
   const { publicKey, networkPassphrase, signTransaction } = useFreighter();
@@ -516,10 +507,49 @@ export function useSorobanContract<TResult = unknown>(
     [baseParse, simulate]
   );
 
+    const contract = useMemo(() => {
+    if (!contractId) return null;
+    try {
+      return new Contract(contractId);
+    } catch {
+      return null;
+    }
+  }, [contractId]);
+
+  const read = useCallback(
+    async (
+      method: string,
+      args: unknown[] = [],
+      overrides?: Partial<Omit<ContractCallOptions<TResult>, "contractId">>
+    ): Promise<TResult | null> => {
+      const scArgs = args.map((a) => (a instanceof xdr.ScVal ? a : nativeToScVal(a)));
+      return query({ method, args: scArgs, ...overrides });
+    },
+    [query]
+  );
+
+  const write = useCallback(
+    async (
+      method: string,
+      args: unknown[] = [],
+      overrides?: Partial<Omit<ContractCallOptions<TResult>, "contractId">>
+    ): Promise<TResult | null> => {
+      const scArgs = args.map((a) => (a instanceof xdr.ScVal ? a : nativeToScVal(a)));
+      return call({ method, args: scArgs, ...overrides });
+    },
+    [call]
+  );
+
+  const invoke = write;
+
   const reset = useCallback(() => dispatch({ type: "RESET" }), []);
 
   return {
     ...state,
+    contract,
+    read,
+    write,
+    invoke,
     isLoading: !["idle", "success", "error"].includes(state.status),
     isSuccess: state.status === "success",
     isError: state.status === "error",

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * @file useTrustline.test.ts
  * @description Unit tests for the useTrustline hook.
  * @package stellar-hooks
@@ -74,6 +74,29 @@ vi.mock("../hooks/useFreighter", () => ({
   useFreighter: () => ({
     publicKey: "GPUBLICKEY",
     signTransaction: mockSignTransaction,
+  }),
+}));
+
+vi.mock("../hooks/useStellarAccount", () => ({
+  useStellarAccount: () => ({
+    data: {
+      accountId: "GPUBLICKEY",
+      balances: [
+        {
+          assetType: "credit_alphanum4",
+          assetCode: "USDC",
+          assetIssuer: "GISSUER...",
+          balance: "100.0000000",
+          balanceFloat: 100,
+          buyingLiabilities: "0",
+          sellingLiabilities: "0",
+          isNative: false,
+        },
+      ],
+    },
+    isLoading: false,
+    error: null,
+    refetch: vi.fn(),
   }),
 }));
 
