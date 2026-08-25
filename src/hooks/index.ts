@@ -254,3 +254,17 @@ export type {
   UseWebAuthOptions,
   UseWebAuthReturn,
 } from "./useWebAuth";
+
+export { useHorizonStream } from "./useHorizonStream";
+export type {
+  HorizonStreamResource,
+  UseHorizonStreamOptions,
+  UseHorizonStreamReturn,
+} from "./useHorizonStream";
+
+export { usePaginatedOperations, decodeOperationRecord } from "./usePaginatedOperations";
+export type {
+  FriendlyOperation,
+  UsePaginatedOperationsOptions,
+  UsePaginatedOperationsReturn,
+} from "./usePaginatedOperations";

@@ -713,6 +713,28 @@
         "types": "./dist/hooks/useXdrDecoder.d.ts",
         "default": "./dist/hooks/useXdrDecoder.js"
       }
+    },
+    "./useHorizonStream": {
+      "types": "./dist/hooks/useHorizonStream.d.ts",
+      "import": {
+        "types": "./dist/hooks/useHorizonStream.d.mts",
+        "default": "./dist/hooks/useHorizonStream.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useHorizonStream.d.ts",
+        "default": "./dist/hooks/useHorizonStream.js"
+      }
+    },
+    "./usePaginatedOperations": {
+      "types": "./dist/hooks/usePaginatedOperations.d.ts",
+      "import": {
+        "types": "./dist/hooks/usePaginatedOperations.d.mts",
+        "default": "./dist/hooks/usePaginatedOperations.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/usePaginatedOperations.d.ts",
+        "default": "./dist/hooks/usePaginatedOperations.js"
+      }
     }
   },
   "files": [
