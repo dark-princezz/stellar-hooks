@@ -130,3 +130,4 @@ export function setCache<T>(key: string, data: T, ttl: number): void {
 
 export * from './xdr';
 export * from './errors';
+export * from './sandboxes';

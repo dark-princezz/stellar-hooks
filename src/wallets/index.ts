@@ -1,8 +1,8 @@
 export type { WalletId, WalletAdapter } from "./types";
 export { createFreighterAdapter, isFreighterInstalled } from "./freighter";
 export { createLobstrAdapter } from "./lobstr";
-export { createXBullAdapter } from "./xbull";
-export { createAlbedoAdapter } from "./albedo";
+export { createXBullAdapter, isXBullInstalled } from "./xbull";
+export { createAlbedoAdapter, isAlbedoInstalled } from "./albedo";
 export { createRabetAdapter } from "./rabet";
 
 import type { WalletAdapter } from "./types";

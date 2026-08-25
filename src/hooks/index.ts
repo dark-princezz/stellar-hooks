@@ -91,6 +91,8 @@ export type {
 
 export { useLedgerEntry, useSuspenseLedgerEntry } from "./useLedgerEntry";
 export type { UseLedgerEntryOptions } from "./useLedgerEntry";
+export { useLedgerEntries, useSuspenseLedgerEntries } from "./useLedgerEntries";
+export type { UseLedgerEntriesOptions, LedgerEntriesState } from "./useLedgerEntries";
 
 export { useContractStorage } from "./useContractStorage";
 export type {

@@ -12,11 +12,19 @@ export function createAlbedoAdapter(): WalletAdapter {
     },
 
     async connect(): Promise<string> {
-      const res = await albedo.publicKey({});
-      if (!res.pubkey) {
-        throw new Error("No public key returned from Albedo");
+      try {
+        const res = await albedo.publicKey({});
+        if (!res.pubkey) {
+          throw new Error("No public key returned from Albedo");
+        }
+        return res.pubkey;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (isUserRejectionMessage(msg)) {
+          throw new UserRejectedError(msg, { cause: err, walletId: "albedo", operation: "connect" });
+        }
+        throw err;
       }
-      return res.pubkey;
     },
 
     disconnect(): void {
@@ -63,5 +71,15 @@ export function createAlbedoAdapter(): WalletAdapter {
       }
       return res.message_signature;
     },
+
+    async signAuthEntry(entryPreimageXdr: string): Promise<string> {
+      // Albedo signs auth entries via tx or custom intent when supported
+      return this.signTransaction(entryPreimageXdr);
+    },
   };
 }
+
+export async function isAlbedoInstalled(): Promise<boolean> {
+  return true;
+}
+
