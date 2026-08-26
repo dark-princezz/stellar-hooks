@@ -21,7 +21,26 @@ Install the project dependencies using your preferred package manager.
 npm install
 ```
 
-### 3. Create a Feature Branch
+**Prerequisites:**
+- Node.js 18+ (check with `node --version`)
+- npm 9+ or pnpm 8+ (check with `npm --version`)
+
+### 3. Set Up Git Remotes
+
+Add the upstream repository to keep your fork in sync:
+
+```bash
+git remote add upstream https://github.com/dark-princezz/stellar-hooks.git
+```
+
+To sync with upstream later:
+```bash
+git fetch upstream
+git checkout main
+git merge upstream/main
+```
+
+### 4. Create a Feature Branch
 
 Create a new branch from the latest `main` using a descriptive name.
 
@@ -39,8 +58,13 @@ git checkout -b fix/issue-<number>-short-description
 | Feature | `feat/` | `feat/add-use-debounce-hook` |
 | Documentation | `docs/` | `docs/update-readme-quickstart` |
 | Chore / tooling | `chore/` | `chore/update-dependencies` |
+| Hotfix | `hotfix/` | `hotfix/critical-security-fix` |
 
-Keep branch names short but descriptive. Reference the issue number when applicable.
+**Rules:**
+- Use lowercase letters, numbers, and hyphens only
+- Keep branch names under 50 characters
+- Always reference the issue number when applicable
+- Use kebab-case for descriptions (e.g., `fix-auth-validation`, not `fix_auth_validation`)
 
 ## Development
 
@@ -52,8 +76,17 @@ Before submitting your changes, ensure the project builds successfully and all t
 npm test                    # run all unit/integration (mocked) tests
 npm run test:watch          # watch mode
 npm run test:types          # type definition tests (tsd)
+npm run test:tree-shaking   # verify tree-shaking works correctly
 npm run test:futurenet      # opt-in live Futurenet suite (network required)
+npm run test:e2e            # run Playwright e2e tests (requires setup)
 ```
+
+**Test Overview:**
+- Unit tests use Vitest with mocked wallet APIs
+- Type tests use tsd to verify type definitions
+- Tree-shaking tests verify individual hook imports don't pull in unrelated code
+- Futurenet tests are opt-in and require network access
+- E2E tests use Playwright with real Freighter extension (see `tests/e2e/README.md`)
 
 Live Futurenet tests are excluded from `npm test` so default CI stays offline-friendly.
 See [`tests/integration/futurenet/README.md`](tests/integration/futurenet/README.md).
