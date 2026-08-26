@@ -289,3 +289,21 @@ export type {
   UsePaginatedOperationsOptions,
   UsePaginatedOperationsReturn,
 } from "./usePaginatedOperations";
+
+export { useSorobanContractSpec } from "./useSorobanContractSpec";
+export type {
+  ContractSpec,
+  ContractSpecEntry,
+  ContractSpecEvent,
+  UseSorobanContractSpecReturn,
+} from "./useSorobanContractSpec";
+
+export { useSep24 } from "./useSep24";
+export type {
+  Sep24Transaction,
+  Sep24TransactionStatus,
+  Sep24DepositParams,
+  Sep24WithdrawParams,
+  UseSep24Options,
+  UseSep24Return,
+} from "./useSep24";
