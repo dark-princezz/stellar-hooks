@@ -1,7 +1,17 @@
+/**
+ * @file useStellarQuery.ts
+ * @description Central polling engine for read-only Stellar/Horizon queries.
+ *   Supports optional in-memory TTL caching via `cacheKey` / `cacheTtl` to
+ *   avoid redundant network calls across hook instances.
+ * @package stellar-hooks
+ * @license MIT
+ */
+
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { useHookActivityDebug } from "../devtools/useHookActivityDebug";
 import { useStellarContext } from "../context";
 import { StellarHookError } from "../utils/errors";
+import { getCache, setCache } from "../utils";
 
 export interface UseStellarQueryOptions<T> {
   enabled?: boolean;
@@ -17,6 +27,16 @@ export interface UseStellarQueryOptions<T> {
    * Default: 0 (no debounce — backward compatible).
    */
   debounceDelay?: number;
+   * When provided, the query result is stored in (and retrieved from) the
+   * shared module-level in-memory cache under this key.  If absent, caching
+   * is disabled for this instance (backward-compatible default).
+   */
+  cacheKey?: string;
+  /**
+   * Time-to-live for the cached entry in milliseconds.
+   * Defaults to `5000` (5 seconds) when `cacheKey` is set.
+   */
+  cacheTtl?: number;
 }
 
 export interface UseStellarQueryResult<T> {
@@ -79,6 +99,9 @@ function reducer<T>(state: QueryState<T>, action: QueryAction<T>): QueryState<T>
   }
 }
 
+/** Default TTL used when `cacheKey` is provided but `cacheTtl` is not. */
+const DEFAULT_CACHE_TTL = 5000;
+
 export function useStellarQuery<T>(
   fetcher: (signal?: AbortSignal) => Promise<T | null>,
   options: UseStellarQueryOptions<T> = {}
@@ -90,6 +113,8 @@ export function useStellarQuery<T>(
     initialData = null,
     debugLabel = "useStellarQuery",
     debounceDelay = 0,
+    cacheKey,
+    cacheTtl = DEFAULT_CACHE_TTL,
   } = options;
 
   const { networkEpoch } = useStellarContext();
@@ -112,6 +137,11 @@ export function useStellarQuery<T>(
   const networkEpochRef = useRef(networkEpoch);
   const debounceDelayRef = useRef(debounceDelay);
 
+  // Keep option refs up-to-date so the callback always sees the latest values
+  // without needing to be re-created.
+  const cacheKeyRef = useRef(cacheKey);
+  const cacheTtlRef = useRef(cacheTtl);
+
   useEffect(() => {
     stateRef.current = state;
   }, [state]);
@@ -131,11 +161,30 @@ export function useStellarQuery<T>(
   useEffect(() => {
     debounceDelayRef.current = debounceDelay;
   }, [debounceDelay]);
+    cacheKeyRef.current = cacheKey;
+  }, [cacheKey]);
+
+  useEffect(() => {
+    cacheTtlRef.current = cacheTtl;
+  }, [cacheTtl]);
 
   const refetch = useCallback(async () => {
     if (!enabled) return;
     if (deduplicate && isFetchingRef.current) return;
 
+    const key = cacheKeyRef.current;
+    const ttl = cacheTtlRef.current;
+
+    // ── Cache hit: dispatch immediately, skip network call ──────────────────
+    if (key) {
+      const cached = getCache<T>(key);
+      if (cached !== null) {
+        dispatch({ type: "FETCH_SUCCESS", payload: cached });
+        return;
+      }
+    }
+
+    // ── Cache miss (or caching disabled): perform the network fetch ─────────
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -150,6 +199,12 @@ export function useStellarQuery<T>(
     try {
       const result = await fetcherRef.current(signal);
       if (epoch !== networkEpochRef.current) return;
+
+      // Populate the cache on success when a key is configured.
+      if (key && result !== null) {
+        setCache<T>(key, result, ttl);
+      }
+
       dispatch({ type: "FETCH_SUCCESS", payload: result });
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;

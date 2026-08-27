@@ -1,0 +1,408 @@
+/* ── Reset & base ── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* ── App shell ── */
+.app {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+header {
+  text-align: center;
+  color: white;
+  margin-bottom: 30px;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+header p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+/* ── Layout ── */
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 520px;
+}
+
+.card h2 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.card p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* ── Button base ── */
+.button {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.button:hover {
+  background: #5568d3;
+}
+
+.button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.button.secondary {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.button.secondary:hover {
+  background: #e0e0e0;
+}
+
+.button.primary {
+  background: #667eea;
+  width: 100%;
+}
+
+.button.primary:hover:not(:disabled) {
+  background: #5568d3;
+}
+
+/* ── Header row ── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.header h2 {
+  margin: 0;
+}
+
+/* ── Balance / info strip ── */
+.balance {
+  background: #f8f9fa;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.balance .label {
+  color: #666;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.balance .value {
+  color: #333;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.mono {
+  font-family: monospace;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 280px;
+}
+
+/* ── Form ── */
+.form {
+  margin-bottom: 25px;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.field input,
+.select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+  background: white;
+}
+
+.field input:focus,
+.select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.select:disabled {
+  background: #f8f9fa;
+  color: #888;
+  cursor: not-allowed;
+}
+
+/* ── Flip row ── */
+.flip-row {
+  display: flex;
+  justify-content: center;
+  margin: -6px 0 10px;
+}
+
+.flip-btn {
+  padding: 8px 18px;
+  font-size: 14px;
+}
+
+/* ── Estimated receive box ── */
+.estimate-box {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+}
+
+.estimate-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+}
+
+.estimate-asset {
+  font-size: 14px;
+  color: #666;
+  font-weight: 600;
+}
+
+.estimate-placeholder {
+  color: #aaa;
+  font-size: 15px;
+}
+
+/* ── Slippage selector ── */
+.slippage-row {
+  display: flex;
+  gap: 8px;
+}
+
+.slippage-btn {
+  flex: 1;
+  padding: 10px 0;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.slippage-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.slippage-btn.active {
+  border-color: #667eea;
+  background: #667eea;
+  color: white;
+}
+
+/* ── Minimum received row ── */
+.dest-min-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f0f4ff;
+  border: 1px solid #d0d9ff;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+.dest-min-label {
+  color: #555;
+  font-weight: 500;
+}
+
+.dest-min-value {
+  color: #333;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+/* ── Status banner ── */
+.status-banner {
+  padding: 12px 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 15px;
+}
+
+.status-submitting {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffc107;
+}
+
+.status-polling {
+  background: #cce5ff;
+  color: #004085;
+  border: 1px solid #b8daff;
+}
+
+.status-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.status-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* ── Success / Error blocks ── */
+.success {
+  background: #d4edda;
+  color: #155724;
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.success p {
+  color: #155724;
+  margin: 5px 0;
+}
+
+.hash {
+  font-family: monospace;
+  font-size: 12px;
+  word-break: break-all;
+  margin-top: 6px;
+}
+
+.explorer-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: #155724;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+.explorer-link:hover {
+  color: #0d3b17;
+}
+
+.error {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.error p {
+  color: #721c24;
+  margin: 5px 0;
+}
+
+/* ── Swap / Reset buttons ── */
+.swap-btn {
+  margin-top: 10px;
+}
+
+.reset-btn {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* ── Info footer ── */
+.info {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 20px;
+  margin-top: 5px;
+}
+
+.info p {
+  color: #666;
+  font-size: 13px;
+  margin: 5px 0;
+  line-height: 1.5;
+}
+
+.info strong {
+  color: #444;
+}
+
+.network {
+  font-weight: 600;
+  color: #555 !important;
+}
+
+/* ── Optional label ── */
+.optional {
+  font-weight: 400;
+  font-size: 12px;
+  color: #999;
+}
