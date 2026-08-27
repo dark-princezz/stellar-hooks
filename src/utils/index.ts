@@ -128,6 +128,25 @@ export function setCache<T>(key: string, data: T, ttl: number): void {
   cache.set(key, { data, expires: Date.now() + ttl });
 }
 
+/**
+ * Clears a specific cache entry by key, or clears all entries if no key is given.
+ *
+ * @param key - The cache key to clear. If omitted, the entire cache is cleared.
+ *
+ * @example
+ * ```ts
+ * clearCache("account:GAAZI4..."); // clear one entry
+ * clearCache();                     // clear everything
+ * ```
+ */
+export function clearCache(key?: string): void {
+  if (key !== undefined) {
+    cache.delete(key);
+  } else {
+    cache.clear();
+  }
+}
+
 export * from './xdr';
 export * from './errors';
 export * from './sandboxes';
