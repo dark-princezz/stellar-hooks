@@ -1,0 +1,1 @@
+Solution proposal for Add bundle-size CI check
