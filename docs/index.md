@@ -77,9 +77,3 @@ export function App() {
 - **Metadata Resolution** — Fetch stellar.toml files and resolve asset metadata
 - **React Query & SWR Adapters** — Drop-in replacements for existing data-fetching setups
 
-## Next Steps
-
-- [Read the Getting Started guide](/getting-started)
-- [Browse the API reference](/api/provider)
-- [Learn the error handling patterns](/guides/error-handling)
-- [Check out the migration guide](/guides/migration-guide)
