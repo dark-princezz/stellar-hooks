@@ -25,6 +25,18 @@ export interface UseStellarAccountOptions {
    * Set to false to allow overlapping requests.
    */
   deduplicate?: boolean;
+  /**
+   * When provided, account data is stored in (and served from) the shared
+   * module-level in-memory cache under this key.  Absent = caching disabled.
+   *
+   * @example "account:GAAZI4..."
+   */
+  cacheKey?: string;
+  /**
+   * Time-to-live for the cached entry in milliseconds.
+   * Only meaningful when `cacheKey` is set. Defaults to 5000 ms.
+   */
+  cacheTtl?: number;
 }
 
 export interface UseStellarAccountReturn {
@@ -64,7 +76,7 @@ export function useStellarAccount(
   publicKey: StellarPublicKey | null | undefined,
   options: UseStellarAccountOptions = {},
 ): UseStellarAccountReturn {
-  const { enabled = true, refetchInterval = 0, deduplicate = true } = options;
+  const { enabled = true, refetchInterval = 0, deduplicate = true, cacheKey, cacheTtl } = options;
   const { config } = useStellarContext();
 
   const fetchAccount = useCallback(async (_signal?: AbortSignal): Promise<StellarAccountData | null> => {
@@ -81,6 +93,8 @@ export function useStellarAccount(
     deduplicate,
     initialData: null,
     debugLabel: "useStellarAccount",
+    cacheKey,
+    cacheTtl,
   });
 
   return useMemo(
