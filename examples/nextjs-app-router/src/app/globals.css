@@ -1,0 +1,29 @@
+:root {
+  --background: #0b0e14;
+  --foreground: #e6e8ef;
+  --muted: #9aa1b2;
+  --border: #2a2f3a;
+  --surface: #141924;
+  --primary: #4f7cff;
+  --primary-hover: #3a66e0;
+  --success: #3ddc97;
+  --error: #ff6b6b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+}
