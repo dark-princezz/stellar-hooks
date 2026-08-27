@@ -12,8 +12,8 @@ import {
   BASE_FEE,
   xdr,
   nativeToScVal,
-} from "@stellar/stellar-sdk";
-import type { Transaction } from "@stellar/stellar-sdk";
+} from "@stellar/stellar-sdk/minimal";
+import type { Transaction } from "@stellar/stellar-sdk/minimal";
 import * as rpc from "@stellar/stellar-sdk/rpc";
 import { useStellarContext } from "../context";
 import { useFreighter } from "./useFreighter";
