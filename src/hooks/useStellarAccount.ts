@@ -25,6 +25,14 @@ export interface UseStellarAccountOptions {
    * Set to false to allow overlapping requests.
    */
   deduplicate?: boolean;
+  /**
+   * Delay in milliseconds before the initial fetch fires when the component
+   * mounts or the `publicKey` changes. When > 0, rapid `publicKey` switches
+   * within the window are coalesced — only the final key triggers a request.
+   * Polling-interval ticks are NOT debounced.
+   * Default: 0 (no debounce — backward compatible).
+   */
+  debounceDelay?: number;
 }
 
 export interface UseStellarAccountReturn {
@@ -64,7 +72,7 @@ export function useStellarAccount(
   publicKey: StellarPublicKey | null | undefined,
   options: UseStellarAccountOptions = {},
 ): UseStellarAccountReturn {
-  const { enabled = true, refetchInterval = 0, deduplicate = true } = options;
+  const { enabled = true, refetchInterval = 0, deduplicate = true, debounceDelay = 0 } = options;
   const { config } = useStellarContext();
 
   const fetchAccount = useCallback(async (_signal?: AbortSignal): Promise<StellarAccountData | null> => {
@@ -81,6 +89,7 @@ export function useStellarAccount(
     deduplicate,
     initialData: null,
     debugLabel: "useStellarAccount",
+    debounceDelay,
   });
 
   return useMemo(
