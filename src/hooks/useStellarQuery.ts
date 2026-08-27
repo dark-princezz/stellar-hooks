@@ -20,6 +20,13 @@ export interface UseStellarQueryOptions<T> {
   initialData?: T | null;
   debugLabel?: string;
   /**
+   * Delay in milliseconds before the initial fetch fires when deps change.
+   * When > 0 the fetch triggered by mount / dep changes is debounced: if deps
+   * change again within the window the timer resets (coalesces rapid changes).
+   * Polling-interval ticks are NOT debounced — only the trigger effect.
+   * Default: 0 (no debounce — backward compatible).
+   */
+  debounceDelay?: number;
    * When provided, the query result is stored in (and retrieved from) the
    * shared module-level in-memory cache under this key.  If absent, caching
    * is disabled for this instance (backward-compatible default).
@@ -105,6 +112,7 @@ export function useStellarQuery<T>(
     deduplicate = true,
     initialData = null,
     debugLabel = "useStellarQuery",
+    debounceDelay = 0,
     cacheKey,
     cacheTtl = DEFAULT_CACHE_TTL,
   } = options;
@@ -123,9 +131,11 @@ export function useStellarQuery<T>(
   const fetcherRef = useRef(fetcher);
   const initialDataRef = useRef(initialData);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isFetchingRef = useRef(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const networkEpochRef = useRef(networkEpoch);
+  const debounceDelayRef = useRef(debounceDelay);
 
   // Keep option refs up-to-date so the callback always sees the latest values
   // without needing to be re-created.
@@ -149,6 +159,8 @@ export function useStellarQuery<T>(
   }, [networkEpoch]);
 
   useEffect(() => {
+    debounceDelayRef.current = debounceDelay;
+  }, [debounceDelay]);
     cacheKeyRef.current = cacheKey;
   }, [cacheKey]);
 
@@ -217,22 +229,49 @@ export function useStellarQuery<T>(
       timerRef.current = null;
     }
 
+    // Cancel any pending debounce timer from a previous dep change.
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
+    }
+
     if (!enabled) {
       dispatch({ type: "RESET", payload: initialDataRef.current });
       return;
     }
 
-    void refetch();
+    const delay = debounceDelayRef.current;
 
-    // 2. Set new interval if required
+    if (delay > 0) {
+      // Debounced path: wait `delay` ms before executing the initial fetch.
+      // If deps change again within the window this effect re-runs, cancels
+      // the previous timer (above), and starts a fresh one — coalescing rapid
+      // changes into a single fetch.
+      debounceTimerRef.current = setTimeout(() => {
+        debounceTimerRef.current = null;
+        void refetch();
+      }, delay);
+    } else {
+      // No debounce: fire immediately (backward-compatible default).
+      void refetch();
+    }
+
+    // 2. Set new interval if required.
+    // Polling ticks are NOT debounced — they fire on schedule regardless of
+    // whether the initial trigger was debounced.
     if (refetchInterval > 0) {
       timerRef.current = setInterval(() => {
         void refetch();
       }, refetchInterval);
     }
 
-    // 3. Cleanup on unmount or dependency change
+    // 3. Cleanup on unmount or dependency change.
     return () => {
+      // Cancel pending debounce timer so no fetch fires after unmount.
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
+      }
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;

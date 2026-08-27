@@ -26,6 +26,13 @@ export interface UseStellarAccountOptions {
    */
   deduplicate?: boolean;
   /**
+   * Delay in milliseconds before the initial fetch fires when the component
+   * mounts or the `publicKey` changes. When > 0, rapid `publicKey` switches
+   * within the window are coalesced — only the final key triggers a request.
+   * Polling-interval ticks are NOT debounced.
+   * Default: 0 (no debounce — backward compatible).
+   */
+  debounceDelay?: number;
    * When provided, account data is stored in (and served from) the shared
    * module-level in-memory cache under this key.  Absent = caching disabled.
    *
@@ -76,6 +83,7 @@ export function useStellarAccount(
   publicKey: StellarPublicKey | null | undefined,
   options: UseStellarAccountOptions = {},
 ): UseStellarAccountReturn {
+  const { enabled = true, refetchInterval = 0, deduplicate = true, debounceDelay = 0 } = options;
   const { enabled = true, refetchInterval = 0, deduplicate = true, cacheKey, cacheTtl } = options;
   const { config } = useStellarContext();
 
@@ -93,6 +101,7 @@ export function useStellarAccount(
     deduplicate,
     initialData: null,
     debugLabel: "useStellarAccount",
+    debounceDelay,
     cacheKey,
     cacheTtl,
   });

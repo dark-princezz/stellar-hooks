@@ -283,3 +283,164 @@ describe("useStellarQuery", () => {
     expect(fetcher).toHaveBeenCalledTimes(callsAfterMount);
   });
 });
+
+// ── Debounce (requires fake timers) ───────────────────────────────────────────
+
+describe("useStellarQuery — debounceDelay", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.clearAllMocks();
+  });
+
+  it("does NOT call the fetcher immediately when debounceDelay > 0", async () => {
+    const fetcher = makeFetcher("debounced");
+
+    renderHook(() =>
+      useStellarQuery(fetcher, { debounceDelay: 200 })
+    );
+
+    // Immediately after mount, before the delay expires, fetcher must NOT have fired.
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it("calls the fetcher after debounceDelay ms have elapsed", async () => {
+    const fetcher = makeFetcher("debounced");
+
+    renderHook(() =>
+      useStellarQuery(fetcher, { debounceDelay: 200 })
+    );
+
+    expect(fetcher).not.toHaveBeenCalled();
+
+    await act(async () => {
+      vi.advanceTimersByTime(200);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it("cancels the pending timer on unmount — no fetch fires after unmount", async () => {
+    const fetcher = makeFetcher("debounced");
+
+    const { unmount } = renderHook(() =>
+      useStellarQuery(fetcher, { debounceDelay: 300 })
+    );
+
+    // Unmount before the delay expires.
+    unmount();
+
+    // Advance past the delay window.
+    await act(async () => {
+      vi.advanceTimersByTime(500);
+      await Promise.resolve();
+    });
+
+    // Fetcher must never have been called.
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it("resets the timer when deps change within the delay window (coalescing)", async () => {
+    const fetcher = makeFetcher("debounced");
+
+    // We simulate dep changes by swapping the fetcher reference, which is part
+    // of the effect dependency array.
+    const fetcherA = vi.fn().mockResolvedValue("A");
+    const fetcherB = vi.fn().mockResolvedValue("B");
+
+    const { rerender } = renderHook(
+      ({ fn }: { fn: typeof fetcherA }) =>
+        useStellarQuery(fn, { debounceDelay: 300 }),
+      { initialProps: { fn: fetcherA } }
+    );
+
+    // After 150 ms (still within window) swap to fetcherB.
+    await act(async () => {
+      vi.advanceTimersByTime(150);
+    });
+
+    // fetcherA must NOT have been called yet.
+    expect(fetcherA).not.toHaveBeenCalled();
+
+    // Change dep — new 300 ms window starts now.
+    rerender({ fn: fetcherB });
+
+    // Advance another 150 ms — we're now 300 ms since mount but only 150 ms
+    // since the dep change, so the new timer has NOT yet expired.
+    await act(async () => {
+      vi.advanceTimersByTime(150);
+    });
+
+    expect(fetcherA).not.toHaveBeenCalled();
+    expect(fetcherB).not.toHaveBeenCalled();
+
+    // Advance the remaining 150 ms to complete the second window.
+    await act(async () => {
+      vi.advanceTimersByTime(150);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    // Only fetcherB should have been called — fetcherA's timer was cancelled.
+    expect(fetcherA).not.toHaveBeenCalled();
+    expect(fetcherB).toHaveBeenCalledTimes(1);
+    void fetcher; // suppress unused-variable lint
+  });
+
+  it("does NOT debounce polling-interval ticks (only the initial trigger)", async () => {
+    const fetcher = makeFetcher("poll");
+
+    renderHook(() =>
+      useStellarQuery(fetcher, { debounceDelay: 100, refetchInterval: 500 })
+    );
+
+    // Before debounce fires — fetcher not called.
+    expect(fetcher).not.toHaveBeenCalled();
+
+    // Advance past debounce delay to trigger the initial fetch.
+    await act(async () => {
+      vi.advanceTimersByTime(100);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(fetcher).toHaveBeenCalledTimes(1);
+
+    // Advance one polling interval — this tick must NOT be debounced.
+    await act(async () => {
+      vi.advanceTimersByTime(500);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(fetcher).toHaveBeenCalledTimes(2);
+
+    // Advance another polling interval.
+    await act(async () => {
+      vi.advanceTimersByTime(500);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(fetcher).toHaveBeenCalledTimes(3);
+  });
+
+  it("behaves identically to debounceDelay=0 (fires immediately) when debounceDelay is omitted", async () => {
+    const fetcher = makeFetcher("immediate");
+
+    renderHook(() => useStellarQuery(fetcher));
+
+    // With no debounce, isLoading should be true immediately.
+    // Drain microtasks to allow the synchronous part to run.
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+});
