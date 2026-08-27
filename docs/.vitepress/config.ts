@@ -81,6 +81,7 @@ export default defineConfig({
         text: 'Guides',
         items: [
           { text: 'Migration Guide', link: '/guides/migration-guide' },
+          { text: 'Network Switching & Mismatches', link: '/guides/network-switching' },
           { text: 'Error Handling Patterns', link: '/guides/error-handling' },
           { text: 'Release Runbook', link: '/guides/release-runbook' },
           { text: 'Soroban Cookbook', link: '/guides/soroban-cookbook' }
