@@ -56,8 +56,6 @@ For breaking changes and migration steps, see [MIGRATION.md](MIGRATION.md).
 ### Testing
 - Repaired corrupted mocks, a fake-timer leak, and several stale assertions across the test suite
 
-### Fixed
-- `useTransactionHistory()` — fixed duplicate closing bracket syntax error; added `fetchPreviousPage()` and `includeFailed` option; uses `Horizon.ServerApi.TransactionRecord` for correct typing
 
 ### Security
 - Added `SECURITY.md` with supported versions, reporting guidelines, disclosure policy, and PGP key
