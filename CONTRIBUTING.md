@@ -91,6 +91,43 @@ npm run test:e2e            # run Playwright e2e tests (requires setup)
 Live Futurenet tests are excluded from `npm test` so default CI stays offline-friendly.
 See [`tests/integration/futurenet/README.md`](tests/integration/futurenet/README.md).
 
+### Mocking `useFreighter` in Vitest (#644)
+
+Vitest's module-caching behaviour can cause `vi.mock('@stellar/freighter-api')` to be
+applied **after** the hook has already imported the real module if the mock is not
+hoisted correctly. The workaround is to always place `vi.mock(...)` calls **at the
+top of the test file**, before any imports that transitively use the module:
+
+```ts
+// ✅ Correct — vi.mock is hoisted by Vitest's transformer
+vi.mock("@stellar/freighter-api", () => ({
+  isConnected: vi.fn().mockResolvedValue({ isConnected: false }),
+  requestAccess: vi.fn(),
+  signTransaction: vi.fn(),
+  getAddress: vi.fn().mockResolvedValue({ address: "" }),
+  getNetwork: vi.fn().mockResolvedValue({ network: "TESTNET", networkPassphrase: "" }),
+}));
+
+import { renderHook } from "@testing-library/react";
+import { useFreighter } from "../hooks/useFreighter";
+```
+
+```ts
+// ❌ Wrong — mock declared after import; Vitest may not intercept in time
+import { useFreighter } from "../hooks/useFreighter";
+vi.mock("@stellar/freighter-api", ...);
+```
+
+**Why this happens:** Vitest statically hoists `vi.mock()` calls to the top of the
+compiled module, but only when they are top-level statements. If the mock is nested
+inside a `beforeEach`, `describe`, or placed after a dynamic import, hoisting is skipped
+and the real module may have already been resolved.
+
+**Resetting between tests:** Call `vi.clearAllMocks()` or `vi.resetAllMocks()` in
+`beforeEach` to prevent state from leaking between test cases.
+
+
+
 ### Type Checking
 
 ```bash
@@ -109,7 +146,28 @@ npm run lint
 npm run build
 ```
 
-### Development Server (Watch Mode)
+### ESM + CJS Dual Build (#646)
+
+The build produces both module formats via `tsup` and the `exports` map in
+`package.json`:
+
+- **ESM** — `dist/index.mjs` (and per-hook `.mjs` files for tree-shaking)
+- **CJS** — `dist/index.js` (for Node/CJS consumers without bundlers)
+
+Both formats are listed under the `"exports"` field with `"import"` and
+`"require"` conditions, so bundlers and Node pick the right format automatically
+without warnings.
+
+### TypeScript Declaration Maps (#645)
+
+`"declarationMap": true` is set in `tsconfig.json`. This means the published
+`.d.ts` files include a `.d.ts.map` pointing back to the original `.ts` source,
+so consumers can **Go to Definition** from their editor and land directly on the
+hook's TypeScript source rather than the generated declaration file.
+
+No extra build step is needed — tsup's `dts` pass picks this up automatically.
+
+
 
 ```bash
 npm run dev                 # builds in watch mode
