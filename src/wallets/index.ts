@@ -4,6 +4,7 @@ export { createLobstrAdapter } from "./lobstr";
 export { createXBullAdapter, isXBullInstalled } from "./xbull";
 export { createAlbedoAdapter, isAlbedoInstalled } from "./albedo";
 export { createRabetAdapter } from "./rabet";
+export { createLedgerAdapter } from "./ledger";
 
 import type { WalletAdapter } from "./types";
 import { createFreighterAdapter } from "./freighter";
