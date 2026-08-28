@@ -1,4 +1,4 @@
-export type WalletId = "freighter" | "lobstr" | "xbull" | "albedo" | "rabet";
+export type WalletId = "freighter" | "lobstr" | "xbull" | "albedo" | "rabet" | "ledger";
 
 export interface WalletAdapter {
   id: WalletId;
