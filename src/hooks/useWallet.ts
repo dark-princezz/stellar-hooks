@@ -90,6 +90,9 @@ const initial: State = {
   error: null,
 };
 
+/** localStorage key for persisting last-connected wallet type (#639). */
+const WALLET_PERSIST_KEY = "stellar-hooks:last-wallet";
+
 export function useWallet(options?: UseWalletOptions): UseWalletReturn {
   const [state, dispatch] = useReducer(reducer, initial);
   const adapters = useMemo<WalletAdapter[]>(() => createAllAdapters(), []);
@@ -104,6 +107,35 @@ export function useWallet(options?: UseWalletOptions): UseWalletReturn {
       dispatch({ type: "SET_ACTIVE", walletId: options.walletId });
     }
   }, [options?.walletId, state.availableWallets]);
+
+  // Auto-reconnect on mount: if autoConnect is true, restore the last wallet
+  // type from localStorage and silently re-connect (#639).
+  // Persists wallet type only — never keys or secrets.
+  useEffect(() => {
+    if (!options?.autoConnect || state.availableWallets.length === 0) return;
+    try {
+      const saved = localStorage.getItem(WALLET_PERSIST_KEY) as WalletId | null;
+      if (saved && state.availableWallets.includes(saved)) {
+        dispatch({ type: "SET_ACTIVE", walletId: saved });
+      }
+    } catch {
+      // localStorage unavailable (SSR, private browsing) — fail silently
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [options?.autoConnect, state.availableWallets]);
+
+  // Persist wallet type on connect; clear on disconnect.
+  useEffect(() => {
+    try {
+      if (state.activeWallet) {
+        localStorage.setItem(WALLET_PERSIST_KEY, state.activeWallet);
+      } else {
+        localStorage.removeItem(WALLET_PERSIST_KEY);
+      }
+    } catch {
+      // ignore
+    }
+  }, [state.activeWallet]);
 
   const getAdapter = useCallback(
     (id: WalletId): WalletAdapter => {
