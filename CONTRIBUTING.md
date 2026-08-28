@@ -212,9 +212,7 @@ Keep the description under 70 characters. Reference the issue in the PR body, no
 
 ## Code Review
 
-Pull requests are automatically assigned to reviewers through the project's **CODEOWNERS** configuration. Please address any feedback promptly to help streamline the review process.
 
-One PR should address exactly one issue. Keep changes minimal and focused — avoid refactoring unrelated code.
 
 ## Code of Conduct
 
