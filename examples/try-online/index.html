@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stellar Hooks - Try Online</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; color: #f8fafc; min-height: 100vh; }
+      .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+      .header { text-align: center; margin-bottom: 40px; }
+      .header h1 { font-size: 2.5rem; margin-bottom: 10px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+      .header p { color: #94a3b8; font-size: 1.1rem; }
+      .card { background: #1e293b; border-radius: 16px; padding: 30px; border: 1px solid #334155; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+      .card h2 { margin-bottom: 15px; color: #e2e8f0; }
+      .card p { color: #94a3b8; margin-bottom: 20px; line-height: 1.6; }
+      .btn { display: inline-block; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; }
+      .btn-primary { background: #3b82f6; color: white; }
+      .btn-primary:hover { background: #2563eb; transform: translateY(-2px); }
+      .btn-secondary { background: #475569; color: white; margin-left: 10px; }
+      .btn-secondary:hover { background: #334155; }
+      .example { margin-top: 20px; padding: 20px; background: #0f172a; border-radius: 8px; font-family: 'Consolas', 'Monaco', monospace; font-size: 0.9rem; overflow-x: auto; }
+      .example .import { color: #64748b; }
+      .example .func { color: #8b5cf6; }
+      .example .string { color: #4ade80; }
+      .example .number { color: #fbbf24; }
+      .example .keyword { color: #f472b6; }
+      .links { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; }
+      .link-card { flex: 1; min-width: 200px; padding: 20px; background: #1e293b; border-radius: 12px; border: 1px solid #334155; text-align: center; transition: transform 0.2s; }
+      .link-card:hover { transform: translateY(-5px); border-color: #3b82f6; }
+      .link-card h3 { margin-bottom: 10px; color: #e2e8f0; }
+      .link-card p { color: #94a3b8; font-size: 0.9rem; margin-bottom: 15px; }
+      .link-card .btn { padding: 8px 16px; font-size: 0.9rem; }
+      .note { background: #0f3460; padding: 15px; border-radius: 8px; margin-top: 30px; border-left: 4px solid #3b82f6; }
+      .note p { margin-bottom: 10px; }
+      .note code { background: #1e293b; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🌊 Stellar Hooks</h1>
+        <p>Try Stellar development online - no installation required</p>
+      </div>
+
+      <div class="card">
+        <h2>Quick Start</h2>
+        <p>Stellar Hooks is a React library for building Stellar applications. This sandbox provides a minimal template to get started with common hooks like wallet connection, payments, and account management.</p>
+        
+        <div class="example">
+          <div class="import">import <span class="keyword">{</span> useFreighter <span class="keyword">}</span> from <span class="string">"stellar-hooks"</span>;</div>
+          <br>
+          <div><span class="keyword">const</span> <span class="func">{ connect, isConnected, publicKey }</span> = useFreighter();</div>
+          <br>
+          <div><span class="keyword">return</span> (</div>
+          <div>&nbsp;&nbsp;<span class="keyword">{</span> !isConnected <span class="keyword">&amp;&amp;</span> <span class="keyword">&lt;</span>button onClick=<span class="func">connect</span><span class="keyword">&gt;</span>Connect<span class="keyword">&lt;/</span>button<span class="keyword">&gt;</span> <span class="keyword">}</span></div>
+          <div>&nbsp;&nbsp;<span class="keyword">{</span> isConnected <span class="keyword">&amp;&amp;</span> <span class="string">`Connected: ${publicKey}`</span> <span class="keyword">}</span></div>
+          <div><span class="keyword">)</span>;</div>
+        </div>
+
+        <div class="links">
+          <a href="https://stackblitz.com/github/dark-princezz/stellar-hooks/tree/main/examples/try-online" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+            ▶ Open in StackBlitz
+          </a>
+          <a href="https://codesandbox.io/s/github/dark-princezz/stellar-hooks/tree/main/examples/try-online" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+            ▶ Open in CodeSandbox
+          </a>
+        </div>
+
+        <div class="note">
+          <p><strong>Note:</strong> To test wallet connections, install the Freighter browser extension or use Albedo for web-based testing.</p>
+          <p><strong>Pro tip:</strong> Fork this sandbox and experiment with hooks like <code>usePayment</code>, <code>usePathPayment</code>, <code>useStellarAccount</code>, and more.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Available Hooks</h2>
+        <p>Try these hooks in your sandbox:</p>
+        <ul style="list-style: none; margin-top: 15px;">
+          <li>✨ <code>useFreighter</code> - Connect Freighter wallet</li>
+          <li>✨ <code>useAlbedo</code> - Connect Albedo web wallet</li>
+          <li>✨ <code>useWallet</code> - Unified wallet adapter</li>
+          <li>✨ <code>usePayment</code> - Send XLM or assets</li>
+          <li>✨ <code>usePathPayment</code> - Multi-hop asset swaps</li>
+          <li>✨ <code>useStellarAccount</code> - Fetch account details</li>
+          <li>✨ <code>useStellarBalance</code> - Get balances</li>
+          <li>✨ <code>useTransaction</code> - Build and submit transactions</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>Next Steps</h2>
+        <p>Explore the Stellar Hooks documentation and try building your own application:</p>
+        <ul style="list-style: none; margin-top: 15px;">
+          <li>📚 <a href="https://stellar-hooks.vercel.app" target="_blank" rel="noopener noreferrer" style="color: #3b82f6;">📖 Documentation</a></li>
+          <li>📝 <a href="https://github.com/dark-princezz/stellar-hooks" target="_blank" rel="noopener noreferrer" style="color: #3b82f6;">GitHub Repository</a></li>
+          <li>💬 <a href="https://discord.gg/stellar" target="_blank" rel="noopener noreferrer" style="color: #3b82f6;">Join Discord Community</a></li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

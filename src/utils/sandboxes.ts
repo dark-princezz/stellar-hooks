@@ -65,6 +65,13 @@ export const HOOK_SANDBOXES: Record<string, HookSandboxInfo> = {
     stackblitzUrl: `https://stackblitz.com/${REPO_BASE}?file=src/examples/usePayment.example.tsx`,
     codesandboxUrl: `https://codesandbox.io/s/${REPO_BASE}?file=/src/examples/usePayment.example.tsx`,
   },
+  usePathPayment: {
+    name: "usePathPayment",
+    category: "transaction",
+    examplePath: "src/examples/usePathPayment.example.tsx",
+    stackblitzUrl: `https://stackblitz.com/${REPO_BASE}?file=src/examples/usePathPayment.example.tsx`,
+    codesandboxUrl: `https://codesandbox.io/s/${REPO_BASE}?file=/src/examples/usePathPayment.example.tsx`,
+  },
   useSorobanContract: {
     name: "useSorobanContract",
     category: "soroban",
@@ -99,6 +106,20 @@ export const HOOK_SANDBOXES: Record<string, HookSandboxInfo> = {
     examplePath: "src/examples/useTrustline.example.tsx",
     stackblitzUrl: `https://stackblitz.com/${REPO_BASE}?file=src/examples/useTrustline.example.tsx`,
     codesandboxUrl: `https://codesandbox.io/s/${REPO_BASE}?file=/src/examples/useTrustline.example.tsx`,
+  },
+  tryOnline: {
+    name: "Try Online Sandbox",
+    category: "utility",
+    examplePath: "examples/try-online/src/App.tsx",
+    stackblitzUrl: `https://stackblitz.com/github/dark-princezz/stellar-hooks/tree/main/examples/try-online`,
+    codesandboxUrl: `https://codesandbox.io/s/github/dark-princezz/stellar-hooks/tree/main/examples/try-online`,
+  },
+  multisigSigningFlow: {
+    name: "Multisig Signing Flow",
+    category: "utility",
+    examplePath: "examples/multisig-signing-flow/src/App.tsx",
+    stackblitzUrl: `https://stackblitz.com/github/dark-princezz/stellar-hooks/tree/main/examples/multisig-signing-flow`,
+    codesandboxUrl: `https://codesandbox.io/s/github/dark-princezz/stellar-hooks/tree/main/examples/multisig-signing-flow`,
   },
 };
 
