@@ -44,7 +44,9 @@ Takes a single options object:
 
 Same as `usePayment`: `submit`, `status`, `hash`, `error`, `isLoading`, `isSuccess`, `isError`, `reset`.
 
-## Strict Send Example
+## Basic Examples
+
+### Strict Send
 
 Send exactly 10 XLM, receive at least 9 USDC:
 
@@ -67,7 +69,7 @@ const { submit, status, hash } = usePathPayment({
 return <button onClick={submit}>Send</button>;
 ```
 
-## Strict Receive Example
+### Strict Receive
 
 Receive exactly 10 USDC, send at most 11 XLM:
 
@@ -86,6 +88,32 @@ const { submit } = usePathPayment({
 });
 ```
 
+## Live Path Preview Example
+
+For a complete asset-swap UI with live path discovery and rate preview, see the [live path preview example](/examples/usePathPayment.example.tsx):
+
+```tsx
+import { usePathPayment, useStrictSendPaths, useFreighter } from "stellar-hooks";
+import { Asset } from "@stellar/stellar-sdk";
+
+// Shows available payment paths before transaction submission
+const { paths, isLoading, error } = useStrictSendPaths(
+  Asset.native(),
+  "10",
+  [new Asset("USDC", USDC_ISSUER)],
+);
+
+// Execute path payment with selected parameters
+const { submit, status, hash } = usePathPayment({
+  mode: "strict-send",
+  sendAsset: { type: "native" },
+  sendAmount: "10",
+  destination: "GB...",
+  destAsset: { type: "credit", code: "USDC", issuer: USDC_ISSUER },
+  destMin: "9",
+});
+```
+
 ## Notes
 
 - **Path Selection**: Leave `path` empty (default) for Horizon to auto-select the best path.
@@ -94,4 +122,5 @@ const { submit } = usePathPayment({
 
 ## See Also
 
-- [usePayment](/api/hooks/use-payment) — Simple direct payments
+- [`useStrictSendPaths`](use-strict-send-paths.md) — Query available payment paths before submitting
+- [`usePayment`](use-payment.md) — Simple payment (no path conversion)
