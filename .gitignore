@@ -9,3 +9,9 @@ coverage/
 AGENTS.md
 docs/.vitepress/dist
 docs/.vitepress/cache
+
+# Kiro IDE
+.kiro/
+
+# PR description (generated artefact, not part of the library source)
+pull-request.md
