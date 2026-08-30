@@ -18,12 +18,14 @@ This guide shows how to replace boilerplate `@stellar/stellar-sdk` and `@stellar
 10. [Submitting pre-signed XDR](#10-submitting-pre-signed-xdr)
 11. [Fetching open offers](#11-fetching-open-offers)
 12. [Fetching the order book](#12-fetching-the-order-book)
-13. [Claimable balances](#13-claimable-balances)
-14. [Contract events](#14-contract-events)
-15. [stellar.toml and asset metadata](#15-stellartoml-and-asset-metadata)
-16. [Custom / private networks](#16-custom--private-networks)
-17. [React Query and SWR adapters](#17-react-query-and-swr-adapters)
-18. [TypeScript types reference](#18-typescript-types-reference)
+13. [DEX trades](#13-dex-trades)
+14. [Claimable balances](#14-claimable-balances)
+15. [Contract events](#15-contract-events)
+16. [stellar.toml and asset metadata](#16-stellartoml-and-asset-metadata)
+17. [Custom / private networks](#17-custom--private-networks)
+18. [React Query and SWR adapters](#18-react-query-and-swr-adapters)
+19. [TypeScript types reference](#19-typescript-types-reference)
+20. [Common pitfalls & best practices](#20-common-pitfalls--best-practices)
 
 ---
 
@@ -709,7 +711,92 @@ function Orderbook() {
 
 ---
 
-## 13. Claimable balances
+## 13. DEX trades
+
+**Before** — manually query Horizon's trades endpoint with filtering:
+
+```tsx
+import { Asset, Horizon } from "@stellar/stellar-sdk";
+
+async function getTrades(publicKey: string) {
+  const server = new Horizon.Server("https://horizon-testnet.stellar.org");
+  const response = await server
+    .trades()
+    .forAccount(publicKey)
+    .limit(20)
+    .order("desc")
+    .call();
+  return response.records;
+}
+
+// With asset pair filtering
+async function getFilteredTrades(publicKey: string) {
+  const server = new Horizon.Server("https://horizon-testnet.stellar.org");
+  const response = await server
+    .trades()
+    .forAccount(publicKey)
+    .forAssetPair(Asset.native(), new Asset("USDC", "GISSUER..."))
+    .limit(50)
+    .call();
+  return response.records;
+}
+```
+
+**After**:
+
+```tsx
+import { useTrades } from "stellar-hooks";
+import { Asset } from "@stellar/stellar-sdk";
+
+function TradeHistory({ publicKey }: { publicKey: string }) {
+  const { trades, isLoading, error, refetch } = useTrades(publicKey, {
+    limit: 20,
+    order: "desc",
+    refetchInterval: 15_000, // poll every 15 seconds
+  });
+
+  if (isLoading) return <p>Loading…</p>;
+  if (error) return <p>{error.message}</p>;
+
+  return (
+    <div>
+      <ul>
+        {trades.map((t) => (
+          <li key={t.id}>
+            {t.base_amount} {t.base_asset_code || "XLM"} → {t.counter_amount} {t.counter_asset_code || "XLM"}
+          </li>
+        ))}
+      </ul>
+      <button onClick={refetch}>Refresh</button>
+    </div>
+  );
+}
+
+// With asset pair filtering
+function FilteredTrades({ publicKey }: { publicKey: string }) {
+  const { trades } = useTrades(publicKey, {
+    baseAsset: Asset.native(),
+    counterAsset: new Asset("USDC", "GISSUER..."),
+    limit: 50,
+  });
+
+  return (
+    <ul>
+      {trades.map((t) => (
+        <li key={t.id}>
+          XLM/USDC trade: {t.base_amount} XLM → {t.counter_amount} USDC
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Supports cursor-based pagination via the `cursor` option for infinite scroll patterns.
+
+---
+
+## 14. Claimable balances
 
 Two separate hooks cover listing and claiming:
 
@@ -764,7 +851,7 @@ function ClaimableList({ publicKey }: { publicKey: string }) {
 
 ---
 
-## 14. Contract events
+## 15. Contract events
 
 **Before**:
 
@@ -818,7 +905,7 @@ useContractEvents({
 
 ---
 
-## 15. stellar.toml and asset metadata
+## 16. stellar.toml and asset metadata
 
 **Before**:
 
@@ -865,7 +952,7 @@ function AssetInfo({ code, issuer }: { code: string; issuer: string }) {
 
 ---
 
-## 16. Custom / private networks
+## 17. Custom / private networks
 
 **Before** — you passed URLs manually to every server instance:
 
@@ -905,7 +992,7 @@ const { horizonUrl, sorobanRpcUrl, networkPassphrase } = NETWORK_CONFIGS.mainnet
 
 ---
 
-## 17. React Query and SWR adapters
+## 18. React Query and SWR adapters
 
 If your project already uses React Query or SWR you can swap the core hooks for adapter versions that plug into your existing cache layer.
 
@@ -980,7 +1067,7 @@ Cache keys used internally:
 
 ---
 
-## 18. TypeScript types reference
+## 19. TypeScript types reference
 
 All types are exported and fully documented. Import them with `import type` to keep your bundle clean.
 
@@ -1036,6 +1123,311 @@ import type {
 
 ---
 
+## 20. Common pitfalls & best practices
+
+### State cleanup and polling intervals
+
+**Before** — manual cleanup is error-prone:
+
+```tsx
+function AccountDisplay({ publicKey }: { publicKey: string }) {
+  const [account, setAccount] = useState(null);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const server = new Horizon.Server("https://horizon-testnet.stellar.org");
+      const acc = await server.loadAccount(publicKey);
+      setAccount(acc);
+    }, 5000);
+
+    // BUG: Missing cleanup interval if publicKey changes
+    return () => clearInterval(interval);
+  }, [publicKey]);
+
+  return <div>{account?.sequence}</div>;
+}
+```
+
+**After** — hooks handle cleanup automatically:
+
+```tsx
+function AccountDisplay({ publicKey }: { publicKey: string }) {
+  const { data } = useStellarAccount(publicKey, {
+    refetchInterval: 5000,
+  });
+
+  return <div>{data?.sequence}</div>;
+}
+```
+
+All hooks with `refetchInterval` clean up intervals on unmount and refetch when dependencies change.
+
+### Network passphrase mismatches
+
+**Before** — silent failures when wallet and dApp networks differ:
+
+```tsx
+async function sendPayment() {
+  const server = new Horizon.Server("https://horizon-testnet.stellar.org");
+  const PASSPHRASE = "Test SDF Network ; September 2015";
+  
+  // BUG: If Freighter is on mainnet, this transaction targets the wrong network
+  const signedXdr = await signTransaction(tx.toXDR(), { networkPassphrase: PASSPHRASE });
+  await server.submitTransaction(signedXdr);
+}
+```
+
+**After** — detect and warn about mismatches:
+
+```tsx
+const { networkPassphraseMismatch, networkPassphraseWarning, signTransaction } = useFreighter();
+
+if (networkPassphraseMismatch) {
+  return <p className="error">{networkPassphraseWarning}</p>;
+}
+
+// Only sign when networks match
+const signedXdr = await signTransaction(tx.toXDR());
+```
+
+### Provider wrapping
+
+**Before** — passing config down through props:
+
+```tsx
+function App() {
+  const horizonUrl = "https://horizon-testnet.stellar.org";
+  const networkPassphrase = "Test SDF Network ; September 2015";
+  
+  return (
+    <WalletList horizonUrl={horizonUrl} networkPassphrase={networkPassphrase} />
+  );
+}
+
+function WalletList({ horizonUrl, networkPassphrase }: Props) {
+  // Have to pass these down to every component that needs them
+  return <AccountCard horizonUrl={horizonUrl} networkPassphrase={networkPassphrase} />;
+}
+```
+
+**After** — context eliminates prop drilling:
+
+```tsx
+function App() {
+  return (
+    <StellarProvider network="testnet">
+      <WalletList />
+    </StellarProvider>
+  );
+}
+
+function WalletList() {
+  // All hooks automatically use the provider's network config
+  const { data } = useStellarAccount(publicKey);
+  return <AccountCard />;
+}
+```
+
+### Error handling patterns
+
+**Before** — scattered try/catch and error state:
+
+```tsx
+function PaymentForm() {
+  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function submit() {
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const server = new Horizon.Server("https://horizon-testnet.stellar.org");
+      // ... build transaction
+      await server.submitTransaction(signedTx);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <button onClick={submit} disabled={isSubmitting}>
+      {isSubmitting ? "Sending..." : "Send"}
+    </button>
+  );
+}
+```
+
+**After** — consistent error and loading states:
+
+```tsx
+function PaymentForm() {
+  const { submit, status, error, isLoading } = usePayment({
+    destination: "GXXX...",
+    amount: "10",
+  });
+
+  return (
+    <button onClick={submit} disabled={isLoading}>
+      {status === "submitting" ? "Sending..." : "Send"}
+    </button>
+  );
+}
+```
+
+### Sequence number management
+
+**Before** — race conditions when submitting multiple transactions:
+
+```tsx
+async function sendTwoPayments() {
+  const server = new Horizon.Server("https://horizon-testnet.stellar.org");
+  const account = await server.loadAccount(publicKey);
+  
+  const tx1 = new TransactionBuilder(account, { fee: "100", networkPassphrase: PASSPHRASE })
+    .addOperation(Operation.payment({ destination: "G1...", amount: "10" }))
+    .build();
+  
+  const tx2 = new TransactionBuilder(account, { fee: "100", networkPassphrase: PASSPHRASE })
+    .addOperation(Operation.payment({ destination: "G2...", amount: "10" }))
+    .build();
+  
+  // BUG: Both transactions have the same sequence number — second will fail
+  await server.submitTransaction(tx1);
+  await server.submitTransaction(tx2);
+}
+```
+
+**After** — hooks manage sequence numbers automatically:
+
+```tsx
+function SendTwoPayments() {
+  const { submit: submit1, status: status1 } = usePayment({
+    destination: "G1...",
+    amount: "10",
+  });
+  
+  const { submit: submit2, status: status2 } = usePayment({
+    destination: "G2...",
+    amount: "10",
+  });
+
+  async function sendBoth() {
+    await submit1();
+    // Hooks refetch account data between submissions
+    await submit2();
+  }
+
+  return <button onClick={sendBoth}>Send Both</button>;
+}
+```
+
+### Asset balance precision
+
+**Before** — manual float conversion:
+
+```tsx
+const balance = account.balances[0].balance;
+const balanceFloat = parseFloat(balance); // Loss of precision possible
+```
+
+**After** — pre-converted values:
+
+```tsx
+const { xlmBalance } = useStellarBalance(publicKey);
+// xlmBalance.balanceFloat is already a number for math operations
+const doubleBalance = xlmBalance.balanceFloat * 2;
+```
+
+### Soroban contract XDR assembly
+
+**Before** — manual ScVal construction is error-prone:
+
+```tsx
+const args = [
+  nativeToScVal(1, { type: "u32" }),
+  nativeToScVal("hello", { type: "string" }),
+  // Easy to mix up types or forget conversion
+];
+```
+
+**After** — use helper functions and validate types:
+
+```tsx
+import { nativeToScVal, scValToNative } from "@stellar/stellar-sdk";
+
+const { call } = useSorobanContract({
+  contractId: "CABC...",
+  method: "my_method",
+  args: [
+    nativeToScVal(1, { type: "u32" }),
+    nativeToScVal("hello", { type: "string" }),
+  ],
+});
+
+// Always validate return values
+const result = scValToNative(callResult as any);
+```
+
+### Memory leaks with polling
+
+**Before** — intervals can continue after component unmount:
+
+```tsx
+useEffect(() => {
+  const interval = setInterval(() => {
+    fetchData();
+  }, 5000);
+  
+  // BUG: Missing cleanup on unmount
+}, []);
+```
+
+**After** — hooks handle cleanup:
+
+```tsx
+const { data } = useStellarAccount(publicKey, {
+  refetchInterval: 5000,
+});
+// Interval is automatically cleared on unmount
+```
+
+### Network switching
+
+**Before** — page reload required:
+
+```tsx
+function NetworkSwitcher() {
+  const [network, setNetwork] = useState("testnet");
+  
+  const switchNetwork = (newNetwork: string) => {
+    setNetwork(newNetwork);
+    window.location.reload(); // Poor UX
+  };
+  
+  return <button onClick={() => switchNetwork("mainnet")}>Switch to Mainnet</button>;
+}
+```
+
+**After** — seamless runtime switching:
+
+```tsx
+function NetworkSwitcher() {
+  const { network, setNetwork } = useNetwork();
+  
+  return (
+    <button onClick={() => setNetwork("mainnet")}>
+      Switch to {network === "testnet" ? "Mainnet" : "Testnet"}
+    </button>
+  );
+}
+```
+
+All child hooks automatically refetch when the network changes.
+
+---
+
 ## Quick reference: before vs. after
 
 | Raw SDK task | stellar-hooks equivalent |
@@ -1051,6 +1443,7 @@ import type {
 | `server.sendTransaction()` + poll loop | `useTransaction({ mode })` |
 | `server.offers().forAccount()` | `useStellarOffers(publicKey)` |
 | `server.orderbook(selling, buying)` | `useOfferBook({ selling, buying })` |
+| `server.trades().forAccount()` | `useTrades(publicKey)` |
 | `server.claimableBalances().claimant()` | `useClaimableBalances(publicKey)` |
 | `claimClaimableBalance` operation + submit | `useClaimBalance().claim(balanceId)` |
 | `server.getEvents(...)` | `useContractEvents(options)` |

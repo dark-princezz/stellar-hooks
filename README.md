@@ -750,7 +750,7 @@ The library ships with `@stellar/stellar-sdk` v13 and `@stellar/freighter-api` v
 
 ## Migration
 
-See [docs/guides/migration-guide.md](docs/guides/migration-guide.md) for a version-by-version guide to breaking changes and how to update your code.
+See [docs/guides/migration-guide.md](docs/guides/migration-guide.md) for a comprehensive guide on migrating from raw `@stellar/stellar-sdk` usage to `stellar-hooks`, including side-by-side code comparisons, common pitfalls, and best practices.
 
 ---
 
