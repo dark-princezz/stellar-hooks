@@ -382,6 +382,37 @@ export type {
 export { useContractEvents } from "./hooks/useContractEvents";
 export type { UseContractEventsOptions } from "./hooks/useContractEvents";
 
+export { useContractStorageEntry } from "./hooks/useContractStorageEntry";
+export type {
+  ContractStorageDurability,
+  ContractStorageEntry,
+  UseContractStorageEntryOptions,
+  UseContractStorageEntryReturn,
+} from "./hooks/useContractStorageEntry";
+
+export { useSorobanEvents } from "./hooks/useSorobanEvents";
+export type {
+  SorobanEventsPageInfo,
+  UseSorobanEventsOptions,
+  UseSorobanEventsReturn,
+} from "./hooks/useSorobanEvents";
+
+export { useWasmUpload } from "./hooks/useWasmUpload";
+export type {
+  UseWasmUploadOptions,
+  WasmUploadPhase,
+  WasmUploadState,
+  UseWasmUploadReturn,
+} from "./hooks/useWasmUpload";
+
+export { useContractDeploy, deriveContractId } from "./hooks/useContractDeploy";
+export type {
+  UseContractDeployOptions,
+  ContractDeployPhase,
+  ContractDeployOverrides,
+  UseContractDeployReturn,
+} from "./hooks/useContractDeploy";
+
 export { useTrades } from "./hooks/useTrades";
 export type {
   TradeRecord,

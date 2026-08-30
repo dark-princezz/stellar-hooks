@@ -339,3 +339,34 @@ export type {
   UseSep24Options,
   UseSep24Return,
 } from "./useSep24";
+
+export { useContractStorageEntry } from "./useContractStorageEntry";
+export type {
+  ContractStorageDurability,
+  ContractStorageEntry,
+  UseContractStorageEntryOptions,
+  UseContractStorageEntryReturn,
+} from "./useContractStorageEntry";
+
+export { useSorobanEvents } from "./useSorobanEvents";
+export type {
+  SorobanEventsPageInfo,
+  UseSorobanEventsOptions,
+  UseSorobanEventsReturn,
+} from "./useSorobanEvents";
+
+export { useWasmUpload } from "./useWasmUpload";
+export type {
+  UseWasmUploadOptions,
+  WasmUploadPhase,
+  WasmUploadState,
+  UseWasmUploadReturn,
+} from "./useWasmUpload";
+
+export { useContractDeploy, deriveContractId } from "./useContractDeploy";
+export type {
+  UseContractDeployOptions,
+  ContractDeployPhase,
+  ContractDeployOverrides,
+  UseContractDeployReturn,
+} from "./useContractDeploy";
