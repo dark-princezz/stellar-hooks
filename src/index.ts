@@ -241,6 +241,8 @@ export type {
   LedgerEntryState,
 } from "./types";
 export type { UseLedgerEntriesOptions, LedgerEntriesState } from "./hooks/useLedgerEntries";
+
+export type {
   // Provider
   StellarProviderProps,
   StellarHooksProviderProps,

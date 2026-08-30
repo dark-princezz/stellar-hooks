@@ -27,6 +27,7 @@ export interface UseStellarQueryOptions<T> {
    * Default: 0 (no debounce — backward compatible).
    */
   debounceDelay?: number;
+  /**
    * When provided, the query result is stored in (and retrieved from) the
    * shared module-level in-memory cache under this key.  If absent, caching
    * is disabled for this instance (backward-compatible default).
@@ -161,6 +162,8 @@ export function useStellarQuery<T>(
   useEffect(() => {
     debounceDelayRef.current = debounceDelay;
   }, [debounceDelay]);
+
+  useEffect(() => {
     cacheKeyRef.current = cacheKey;
   }, [cacheKey]);
 

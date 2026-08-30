@@ -33,6 +33,7 @@ export interface UseStellarAccountOptions {
    * Default: 0 (no debounce — backward compatible).
    */
   debounceDelay?: number;
+  /**
    * When provided, account data is stored in (and served from) the shared
    * module-level in-memory cache under this key.  Absent = caching disabled.
    *
