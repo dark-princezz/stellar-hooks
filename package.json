@@ -131,6 +131,50 @@
         "default": "./dist/hooks/useContractEvents.js"
       }
     },
+    "./useContractStorageEntry": {
+      "types": "./dist/hooks/useContractStorageEntry.d.ts",
+      "import": {
+        "types": "./dist/hooks/useContractStorageEntry.d.mts",
+        "default": "./dist/hooks/useContractStorageEntry.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useContractStorageEntry.d.ts",
+        "default": "./dist/hooks/useContractStorageEntry.js"
+      }
+    },
+    "./useSorobanEvents": {
+      "types": "./dist/hooks/useSorobanEvents.d.ts",
+      "import": {
+        "types": "./dist/hooks/useSorobanEvents.d.mts",
+        "default": "./dist/hooks/useSorobanEvents.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useSorobanEvents.d.ts",
+        "default": "./dist/hooks/useSorobanEvents.js"
+      }
+    },
+    "./useWasmUpload": {
+      "types": "./dist/hooks/useWasmUpload.d.ts",
+      "import": {
+        "types": "./dist/hooks/useWasmUpload.d.mts",
+        "default": "./dist/hooks/useWasmUpload.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useWasmUpload.d.ts",
+        "default": "./dist/hooks/useWasmUpload.js"
+      }
+    },
+    "./useContractDeploy": {
+      "types": "./dist/hooks/useContractDeploy.d.ts",
+      "import": {
+        "types": "./dist/hooks/useContractDeploy.d.mts",
+        "default": "./dist/hooks/useContractDeploy.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useContractDeploy.d.ts",
+        "default": "./dist/hooks/useContractDeploy.js"
+      }
+    },
     "./useContractId": {
       "types": "./dist/hooks/useContractId.d.ts",
       "import": {
