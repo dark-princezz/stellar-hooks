@@ -77,3 +77,7 @@ export function App() {
 - **Metadata Resolution** — Fetch stellar.toml files and resolve asset metadata
 - **React Query & SWR Adapters** — Drop-in replacements for existing data-fetching setups
 
+
+
+## Guides
+- [Wagmi-Inspired Design Philosophy](./guides/wagmi-design-philosophy.md)

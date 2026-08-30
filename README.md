@@ -11,6 +11,75 @@
 
 `stellar-hooks` wires the [Stellar JS SDK v13](https://github.com/stellar/js-stellar-sdk) and the Freighter wallet API into a set of ergonomic React hooks so you can build Stellar dApps without copy-pasting the same boilerplate across repos.
 
+## Getting Started
+
+Follow these simple steps to start building Stellar and Soroban dApps with `stellar-hooks`.
+
+### 1. Installation
+
+Install the library via your preferred package manager:
+
+```bash
+npm install stellar-hooks
+```
+*(Note: `@stellar/stellar-sdk` and `@stellar/freighter-api` are bundled as direct dependencies, so you don't need to install them separately).*
+
+### 2. Wrap Your App in `<StellarProvider>`
+
+To enable network context for all child hooks, wrap your root application component with `StellarProvider`, specifying your target network (`"testnet"`, `"mainnet"`, or `"futurenet"`):
+
+```tsx
+// main.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { StellarProvider } from "stellar-hooks";
+import { App } from "./App";
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <StellarProvider network="testnet">
+      <App />
+    </StellarProvider>
+  </React.StrictMode>
+);
+```
+
+### 3. Your First Working Example with `useFreighter`
+
+Use the `useFreighter` hook to connect to the Freighter browser extension wallet, check connection status, and read the user's native XLM balance in real time:
+
+```tsx
+// App.tsx
+import { useFreighter, useStellarBalance } from "stellar-hooks";
+
+export function App() {
+  const { isInstalled, isConnected, publicKey, connect, disconnect } = useFreighter();
+  const { xlmBalance, isLoading } = useStellarBalance(publicKey);
+
+  if (!isInstalled) {
+    return <p>Please install the Freighter browser extension to use this dApp.</p>;
+  }
+
+  if (!isConnected) {
+    return (
+      <div style={{ padding: "2rem" }}>
+        <h2>Welcome to Stellar dApp</h2>
+        <button onClick={connect}>Connect Freighter Wallet</button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: "2rem" }}>
+      <h2>Connected to Stellar Testnet</h2>
+      <p><strong>Account:</strong> {publicKey}</p>
+      <p><strong>XLM Balance:</strong> {isLoading ? "Loading..." : \`\${xlmBalance?.balance ?? "0"} XLM\`}</p>
+      <button onClick={disconnect}>Disconnect</button>
+    </div>
+  );
+}
+```
+
 ---
 
 ## Quick start
@@ -750,7 +819,7 @@ The library ships with `@stellar/stellar-sdk` v13 and `@stellar/freighter-api` v
 
 ## Migration
 
-See [docs/guides/migration-guide.md](docs/guides/migration-guide.md) for a version-by-version guide to breaking changes and how to update your code.
+See [docs/guides/migration-guide.md](docs/guides/migration-guide.md) for a comprehensive guide on migrating from raw `@stellar/stellar-sdk` usage to `stellar-hooks`, including side-by-side code comparisons, common pitfalls, and best practices.
 
 ---
 
