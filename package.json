@@ -175,6 +175,17 @@
         "default": "./dist/hooks/useEffects.js"
       }
     },
+    "./useFeeBumpTransaction": {
+      "types": "./dist/hooks/useFeeBumpTransaction.d.ts",
+      "import": {
+        "types": "./dist/hooks/useFeeBumpTransaction.d.mts",
+        "default": "./dist/hooks/useFeeBumpTransaction.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useFeeBumpTransaction.d.ts",
+        "default": "./dist/hooks/useFeeBumpTransaction.js"
+      }
+    },
     "./useFeeStats": {
       "types": "./dist/hooks/useFeeStats.d.ts",
       "import": {
@@ -217,6 +228,17 @@
       "require": {
         "types": "./dist/hooks/useFreighterAccounts.d.ts",
         "default": "./dist/hooks/useFreighterAccounts.js"
+      }
+    },
+    "./useMultiSigThreshold": {
+      "types": "./dist/hooks/useMultiSigThreshold.d.ts",
+      "import": {
+        "types": "./dist/hooks/useMultiSigThreshold.d.mts",
+        "default": "./dist/hooks/useMultiSigThreshold.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useMultiSigThreshold.d.ts",
+        "default": "./dist/hooks/useMultiSigThreshold.js"
       }
     },
     "./useRabet": {

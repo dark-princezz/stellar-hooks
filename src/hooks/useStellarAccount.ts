@@ -102,8 +102,8 @@ export function useStellarAccount(
     initialData: null,
     debugLabel: "useStellarAccount",
     debounceDelay,
-    cacheKey,
-    cacheTtl,
+    ...(cacheKey !== undefined && { cacheKey }),
+    ...(cacheTtl !== undefined && { cacheTtl }),
   });
 
   return useMemo(
