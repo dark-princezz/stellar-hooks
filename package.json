@@ -175,6 +175,17 @@
         "default": "./dist/hooks/useEffects.js"
       }
     },
+    "./useFeeBumpTransaction": {
+      "types": "./dist/hooks/useFeeBumpTransaction.d.ts",
+      "import": {
+        "types": "./dist/hooks/useFeeBumpTransaction.d.mts",
+        "default": "./dist/hooks/useFeeBumpTransaction.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useFeeBumpTransaction.d.ts",
+        "default": "./dist/hooks/useFeeBumpTransaction.js"
+      }
+    },
     "./useFeeStats": {
       "types": "./dist/hooks/useFeeStats.d.ts",
       "import": {
@@ -219,6 +230,17 @@
         "default": "./dist/hooks/useFreighterAccounts.js"
       }
     },
+    "./useMultiSigThreshold": {
+      "types": "./dist/hooks/useMultiSigThreshold.d.ts",
+      "import": {
+        "types": "./dist/hooks/useMultiSigThreshold.d.mts",
+        "default": "./dist/hooks/useMultiSigThreshold.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useMultiSigThreshold.d.ts",
+        "default": "./dist/hooks/useMultiSigThreshold.js"
+      }
+    },
     "./useRabet": {
       "types": "./dist/hooks/useRabet.d.ts",
       "import": {
@@ -228,6 +250,17 @@
       "require": {
         "types": "./dist/hooks/useRabet.d.ts",
         "default": "./dist/hooks/useRabet.js"
+      }
+    },
+    "./useSorobanSimulate": {
+      "types": "./dist/hooks/useSorobanSimulate.d.ts",
+      "import": {
+        "types": "./dist/hooks/useSorobanSimulate.d.mts",
+        "default": "./dist/hooks/useSorobanSimulate.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useSorobanSimulate.d.ts",
+        "default": "./dist/hooks/useSorobanSimulate.js"
       }
     },
     "./useWallet": {

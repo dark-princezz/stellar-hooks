@@ -192,6 +192,25 @@ export type {
   UseMultiSigReturn,
 } from "./hooks/useMultiSig";
 
+export { useMultiSigThreshold } from "./hooks/useMultiSigThreshold";
+export type {
+  ThresholdLevel,
+  UseMultiSigThresholdOptions,
+  UseMultiSigThresholdReturn,
+} from "./hooks/useMultiSigThreshold";
+
+export { useSorobanSimulate } from "./hooks/useSorobanSimulate";
+export type {
+  UseSorobanSimulateOptions,
+  UseSorobanSimulateReturn,
+} from "./hooks/useSorobanSimulate";
+
+export { useSequenceNumber } from "./hooks/useSequenceNumber";
+export type {
+  UseSequenceNumberOptions,
+  UseSequenceNumberReturn,
+} from "./hooks/useSequenceNumber";
+
 export { useTrustline } from "./hooks/useTrustline";
 export type {
   UseTrustlineOptions,
@@ -241,6 +260,7 @@ export type {
   LedgerEntryState,
 } from "./types";
 export type { UseLedgerEntriesOptions, LedgerEntriesState } from "./hooks/useLedgerEntries";
+export type {
   // Provider
   StellarProviderProps,
   StellarHooksProviderProps,
@@ -303,12 +323,6 @@ export type {
   AssetDescriptor as ContractAssetDescriptor,
   UseContractIdReturn,
 } from "./hooks/useContractId";
-
-export { useSequenceNumber } from "./hooks/useSequenceNumber";
-export type {
-  UseSequenceNumberOptions,
-  UseSequenceNumberReturn,
-} from "./hooks/useSequenceNumber";
 
 export { useFeeStats } from "./hooks/useFeeStats";
 export type {
