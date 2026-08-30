@@ -84,8 +84,7 @@ export function useStellarAccount(
   publicKey: StellarPublicKey | null | undefined,
   options: UseStellarAccountOptions = {},
 ): UseStellarAccountReturn {
-  const { enabled = true, refetchInterval = 0, deduplicate = true, debounceDelay = 0 } = options;
-  const { enabled = true, refetchInterval = 0, deduplicate = true, cacheKey, cacheTtl } = options;
+  const { enabled = true, refetchInterval = 0, deduplicate = true, debounceDelay = 0, cacheKey, cacheTtl } = options;
   const { config } = useStellarContext();
 
   const fetchAccount = useCallback(async (_signal?: AbortSignal): Promise<StellarAccountData | null> => {

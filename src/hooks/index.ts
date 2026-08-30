@@ -216,6 +216,19 @@ export type {
   UseFeeBumpTransactionReturn,
 } from "./useFeeBumpTransaction";
 
+export { useTransactionStatus } from "./useTransactionStatus";
+export type {
+  TransactionStatusSnapshot,
+  UseTransactionStatusOptions,
+  UseTransactionStatusReturn,
+} from "./useTransactionStatus";
+
+export { useSignTransaction } from "./useSignTransaction";
+export type {
+  UseSignTransactionOptions,
+  UseSignTransactionReturn,
+} from "./useSignTransaction";
+
 export { useAccountLiquidityPositions } from "./useAccountLiquidityPositions";
 export type {
   UseAccountLiquidityPositionsOptions,

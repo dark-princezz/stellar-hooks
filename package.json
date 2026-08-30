@@ -768,6 +768,28 @@
         "types": "./dist/hooks/usePaginatedOperations.d.ts",
         "default": "./dist/hooks/usePaginatedOperations.js"
       }
+    },
+    "./useSignTransaction": {
+      "types": "./dist/hooks/useSignTransaction.d.ts",
+      "import": {
+        "types": "./dist/hooks/useSignTransaction.d.mts",
+        "default": "./dist/hooks/useSignTransaction.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useSignTransaction.d.ts",
+        "default": "./dist/hooks/useSignTransaction.js"
+      }
+    },
+    "./useTransactionStatus": {
+      "types": "./dist/hooks/useTransactionStatus.d.ts",
+      "import": {
+        "types": "./dist/hooks/useTransactionStatus.d.mts",
+        "default": "./dist/hooks/useTransactionStatus.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useTransactionStatus.d.ts",
+        "default": "./dist/hooks/useTransactionStatus.js"
+      }
     }
   },
   "files": [

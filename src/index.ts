@@ -294,6 +294,16 @@ export {
 // Utilities
 export { parseAccountResponse, getCache, setCache, clearCache, getSandboxUrls, HOOK_SANDBOXES } from "./utils";
 export type { HookSandboxInfo } from "./utils";
+
+// Typed error classes
+export {
+  StellarHookError,
+  UserRejectedError,
+  FreighterNotInstalledError,
+  SimulationError,
+  isUserRejectionMessage,
+} from "./utils/errors";
+
 export { decodeXdr, formatXdrResult, detectXdrType } from "./utils/xdr";
 export type { XdrDecodeResult } from "./utils/xdr";
 
@@ -336,6 +346,19 @@ export type {
   UseFeeBumpTransactionOptions,
   UseFeeBumpTransactionReturn,
 } from "./hooks/useFeeBumpTransaction";
+
+export { useTransactionStatus } from "./hooks/useTransactionStatus";
+export type {
+  TransactionStatusSnapshot,
+  UseTransactionStatusOptions,
+  UseTransactionStatusReturn,
+} from "./hooks/useTransactionStatus";
+
+export { useSignTransaction } from "./hooks/useSignTransaction";
+export type {
+  UseSignTransactionOptions,
+  UseSignTransactionReturn,
+} from "./hooks/useSignTransaction";
 
 export { useAccountLiquidityPositions } from "./hooks/useAccountLiquidityPositions";
 export type {
