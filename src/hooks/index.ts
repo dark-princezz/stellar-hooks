@@ -184,6 +184,25 @@ export type {
   UseMultiSigReturn,
 } from "./useMultiSig";
 
+export { useMultiSigThreshold } from "./useMultiSigThreshold";
+export type {
+  ThresholdLevel,
+  UseMultiSigThresholdOptions,
+  UseMultiSigThresholdReturn,
+} from "./useMultiSigThreshold";
+
+export { useSorobanSimulate } from "./useSorobanSimulate";
+export type {
+  UseSorobanSimulateOptions,
+  UseSorobanSimulateReturn,
+} from "./useSorobanSimulate";
+
+export { useSequenceNumber } from "./useSequenceNumber";
+export type {
+  UseSequenceNumberOptions,
+  UseSequenceNumberReturn,
+} from "./useSequenceNumber";
+
 export { useTrustline } from "./useTrustline";
 export type {
   UseTrustlineOptions,

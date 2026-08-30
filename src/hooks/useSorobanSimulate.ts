@@ -13,7 +13,6 @@ import {
   xdr,
   nativeToScVal,
 } from "@stellar/stellar-sdk";
-import type { Transaction } from "@stellar/stellar-sdk";
 import * as rpc from "@stellar/stellar-sdk/rpc";
 import { useStellarContext } from "../context";
 import { useFreighter } from "./useFreighter";
