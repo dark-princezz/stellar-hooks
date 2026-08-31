@@ -14,6 +14,20 @@ export interface UseStellarNetworkReturn {
 /**
  * Read the active network and switch networks at runtime without remounting.
  *
+ * This hook provides dynamic network switching capabilities without requiring
+ * a page reload or provider remount. All child hooks automatically re-fetch
+ * when the network changes, making it ideal for network selection UIs.
+ *
+ * @returns Object containing network configuration and setter function
+ * @returns {string} returns.network - Current network: "testnet" | "mainnet" | "futurenet" | "custom"
+ * @returns {string} returns.networkPassphrase - Network passphrase for transaction signing
+ * @returns {string} returns.horizonUrl - Active Horizon REST API endpoint
+ * @returns {string} returns.sorobanRpcUrl - Active Soroban RPC endpoint
+ * @returns {NetworkConfig} returns.config - Full network configuration object
+ * @returns {function} returns.setNetwork - Function to switch networks dynamically
+ * @returns {string} returns.setNetwork.network - Target network to switch to
+ * @returns {CustomNetworkConfig} returns.setNetwork.customConfig - Custom config for "custom" network
+ *
  * @example
  * ```tsx
  * const { network, setNetwork } = useStellarNetwork();
@@ -23,6 +37,20 @@ export interface UseStellarNetworkReturn {
  *     Switch to Mainnet (currently {network})
  *   </button>
  * );
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Network toggle component
+ * function NetworkToggle() {
+ *   const { network, setNetwork } = useStellarNetwork();
+ *
+ *   return (
+ *     <button onClick={() => setNetwork(network === "testnet" ? "mainnet" : "testnet")}>
+ *       Currently: {network} — click to switch
+ *     </button>
+ *   );
+ * }
  * ```
  */
 export function useStellarNetwork(): UseStellarNetworkReturn {

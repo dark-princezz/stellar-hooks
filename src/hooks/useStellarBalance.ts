@@ -24,21 +24,51 @@ export interface UseStellarBalanceReturn {
  * Convenience wrapper around useStellarAccount that surfaces the native XLM balance
  * and optionally a specific asset balance.
  *
- * @param {StellarPublicKey | null | undefined} publicKey - The public key of the account to fetch.
- * @param {{ code: string; issuer: string } | UseStellarAccountOptions} [assetOrOptions] - Specific asset to find, or configuration options.
- * @param {UseStellarAccountOptions} [options] - Configuration options (if asset is provided as 2nd arg).
- * @returns {UseStellarBalanceReturn}
+ * This hook is a simplified interface for fetching account balances, providing
+ * easy access to the native XLM balance and optionally filtering for a specific
+ * custom asset by code and issuer.
+ *
+ * @param publicKey - The public key of the account to fetch balances for
+ * @param assetOrOptions - Either a specific asset to find (code + issuer) or configuration options
+ * @param assetOrOptions.code - Asset code (e.g., "USDC") when filtering for specific asset
+ * @param assetOrOptions.issuer - Asset issuer public key when filtering for specific asset
+ * @param options - Configuration options (only used when asset is provided as 2nd arg)
+ *
+ * @returns Object containing balance data and query state
+ * @returns {StellarBalance[]} returns.balances - All account balances
+ * @returns {StellarBalance|null} returns.xlmBalance - Native XLM balance entry
+ * @returns {StellarBalance|null} returns.assetBalance - Specific asset balance if requested
+ * @returns {StellarAccountData|null} returns.data - Full account data
+ * @returns {boolean} returns.isLoading - True during initial fetch
+ * @returns {Error|null} returns.error - Any error from the fetch
+ * @returns {Date|null} returns.lastFetchedAt - Timestamp of last successful fetch
+ * @returns {function} returns.refetch - Manually trigger a refetch
  *
  * @example
  * ```tsx
+ * // Get native XLM balance
  * const { xlmBalance, isLoading } = useStellarBalance(publicKey);
  * return <p>Balance: {xlmBalance?.balance ?? "0"} XLM</p>;
  * ```
  *
  * @example
  * ```tsx
+ * // Get specific asset balance
  * const { assetBalance } = useStellarBalance(publicKey, { code: "USDC", issuer: "G..." });
  * return <p>USDC Balance: {assetBalance?.balance ?? "0"}</p>;
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Get all balances with polling
+ * const { balances, isLoading } = useStellarBalance(publicKey, { refetchInterval: 5000 });
+ * return (
+ *   <ul>
+ *     {balances.map((balance) => (
+ *       <li key={balance.assetCode}>{balance.assetCode}: {balance.balance}</li>
+ *     ))}
+ *   </ul>
+ * );
  * ```
  */
 export function useStellarBalance(

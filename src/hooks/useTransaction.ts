@@ -81,12 +81,36 @@ export interface UseTransactionReturn {
 /**
  * Build, sign, and submit a Stellar transaction from raw operations.
  *
- * Handles the full lifecycle:
- * 1. Loads the source account sequence number from Horizon.
- * 2. Builds a `TransactionBuilder` with the supplied operations, fee, and memo.
- * 3. Optionally wraps the transaction in a fee-bump envelope.
- * 4. Signs the transaction via the connected Freighter wallet.
- * 5. Submits and polls until the transaction is confirmed (classic) or finalized (Soroban).
+ * This hook handles the full transaction lifecycle:
+ * 1. Loads the source account sequence number from Horizon
+ * 2. Builds a TransactionBuilder with the supplied operations, fee, and memo
+ * 3. Optionally wraps the transaction in a fee-bump envelope
+ * 4. Signs the transaction via the connected wallet (Freighter by default)
+ * 5. Submits and polls until the transaction is confirmed (classic) or finalized (Soroban)
+ *
+ * Supports both classic Stellar transactions and Soroban smart contract transactions.
+ *
+ * @param options - Transaction configuration
+ * @param options.retryStrategy - Configuration for handling network failures during polling
+ * @param options.mode - "classic" for Horizon, "soroban" for RPC (default: "classic")
+ * @param options.fee - Base fee in stroops (default: 100)
+ * @param options.memo - Optional text memo attached to the transaction
+ * @param options.feeBump - Optional fee-bump configuration for sponsored transactions
+ * @param options.feeBump.fee - Total fee for the fee-bump envelope (in stroops as string)
+ * @param options.feeBump.sponsor - Sponsor account public key (defaults to connected wallet)
+ * @param options.timeoutSeconds - Build and polling timeout in seconds (default: 60)
+ * @param options.onSuccess - Callback fired when transaction is successfully confirmed
+ * @param options.onError - Callback fired when an error occurs at any stage
+ *
+ * @returns Object containing transaction execution state and methods
+ * @returns {function} returns.submit - Build, sign, and submit transaction with provided operations
+ * @returns {string} returns.status - Current lifecycle status: "idle" | "building" | "signing" | "submitting" | "polling" | "success" | "error"
+ * @returns {string|null} returns.hash - Transaction hash once confirmed on-chain
+ * @returns {Error|null} returns.error - Error object if transaction failed at any stage
+ * @returns {boolean} returns.isLoading - True during any async operation
+ * @returns {boolean} returns.isSuccess - True when transaction completed successfully
+ * @returns {boolean} returns.isError - True when transaction failed
+ * @returns {function} returns.reset - Reset state back to idle
  *
  * @example
  * ```tsx

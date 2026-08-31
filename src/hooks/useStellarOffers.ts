@@ -39,6 +39,31 @@ export interface UseStellarOffersReturn {
 
 /**
  * Fetches open buy/sell offers from Horizon for a given account.
+ *
+ * @param publicKey - Stellar account public key (G...) to fetch offers for
+ * @param options - Configuration options for the query
+ * @param options.enabled - Whether the hook should fetch (default: true)
+ * @param options.refetchInterval - Polling interval in milliseconds, 0 = disabled (default: 0)
+ *
+ * @returns Object containing offer data and query state
+ * @returns {Horizon.ServerApi.OfferRecord[]} returns.offers - Array of open buy/sell offers
+ * @returns {boolean} returns.isLoading - True during initial fetch
+ * @returns {Error|null} returns.error - Any error from the fetch
+ * @returns {Date|null} returns.lastFetchedAt - Timestamp of last successful fetch
+ * @returns {function} returns.refetch - Manually trigger a refetch
+ *
+ * @example
+ * ```tsx
+ * const {
+ *   offers,        // Horizon.ServerApi.OfferRecord[] — open buy/sell offers
+ *   isLoading,     // boolean
+ *   error,         // Error | null
+ *   lastFetchedAt, // Date | null
+ *   refetch,       // () => Promise<void>
+ * } = useStellarOffers("G...", { refetchInterval: 10_000 });
+ *
+ * // Each offer: { id, selling, buying, amount, price, seller, ... }
+ * ```
  */
 export function useStellarOffers(
   publicKey: string | null | undefined,

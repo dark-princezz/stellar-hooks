@@ -94,7 +94,32 @@ export interface UsePaymentReturn {
  * Builds a classic Stellar payment operation, signs it via connected wallet (Freighter, Albedo, etc.),
  * and submits it through Horizon with polling for confirmation.
  *
+ * This hook simplifies the payment workflow by handling transaction building, signing,
+ * submission, and confirmation polling in a single interface. It supports both native
+ * XLM payments and custom asset payments.
+ *
  * Wraps `useTransaction({ mode: "classic" })` for submission and polling.
+ *
+ * @param options - Payment configuration
+ * @param options.destination - Recipient Stellar address (G...)
+ * @param options.asset - Asset to send (native or credit asset)
+ * @param options.amount - Amount as a string, e.g. "10.5"
+ * @param options.memo - Optional memo text (max 28 bytes)
+ * @param options.fee - Fee in stroops (default: 100)
+ * @param options.timeoutSeconds - Polling timeout in seconds (default: 60)
+ * @param options.walletId - Optional wallet ID to sign with (default: active wallet or freighter)
+ * @param options.onSuccess - Callback fired when transaction is successfully confirmed
+ * @param options.onError - Callback fired when transaction fails or error occurs
+ *
+ * @returns Object containing payment execution state and methods
+ * @returns {function} returns.submit - Call this to build, sign, and submit the payment
+ * @returns {string} returns.status - Transaction status: "idle" | "submitting" | "polling" | "success" | "error"
+ * @returns {string|null} returns.hash - Transaction hash on success
+ * @returns {Error|null} returns.error - Transaction error if failed
+ * @returns {boolean} returns.isLoading - True during submission or polling
+ * @returns {boolean} returns.isSuccess - True when payment completed successfully
+ * @returns {boolean} returns.isError - True when payment failed
+ * @returns {function} returns.reset - Reset the hook to idle state
  *
  * @example
  * ```tsx

@@ -73,6 +73,39 @@ export interface UseTradesReturn {
 /**
  * Fetches DEX trade history for a given Stellar account from Horizon.
  * Supports optional baseAsset / counterAsset filtering and cursor-based pagination.
+ *
+ * @param publicKey - Stellar account public key (G...) to fetch trade history for
+ * @param options - Configuration options for the query
+ * @param options.cursor - Cursor for pagination (default: latest)
+ * @param options.limit - Maximum number of records per page (default: 10)
+ * @param options.order - Sort order: "asc" or "desc" (default: "desc")
+ * @param options.baseAsset - Optional base asset filter for specific asset pair
+ * @param options.counterAsset - Optional counter asset filter (required when baseAsset is set)
+ * @param options.enabled - Whether the hook should fetch (default: true)
+ * @param options.refetchInterval - Polling interval in milliseconds, 0 = disabled (default: 0)
+ *
+ * @returns Object containing trade data and query state
+ * @returns {TradeRecord[]} returns.trades - Array of trade records
+ * @returns {boolean} returns.isLoading - True during initial fetch
+ * @returns {Error|null} returns.error - Any error from the fetch
+ * @returns {Date|null} returns.lastFetchedAt - Timestamp of last successful fetch
+ * @returns {function} returns.refetch - Manually trigger a refetch
+ *
+ * @example
+ * ```tsx
+ * // Fetch trade history for an account
+ * const { trades, isLoading, error, refetch } = useTrades("G...", {
+ *   limit: 20,
+ *   order: "desc",
+ * });
+ *
+ * // With asset pair filtering
+ * import { Asset } from "@stellar/stellar-sdk";
+ * const { trades } = useTrades("G...", {
+ *   baseAsset: Asset.native(),
+ *   counterAsset: new Asset("USDC", "GA5ZSE..."),
+ * });
+ * ```
  */
 export function useTrades(
   publicKey: string | null | undefined,

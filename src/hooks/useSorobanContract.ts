@@ -135,12 +135,60 @@ function createReducer<TResult>() {
  * similar to wagmi's useContract.
  * Handles simulation, auth, submission, and status polling in one hook.
  *
- * @returns {UseContractCallReturn}
+ * This hook provides a complete interface for Soroban smart contract interactions,
+ * including read-only calls (simulation) and write operations (transaction submission
+ * with signing and polling). It handles the full lifecycle from simulation to
+ * confirmation.
+ *
+ * @param contractId - Soroban contract ID (C...) to interact with
+ * @param options - Contract call configuration
+ * @param options.method - Contract method to call
+ * @param options.args - Arguments to pass to the contract method as ScVal array
+ * @param options.fee - Fee in stroops (default: BASE_FEE)
+ * @param options.timeoutSeconds - Timeout for submission and polling (default: 30)
+ * @param options.sorobanRpcServer - Optional custom RPC server instance
+ * @param options.onSuccess - Callback fired when transaction is confirmed
+ * @param options.onError - Callback fired when an error occurs
+ * @param options.parseResult - Function to parse ScVal result to TypeScript type
+ * @param options.optimisticResult - Optimistic result to show during transaction
+ *
+ * @returns Object containing contract interaction methods and state
+ * @returns {function} returns.call - Execute contract call (simulate → sign → submit → poll)
+ * @returns {function} returns.simulate - Simulate the contract call without submission
+ * @returns {string} returns.status - Transaction status: "idle" | "building" | "signing" | "submitting" | "polling" | "success" | "error"
+ * @returns {TResult|null} returns.result - Parsed contract result on success
+ * @returns {string|null} returns.hash - Transaction hash on success
+ * @returns {Error|null} returns.error - Error object if any stage fails
+ * @returns {object|null} returns.simulation - Raw simulation response from RPC
+ * @returns {object|null} returns.estimatedCost - Estimated resource costs from simulation
+ * @returns {boolean} returns.isLoading - True during any async operation
+ * @returns {boolean} returns.isSuccess - True when call completed successfully
+ * @returns {boolean} returns.isError - True when call failed
+ * @returns {function} returns.reset - Reset state back to idle
+ *
  * @example
  * ```tsx
- * const { contract, read, write } = useSorobanContract(contractId);
- * const balance = await read("balance", [userAddress]);
- * const txHash = await write("transfer", [to, amount]);
+ * const { call, status, result, error } = useSorobanContract({
+ *   contractId: "CABC...XYZ",
+ *   method: "increment",
+ *   args: [nativeToScVal(1, { type: "u32" })],
+ *   fee: "100",
+ *   timeoutSeconds: 30,
+ * });
+ *
+ * return <button onClick={() => call()} disabled={status !== "idle"}>
+ *   {status}
+ * </button>;
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Parse result to TypeScript type
+ * const contract = useSorobanContract<number>({
+ *   contractId: "CABC...XYZ",
+ *   method: "get_value",
+ *   parseResult: (scVal) => scVal.u32().toNumber(),
+ * });
  * ```
  */
 export function useSorobanContract<TResult = unknown>(

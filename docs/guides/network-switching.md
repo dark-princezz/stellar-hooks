@@ -160,7 +160,7 @@ Because a network change bumps the request version/epoch, connected read hooks i
 
 ## See Also
 
-- [Provider & Context](/api/provider) — `StellarProvider` props and custom networks
-- [useNetwork](/api/hooks/use-network) — reading and switching the app network
-- [useFreighter](/api/hooks/use-freighter) — wallet connection and mismatch fields
-- [Error Handling Patterns](/guides/error-handling) — the wallet guard-rail pattern
+- [Provider Setup](/guide/provider) — `StellarProvider` props and custom networks
+- [useNetwork](/hooks/use-network) — reading and switching the app network
+- [useFreighter](/hooks/use-freighter) — wallet connection and mismatch fields
+- [Error Handling](/guide/error-handling) — the wallet guard-rail pattern

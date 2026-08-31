@@ -91,13 +91,61 @@ export interface UseTrustlineReturn {
 /**
  * Exposes current trustlines for an account and helpers to submit changeTrust operations.
  *
+ * This hook provides access to an account's trustlines and methods to add, modify,
+ * or remove trustlines. It handles the transaction building, signing, and submission
+ * process for trustline changes.
+ *
+ * @param options - Configuration options for trustline management
+ * @param options.publicKey - Account public key to query trustlines for (defaults to connected wallet)
+ * @param options.account - Alias for publicKey
+ * @param options.code - Asset code for trustline operations (e.g., "USDC")
+ * @param options.issuer - Asset issuer public key (G...)
+ * @param options.limit - Trustline limit (defaults to max, "0" to remove trustline)
+ * @param options.fee - Fee in stroops (default: 100)
+ * @param options.timeoutSeconds - Polling timeout in seconds (default: 60)
+ * @param options.onSuccess - Callback fired when transaction is successfully confirmed
+ * @param options.onError - Callback fired when transaction fails or error occurs
+ *
+ * @returns Object containing trustline data and management methods
+ * @returns {function} returns.submit - Build, sign, and submit the configured trustline change
+ * @returns {function} returns.changeTrust - Submit changeTrust operations with custom parameters
+ * @returns {StellarBalance[]} returns.trustlines - Array of current non-native trustlines for the account
+ * @returns {StellarBalance|null} returns.trustline - Trustline matching code & issuer if specified
+ * @returns {string} returns.status - Transaction status: "idle" | "submitting" | "polling" | "success" | "error"
+ * @returns {string|null} returns.hash - Transaction hash on success
+ * @returns {Error|null} returns.error - Transaction error if failed
+ * @returns {boolean} returns.isLoading - True during transaction operations
+ * @returns {boolean} returns.isSuccess - True when trustline change completed successfully
+ * @returns {boolean} returns.isError - True when trustline change failed
+ * @returns {function} returns.reset - Reset state back to idle
+ * @returns {function} returns.refetch - Manually trigger a refetch of trustlines
+ *
  * @example
  * ```tsx
  * // Query trustlines & submit changeTrust
  * const { trustlines, changeTrust, isLoading } = useTrustline({
  *   publicKey: "G...",
  * });
+ *
+ * // Add trustline for USDC
+ * await changeTrust({
+ *   code: "USDC",
+ *   issuer: "GA5Z...",
+ *   limit: "1000",
+ * });
  * ```
+ *
+ * @example
+ * ```tsx
+ * // Remove trustline
+ * const { changeTrust } = useTrustline({
+ *   code: "USDC",
+ *   issuer: "GA5Z...",
+ * });
+ *
+ * await changeTrust({ limit: "0" });
+ * ```
+ */
  */
 export function useTrustline(options: UseTrustlineOptions = {}): UseTrustlineReturn {
   const {

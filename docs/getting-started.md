@@ -48,6 +48,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 ### Custom Networks
 
+For detailed information on custom RPC and Horizon endpoint configuration, see the [RPC Endpoint Configuration](/guides/rpc-endpoint-configuration) guide.
+
 For private or self-hosted Stellar networks, use `network="custom"` and provide full configuration:
 
 ```tsx

@@ -6,6 +6,16 @@
     "packages/*"
   ],
   "description": "React hooks for Stellar and Soroban — useFreighter, useStellarAccount, useSorobanContract, useTransaction, and more.",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "npm run docs:typedoc:all && vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "docs:typedoc": "typedoc",
+    "docs:typedoc:all": "npm run docs:typedoc && cd packages/query && npm run docs:build && cd ../swr && npm run docs:build && cd ../..",
+    "docs:clean": "rm -rf docs/api",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -861,34 +871,6 @@
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "tsup",
-    "build:types-package": "npm --prefix packages/types run build",
-    "dev": "tsup --watch",
-    "lint": "eslint src --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "test:types": "tsd --files src/types/branded.test-d.ts",
-    "test:tree-shaking": "node scripts/test-tree-shaking.mjs",
-    "test:futurenet": "cross-env RUN_FUTURENET_TESTS=1 vitest run --config vitest.futurenet.config.ts --no-file-parallelism",
-    "test:e2e": "playwright test",
-    "prepare": "husky",
-    "prepublishOnly": "npm run build",
-    "changeset": "changeset",
-    "version": "changeset version",
-    "release": "changeset publish",
-    "size": "npm run build && size-limit",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "npm run docs:typedoc:all && vitepress build docs",
-    "docs:preview": "vitepress preview docs",
-    "docs:typedoc": "typedoc",
-    "docs:typedoc:all": "npm run docs:typedoc && cd packages/query && npm run docs:build && cd ../swr && npm run docs:build && cd ../..",
-    "docs:clean": "rm -rf docs/api",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
-  },
   "size-limit": [
     {
       "path": "dist/index.mjs",

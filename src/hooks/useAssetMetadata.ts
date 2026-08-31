@@ -41,6 +41,43 @@ export interface UseAssetMetadataReturn {
 /**
  * Resolves asset issuer info via stellar.toml.
  * Composes useStellarAccount and useStellarToml to fetch the issuer's home_domain and metadata.
+ *
+ * This hook fetches asset metadata by:
+ * 1. Getting the issuer account's home_domain from Horizon
+ * 2. Fetching the stellar.toml file from that domain
+ * 3. Finding the matching asset in the CURRENCIES section
+ *
+ * This provides access to asset information like name, description, logo, and other
+ * metadata defined in the issuer's stellar.toml file.
+ *
+ * @param assetCode - Asset code to look up (e.g., "USDC")
+ * @param assetIssuer - Asset issuer public key (G...)
+ *
+ * @returns Object containing asset metadata and query state
+ * @returns {AssetMetadata|null} returns.metadata - Matched CURRENCIES entry from stellar.toml
+ * @returns {boolean} returns.isLoading - True during account or toml fetch
+ * @returns {Error|null} returns.error - Any error from the fetch process
+ *
+ * @example
+ * ```tsx
+ * const {
+ *   metadata,  // AssetMetadata | null — matched CURRENCIES entry from stellar.toml
+ *   isLoading, // boolean
+ *   error,     // Error | null
+ * } = useAssetMetadata("USDC", "GISSUER...");
+ *
+ * if (isLoading) return <Spinner />;
+ * if (error) return <ErrorBanner error={error} />;
+ * if (!metadata) return <div>Asset metadata not found</div>;
+ *
+ * return (
+ *   <div>
+ *     <h3>{metadata.name || metadata.code}</h3>
+ *     <p>{metadata.desc}</p>
+ *     {metadata.image && <img src={metadata.image} alt={metadata.code} />}
+ *   </div>
+ * );
+ * ```
  */
 export function useAssetMetadata(
   assetCode: string | null | undefined,

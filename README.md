@@ -764,6 +764,8 @@ const { horizonUrl } = NETWORK_CONFIGS.mainnet;
 </StellarProvider>
 ```
 
+For detailed information on custom RPC and Horizon endpoint configuration, see the [RPC Endpoint Configuration](/guides/rpc-endpoint-configuration) guide in the documentation.
+
 ### `CustomNetworkConfig`
 
 Use this interface when connecting to a private or self-hosted Stellar network.
