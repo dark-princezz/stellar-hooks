@@ -25,6 +25,7 @@ export type {
 } from "./hooks/useAlbedo";
 export { useWallet } from "./hooks/useWallet";
 export type {
+  WalletInfo,
   UseWalletOptions,
   UseWalletReturn,
 } from "./hooks/useWallet";
@@ -300,14 +301,21 @@ export type {
 export { NETWORK_CONFIGS } from "./types";
 
 // Wallet adapters
-export type { WalletId, WalletAdapter } from "./wallets";
+export type { WalletId, WalletAdapter, WalletMeta, WalletInfo } from "./wallets";
 export {
   createFreighterAdapter,
   createLobstrAdapter,
   createXBullAdapter,
+  createXBullWalletConnectAdapter,
   createAlbedoAdapter,
   createRabetAdapter,
+  createLedgerAdapter,
+  createLobstrWalletConnectAdapter,
   createAllAdapters,
+  supportsTransactionSigning,
+  supportsMessageSigning,
+  supportsAuthEntrySigning,
+  getWalletsWithCapability,
 } from "./wallets";
 
 // Utilities

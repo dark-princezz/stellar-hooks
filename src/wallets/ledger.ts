@@ -20,6 +20,14 @@ export function createLedgerAdapter(): WalletAdapter {
   return {
     id: "ledger",
     name: "Ledger",
+    meta: {
+      name: "Ledger",
+      description: "Sign transactions with your Ledger hardware wallet via WebUSB. Requires the Stellar app to be open on the device.",
+      iconUrl: "https://cdn.ledger.com/ledger-live/images/ledger-live.png",
+      installUrl: "https://www.ledger.com/ledger-live",
+      supportsSignMessage: false,
+      supportsSignAuthEntry: false,
+    },
 
     isInstalled(): boolean {
       // WebUSB is the transport; available in Chrome/Edge but not Firefox/Safari.

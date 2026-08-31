@@ -18,6 +18,14 @@ export function createXBullAdapter(): WalletAdapter {
   return {
     id: "xbull",
     name: "xBull",
+    meta: {
+      name: "xBull",
+      description: "Feature-rich Stellar browser wallet with advanced trading tools.",
+      iconUrl: "https://xbull.app/assets/imgs/logo/logo.svg",
+      installUrl: "https://xbull.app",
+      supportsSignMessage: true,
+      supportsSignAuthEntry: true,
+    },
 
     isInstalled(): boolean {
       return getXBullSDK() !== null;

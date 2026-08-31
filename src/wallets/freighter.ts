@@ -14,6 +14,14 @@ export function createFreighterAdapter(): WalletAdapter {
   return {
     id: "freighter",
     name: "Freighter",
+    meta: {
+      name: "Freighter",
+      description: "Stellar browser extension wallet by the Stellar Development Foundation.",
+      iconUrl: "https://raw.githubusercontent.com/stellar/freighter/main/extension/src/popup/assets/logo.svg",
+      installUrl: "https://www.freighter.app",
+      supportsSignMessage: true,
+      supportsSignAuthEntry: true,
+    },
 
     isInstalled(): boolean {
       return typeof window !== "undefined" && !!(window as unknown as { __FREIGHTER__?: unknown }).__FREIGHTER__;

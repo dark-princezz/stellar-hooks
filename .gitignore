@@ -16,4 +16,5 @@ docs/.vitepress/cache
 
 # PR descriptions (generated artefacts, not part of the library source)
 pull-request.md
+PR_738-741.md
 PR_726-729.md

@@ -6,6 +6,14 @@ export function createAlbedoAdapter(): WalletAdapter {
   return {
     id: "albedo",
     name: "Albedo",
+    meta: {
+      name: "Albedo",
+      description: "Web-based Stellar signer — no install required. Signs via a secure popup.",
+      iconUrl: "https://albedo.link/img/albedo-logo.svg",
+      installUrl: "https://albedo.link",
+      supportsSignMessage: true,
+      supportsSignAuthEntry: true,
+    },
 
     isInstalled(): boolean {
       return true;
