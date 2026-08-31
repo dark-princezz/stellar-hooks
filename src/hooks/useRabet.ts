@@ -25,8 +25,14 @@ export interface RabetState {
   error: Error | null;
 }
 
+/**
+ * Configuration options for the useRabet hook.
+ */
 export interface UseRabetOptions {
-  /** When `true`, checks `isAllowed()` on mount and silently reconnects if previously granted */
+  /**
+   * When true, checks isAllowed() on mount and silently reconnects if previously granted.
+   * Default: false.
+   */
   autoConnect?: boolean;
 }
 
@@ -143,11 +149,26 @@ const initialState: State = {
 /**
  * Interact with the Rabet browser extension wallet.
  *
- * Handles detection, connection, transaction signing, and message signing.
- * Supports auto-connect on mount when `autoConnect` is enabled.
+ * Rabet is a browser extension wallet for Stellar that provides secure key management
+ * and transaction signing. This hook handles detection, connection, transaction signing,
+ * and message signing. It supports auto-connect on mount when enabled.
  *
- * @param options - Configuration options
- * @returns Wallet state and interaction methods
+ * @param options - Configuration options for Rabet integration
+ * @param options.autoConnect - When true, silently reconnects returning users (default: false)
+ *
+ * @returns Object containing Rabet wallet state and methods
+ * @returns {boolean} returns.isInstalled - Whether Rabet extension is detected
+ * @returns {boolean} returns.isConnected - Whether user has granted access to the wallet
+ * @returns {string|null} returns.publicKey - Connected wallet's public key (G...)
+ * @returns {boolean} returns.isLoading - True during detection or connection operations
+ * @returns {Error|null} returns.error - Any error from Rabet operations
+ * @returns {boolean} returns.isConnecting - True while connect() call is in flight
+ * @returns {boolean} returns.isSigningMessage - True while signMessage() call is in flight
+ * @returns {boolean} returns.isSigningTransaction - True while signTransaction() call is in flight
+ * @returns {function} returns.connect - Request wallet access from the user
+ * @returns {function} returns.disconnect - Clear the active wallet session
+ * @returns {function} returns.signTransaction - Sign a Stellar transaction XDR
+ * @returns {function} returns.signMessage - Sign an arbitrary message string
  *
  * @example
  * ```tsx
@@ -157,6 +178,14 @@ const initialState: State = {
  * if (!isConnected) return <button onClick={connect}>Connect</button>;
  *
  * return <p>{publicKey}</p>;
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Auto-connect returning users
+ * const { isConnected, publicKey } = useRabet({ autoConnect: true });
+ *
+ * if (isConnected) return <p>Welcome back, {publicKey}</p>;
  * ```
  */
 export function useRabet(options?: UseRabetOptions): UseRabetReturn {

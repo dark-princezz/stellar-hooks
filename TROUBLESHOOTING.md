@@ -4,6 +4,86 @@ Common errors users encounter when using stellar-hooks and how to fix them.
 
 ## Freighter Wallet Issues
 
+### Connection Timeout / Hanging on "Connecting"
+
+**Error Message:**
+```
+Connecting to Freighter... (hangs indefinitely)
+App stuck on loading spinner
+```
+
+**Causes:**
+1. Freighter extension is not installed and `isConnected()` never resolves
+2. Browser message channel communication issues
+3. Running in headless/preview environments without timeout handling
+4. Extension in a different browser profile
+
+**Solutions:**
+
+1. **Add timeout handling for connection checks:**
+```tsx
+import { useFreighter } from 'stellar-hooks';
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error("Connection timeout")), ms)
+  );
+  return Promise.race([promise, timeout]);
+}
+
+// Wrap your connection logic
+const checkConnection = async () => {
+  try {
+    await withTimeout(connect(), 5000); // 5 second timeout
+  } catch (err) {
+    if (err.message === "Connection timeout") {
+      console.error("Freighter not responding - may not be installed");
+    }
+  }
+};
+```
+
+2. **Use the hook's built-in error handling:**
+```tsx
+const { isInstalled, isLoading, error } = useFreighter();
+
+useEffect(() => {
+  if (isLoading && !isInstalled) {
+    // Show timeout warning after 3 seconds
+    const timeout = setTimeout(() => {
+      console.warn("Freighter detection taking longer than expected");
+    }, 3000);
+    return () => clearTimeout(timeout);
+  }
+}, [isLoading, isInstalled]);
+```
+
+3. **Provide clear timeout UI feedback:**
+```tsx
+const { isInstalled, isLoading, connect } = useFreighter();
+const [connectionTimeout, setConnectionTimeout] = useState(false);
+
+useEffect(() => {
+  if (isLoading) {
+    const timeout = setTimeout(() => setConnectionTimeout(true), 5000);
+    return () => clearTimeout(timeout);
+  }
+}, [isLoading]);
+
+if (connectionTimeout && !isInstalled) {
+  return (
+    <div>
+      <p>Connection timeout. Freighter may not be installed.</p>
+      <a href="https://freighter.app" target="_blank" rel="noopener noreferrer">
+        Install Freighter
+      </a>
+    </div>
+  );
+}
+```
+
+---
+
 ### "Freighter not detected"
 
 **Error Message:**
@@ -49,6 +129,196 @@ if (!isInstalled) {
       <a href="https://freighter.app" target="_blank" rel="noopener noreferrer">
         Install Freighter
       </a>
+    </div>
+  );
+}
+```
+
+---
+
+### "Failed to get address" / "No public key returned"
+
+**Error Message:**
+```
+Failed to get address
+No public key returned
+User denied the request
+```
+
+**Causes:**
+1. User denied the connection permission in Freighter popup
+2. Freighter wallet is locked
+3. Multiple accounts configured but no active selection
+4. Extension permissions not granted
+
+**Solutions:**
+
+1. **Handle permission denial gracefully:**
+```tsx
+import { UserRejectedError } from 'stellar-hooks';
+
+const { connect, error } = useFreighter();
+
+const handleConnect = async () => {
+  try {
+    await connect();
+  } catch (err) {
+    if (err instanceof UserRejectedError) {
+      console.log('User denied connection permission');
+      alert('Please grant permission to connect your wallet.');
+    } else if (err.message.includes('Failed to get address')) {
+      console.error('Address retrieval failed:', err);
+      alert('Unable to retrieve wallet address. Please check Freighter is unlocked.');
+    }
+  }
+};
+```
+
+2. **Check for locked wallet:**
+```tsx
+const { error, isInstalled } = useFreighter();
+
+if (error?.message.includes('locked') || error?.message.includes('unlock')) {
+  return (
+    <div>
+      <p>Please unlock your Freighter wallet and try again.</p>
+      <button onClick={() => window.location.reload()}>Retry</button>
+    </div>
+  );
+}
+```
+
+3. **Guide users through reconnection:**
+```tsx
+const { error, connect } = useFreighter();
+
+if (error?.message.includes('Failed to get address')) {
+  return (
+    <div style={{ padding: '1rem', border: '1px solid orange' }}>
+      <h3>Connection Issue</h3>
+      <p>Unable to retrieve your wallet address. This could be because:</p>
+      <ul>
+        <li>You denied the permission request</li>
+        <li>Your wallet is locked</li>
+        <li>No account is selected in Freighter</li>
+      </ul>
+      <button onClick={connect}>Try Connecting Again</button>
+    </div>
+  );
+}
+```
+
+4. **Use useFreighterAccounts for multi-account scenarios:**
+```tsx
+import { useFreighterAccounts } from 'stellar-hooks';
+
+const { accounts, switchAccount, error } = useFreighterAccounts();
+
+if (accounts.length > 1) {
+  return (
+    <div>
+      <p>Select an account:</p>
+      {accounts.map((account) => (
+        <button key={account} onClick={() => switchAccount(account)}>
+          {account.slice(0, 8)}...{account.slice(-4)}
+        </button>
+      ))}
+    </div>
+  );
+}
+```
+
+---
+
+### Extension Communication Errors
+
+**Error Message:**
+```
+Freighter is not available in this browser
+Extension communication failed
+window.freighterApi is not defined
+```
+
+**Causes:**
+1. Freighter extension not installed
+2. Extension disabled in current browser
+3. Running in iframe with restricted permissions
+4. Browser blocking extension communication
+5. Using wrong browser (not Chrome/Firefox/Brave)
+
+**Solutions:**
+
+1. **Detect extension availability:**
+```tsx
+const { isInstalled } = useFreighter();
+
+if (!isInstalled) {
+  return (
+    <div>
+      <h3>Freighter Not Detected</h3>
+      <p>Please install the Freighter browser extension to continue.</p>
+      <a 
+        href="https://freighter.app" 
+        target="_blank" 
+        rel="noopener noreferrer"
+        style={{ padding: '0.5rem 1rem', background: '#007bff', color: 'white', textDecoration: 'none' }}
+      >
+        Install Freighter
+      </a>
+    </div>
+  );
+}
+```
+
+2. **Check browser compatibility:**
+```tsx
+const isSupportedBrowser = () => {
+  const userAgent = navigator.userAgent;
+  return /Chrome|Firefox|Brave/.test(userAgent);
+};
+
+if (!isSupportedBrowser()) {
+  return (
+    <div>
+      <p>Freighter is supported on Chrome, Firefox, and Brave browsers.</p>
+      <p>Please use a supported browser or install the Freighter mobile app.</p>
+    </div>
+  );
+}
+```
+
+3. **Handle iframe restrictions:**
+```tsx
+const isInIframe = window.self !== window.top;
+
+if (isInIframe && !isInstalled) {
+  return (
+    <div>
+      <p>Extension detection may not work in iframes.</p>
+      <p>Please open this app in a new tab or ensure extension permissions are granted.</p>
+      <button onClick={() => window.open(window.location.href, '_blank')}>
+        Open in New Tab
+      </button>
+    </div>
+  );
+}
+```
+
+4. **Enable extension instructions:**
+```tsx
+const { isInstalled } = useFreighter();
+
+if (!isInstalled) {
+  return (
+    <div>
+      <h3>Enable Freighter Extension</h3>
+      <ol>
+        <li>Open your browser's extensions page</li>
+        <li>Find Freighter in the list</li>
+        <li>Enable the extension toggle</li>
+        <li>Refresh this page</li>
+      </ol>
+      <button onClick={() => window.location.reload()}>Refresh Page</button>
     </div>
   );
 }
@@ -196,6 +466,263 @@ const handleConnect = async () => {
     }
     // Handle other errors
   }
+};
+```
+
+---
+
+### Signing Errors
+
+**Error Message:**
+```
+Signing failed
+No signed transaction returned
+User rejected signing
+Transaction signing error
+```
+
+**Causes:**
+1. User rejected the signing request in Freighter popup
+2. Transaction XDR is malformed or invalid
+3. Network passphrase mismatch in signing options
+4. Account not connected before signing attempt
+5. Insufficient fee stroops in transaction
+
+**Solutions:**
+
+1. **Validate before signing:**
+```tsx
+const { isConnected, publicKey, signTransaction } = useFreighter();
+
+const handleSign = async (xdr: string) => {
+  if (!isConnected || !publicKey) {
+    alert('Please connect your wallet first');
+    return;
+  }
+
+  try {
+    const signedXdr = await signTransaction(xdr, {
+      networkPassphrase: "Test SDF Network ; September 2015",
+    });
+    console.log('Signed:', signedXdr);
+  } catch (err) {
+    if (err instanceof UserRejectedError) {
+      console.log('User rejected signing');
+    } else {
+      console.error('Signing failed:', err);
+    }
+  }
+};
+```
+
+2. **Check XDR validity before signing:**
+```tsx
+import { Transaction } from '@stellar/stellar-sdk';
+
+const validateXdr = (xdrString: string): boolean => {
+  try {
+    Transaction.fromXDR(xdrString, "base64");
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const handleSign = async (xdr: string) => {
+  if (!validateXdr(xdr)) {
+    alert('Invalid transaction XDR');
+    return;
+  }
+  await signTransaction(xdr);
+};
+```
+
+3. **Handle network passphrase in signing:**
+```tsx
+const { networkPassphrase, signTransaction } = useFreighter();
+
+const handleSign = async (xdr: string) => {
+  try {
+    const signedXdr = await signTransaction(xdr, {
+      networkPassphrase: networkPassphrase || undefined,
+    });
+    return signedXdr;
+  } catch (err) {
+    console.error('Signing failed:', err);
+    throw err;
+  }
+};
+```
+
+4. **Provide signing feedback:**
+```tsx
+const { isSigningMessage, signTransaction } = useFreighter();
+
+const handleSign = async (xdr: string) => {
+  try {
+    const signedXdr = await signTransaction(xdr);
+    alert('Transaction signed successfully!');
+    return signedXdr;
+  } catch (err) {
+    if (err.message.includes('reject') || err.message.includes('cancel')) {
+      alert('Signing was cancelled. Please try again if you want to proceed.');
+    } else {
+      alert(`Signing failed: ${err.message}`);
+    }
+    throw err;
+  }
+};
+```
+
+---
+
+### Auto-Connect Issues
+
+**Error Message:**
+```
+Auto-connect failed
+Silent reconnection not working
+Permission check failed
+```
+
+**Causes:**
+1. User previously denied permission (auto-connect requires prior approval)
+2. Extension permissions changed since last connection
+3. Network configuration changed between sessions
+4. localStorage/sessionStorage cleared
+
+**Solutions:**
+
+1. **Handle auto-connect failures gracefully:**
+```tsx
+const { isConnected, isAutoConnecting, error } = useFreighter({
+  autoConnect: true,
+});
+
+if (isAutoConnecting) {
+  return <p>Reconnecting to wallet...</p>;
+}
+
+if (!isConnected && !isAutoConnecting) {
+  return <button onClick={connect}>Connect Wallet</button>;
+}
+
+if (error && error.message.includes('auto-connect')) {
+  return (
+    <div>
+      <p>Auto-reconnect failed. Please connect manually.</p>
+      <button onClick={connect}>Connect Wallet</button>
+    </div>
+  );
+}
+```
+
+2. **Clear stored data for fresh start:**
+```tsx
+const forceReconnect = () => {
+  localStorage.removeItem('stellar-hooks:freighter-accounts');
+  localStorage.removeItem('stellar-hooks:network');
+  window.location.reload();
+};
+
+// Use when auto-connect issues persist
+<button onClick={forceReconnect}>Reset Connection</button>
+```
+
+3. **Check permission status before auto-connect:**
+```tsx
+import { isAllowed } from '@stellar/freighter-api';
+
+const checkPermission = async () => {
+  const { isAllowed: allowed } = await isAllowed();
+  if (!allowed) {
+    console.log('Permission not granted, auto-connect will fail');
+    return false;
+  }
+  return true;
+};
+
+// In your component
+useEffect(() => {
+  checkPermission().then((hasPermission) => {
+    if (!hasPermission) {
+      // Show manual connect button instead of auto-connect
+    }
+  });
+}, []);
+```
+
+---
+
+### SignMessage / SignBlob Errors
+
+**Error Message:**
+```
+Message signing failed
+No signed message returned
+Blob signing error
+```
+
+**Causes:**
+1. User rejected the message signing request
+2. Message format not supported by Freighter
+3. Account not connected
+4. Message too long or contains invalid characters
+
+**Solutions:**
+
+1. **Handle message signing rejection:**
+```tsx
+const { isConnected, signMessage, isSigningMessage } = useFreighter();
+
+const handleSignMessage = async (message: string) => {
+  if (!isConnected) {
+    alert('Please connect your wallet first');
+    return;
+  }
+
+  try {
+    const signature = await signMessage(message);
+    console.log('Signed message:', signature);
+    return signature;
+  } catch (err) {
+    if (err instanceof UserRejectedError) {
+      alert('Message signing was cancelled');
+    } else {
+      alert(`Message signing failed: ${err.message}`);
+    }
+    throw err;
+  }
+};
+```
+
+2. **Show signing state:**
+```tsx
+const { signMessage, isSigningMessage } = useFreighter();
+
+<button 
+  onClick={() => signMessage("Hello")}
+  disabled={isSigningMessage}
+>
+  {isSigningMessage ? 'Signing...' : 'Sign Message'}
+</button>
+```
+
+3. **Validate message before signing:**
+```tsx
+const validateMessage = (message: string): boolean => {
+  // Freighter has message length limits
+  if (message.length > 1000) {
+    alert('Message too long for signing');
+    return false;
+  }
+  // Check for invalid characters if needed
+  return true;
+};
+
+const handleSign = async (message: string) => {
+  if (!validateMessage(message)) return;
+  await signMessage(message);
 };
 ```
 

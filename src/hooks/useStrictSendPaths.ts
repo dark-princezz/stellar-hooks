@@ -74,6 +74,47 @@ export interface UseStrictSendPathsReturn {
  *
  * Automatically re-queries whenever `sourceAsset`, `sourceAmount`, or
  * `destinationAssets` change, with a configurable debounce (default 300 ms).
+ *
+ * @param sourceAsset - Asset being sent (e.g., Asset.native() for XLM)
+ * @param sourceAmount - Amount to send as a string (e.g., "10.5")
+ * @param destinationAssets - Array of destination assets to find paths to
+ * @param options - Configuration options for the query
+ * @param options.debounceMs - Debounce delay in milliseconds before triggering query (default: 300)
+ * @param options.enabled - Whether the hook should fetch (default: true)
+ *
+ * @returns Object containing path records and query state
+ * @returns {PathRecord[]} returns.paths - Array of available payment paths with exchange rates
+ * @returns {boolean} returns.isLoading - True during initial fetch
+ * @returns {Error|null} returns.error - Any error from the fetch
+ * @returns {Date|null} returns.lastFetchedAt - Timestamp of last successful fetch
+ *
+ * @example
+ * ```tsx
+ * import { useStrictSendPaths } from "stellar-hooks";
+ * import { Asset } from "@stellar/stellar-sdk";
+ *
+ * // Swap rate preview UI — show available paths for sending 10 XLM
+ * function SwapRatePreview() {
+ *   const USDC_ISSUER = "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN";
+ *   const { paths, isLoading, error } = useStrictSendPaths(
+ *     Asset.native(),
+ *     "10",
+ *     [new Asset("USDC", USDC_ISSUER)],
+ *   );
+ *
+ *   if (isLoading) return <p>Finding best rate…</p>;
+ *   if (error) return <p>Error: {error.message}</p>;
+ *
+ *   const best = paths[0];
+ *   if (!best) return <p>No paths found.</p>;
+ *
+ *   return (
+ *     <p>
+ *       Send {best.source_amount} XLM → Receive ~{best.destination_amount} USDC
+ *     </p>
+ *   );
+ * }
+ * ```
  */
 export function useStrictSendPaths(
   sourceAsset: Asset,

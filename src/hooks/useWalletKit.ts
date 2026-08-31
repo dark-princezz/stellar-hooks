@@ -68,6 +68,22 @@ const initial: State = {
  * (Freighter, Lobstr, xBull) and exposes a single interface regardless
  * of which wallet is active.
  *
+ * This hook automatically detects which Stellar wallet extensions are installed
+ * in the user's browser and provides a unified interface for connecting,
+ * disconnecting, and signing transactions. It's ideal for building wallet-agnostic
+ * dApps that support multiple wallet options.
+ *
+ * @returns Object containing wallet detection and interaction methods
+ * @returns {WalletId[]} returns.availableWallets - Array of detected wallet IDs
+ * @returns {WalletId|null} returns.activeWallet - Currently active wallet ID
+ * @returns {string|null} returns.publicKey - Connected wallet's public key
+ * @returns {boolean} returns.isConnecting - True while actively connecting to a wallet
+ * @returns {Error|null} returns.error - Any error from wallet operations
+ * @returns {function} returns.setActiveWallet - Set the active wallet ID
+ * @returns {function} returns.connect - Connect to a specific wallet (or use active)
+ * @returns {function} returns.disconnect - Disconnect the current wallet
+ * @returns {function} returns.signTransaction - Sign a transaction XDR with the connected wallet
+ *
  * @example
  * ```tsx
  * const { availableWallets, connect, publicKey, signTransaction } = useWalletKit();
@@ -78,6 +94,35 @@ const initial: State = {
  *   ));
  * }
  * return <p>Connected: {publicKey}</p>;
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Wallet picker component
+ * function WalletPicker() {
+ *   const { availableWallets, activeWallet, publicKey, connect, disconnect } = useWalletKit();
+ *
+ *   if (publicKey) {
+ *     return (
+ *       <div>
+ *         <p>Connected via {activeWallet}: {publicKey}</p>
+ *         <button onClick={disconnect}>Disconnect</button>
+ *       </div>
+ *     );
+ *   }
+ *
+ *   if (availableWallets.length === 0) return <p>No Stellar wallets detected.</p>;
+ *
+ *   return (
+ *     <div>
+ *       {availableWallets.map((id) => (
+ *         <button key={id} onClick={() => connect(id)}>
+ *           Connect {id}
+ *         </button>
+ *       ))}
+ *     </div>
+ *   );
+ * }
  * ```
  */
 export function useWalletKit(): UseWalletKitReturn {

@@ -33,12 +33,37 @@ export interface UseCreateAccountReturn {
  * Fund a new Stellar account via Friendbot (testnet/futurenet only) or build a
  * classic `createAccount` operation for mainnet.
  *
+ * This hook provides two main functionalities:
+ * 1. Friendbot funding for testnet/futurenet account creation
+ * 2. Transaction building for mainnet account creation operations
+ *
+ * Friendbot is a Stellar Foundation service that provides free testnet XLM to
+ * developers for testing purposes.
+ *
+ * @param options - Configuration options for account creation
+ * @param options.friendbotUrl - Optional Friendbot URL (infers from network if not provided)
+ *
+ * @returns Object containing account creation methods and state
+ * @returns {function} returns.fundWithFriendbot - Request funding for a public key from Friendbot (testnet/futurenet only)
+ * @returns {function} returns.buildCreateAccountTransaction - Build a CreateAccount transaction for mainnet
+ * @returns {function} returns.buildCreateAccountTransaction.sourceAccountId - Source account funding the new account
+ * @returns {function} returns.buildCreateAccountTransaction.destinationPublicKey - New account public key
+ * @returns {function} returns.buildCreateAccountTransaction.startingBalance - Starting balance in XLM
+ * @returns {function} returns.buildCreateAccountTransaction.sequenceNumber - Source account sequence number
+ * @returns {function} returns.buildCreateAccountTransaction.baseFee - Optional base fee in stroops
+ * @returns {boolean} returns.isLoading - True during funding operation
+ * @returns {Error|null} returns.error - Any error from the funding process
+ *
  * @example
  * ```tsx
  * const { fundWithFriendbot, isLoading, error } = useCreateAccount();
  *
  * // Fund an account on testnet
  * await fundWithFriendbot("GNEW_PUBLIC_KEY...");
+ *
+ * if (isLoading) return <Spinner />;
+ * if (error) return <ErrorBanner error={error} />;
+ * return <div>Account funded successfully!</div>;
  * ```
  *
  * @example
@@ -51,6 +76,9 @@ export interface UseCreateAccountReturn {
  *   "1",           // startingBalance in XLM
  *   sequenceNumber,
  * );
+ *
+ * // Sign and submit the transaction with your wallet
+ * const signedTx = await signTransaction(tx.toXDR());
  * ```
  */
 export function useCreateAccount(options: UseCreateAccountOptions = {}): UseCreateAccountReturn {

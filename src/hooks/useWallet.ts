@@ -3,25 +3,53 @@ import type { WalletId, WalletAdapter } from "../wallets/types";
 import { createAllAdapters } from "../wallets";
 import { asPublicKey, type StellarPublicKey } from "../types";
 
+/**
+ * Configuration options for the useWallet hook.
+ */
 export interface UseWalletOptions {
+  /**
+   * Specific wallet ID to use. If not provided, the hook will detect available wallets
+   * and use the last-connected wallet from localStorage.
+   */
   walletId?: WalletId;
+  /**
+   * If true, automatically reconnects users who previously granted access (default: false).
+   * Only works if the wallet was previously connected and permission was granted.
+   */
   autoConnect?: boolean;
 }
 
+/**
+ * Return type for the useWallet hook.
+ */
 export interface UseWalletReturn {
+  /** Array of detected wallet IDs that are available in the current browser */
   availableWallets: WalletId[];
+  /** Currently active wallet ID, or null if no wallet is connected */
   activeWallet: WalletId | null;
+  /** Connected wallet's public key (G...), or null if not connected */
   publicKey: StellarPublicKey | null;
+  /** Whether a wallet is currently connected */
   isConnected: boolean;
+  /** True during initial wallet detection and connection attempts */
   isLoading: boolean;
+  /** True while actively connecting to a wallet */
   isConnecting: boolean;
+  /** True while a message signing operation is in progress */
   isSigningMessage: boolean;
+  /** Any error that occurred during wallet operations */
   error: Error | null;
+  /** Set the active wallet (does not automatically connect) */
   setActiveWallet: (id: WalletId) => void;
+  /** Connect to a wallet by ID (or use active/default wallet) */
   connect: (walletId?: WalletId) => Promise<StellarPublicKey | null>;
+  /** Disconnect the current wallet (clears local state only) */
   disconnect: () => void;
+  /** Sign a Stellar transaction XDR with the connected wallet */
   signTransaction: (xdr: string, opts?: { networkPassphrase?: string }) => Promise<string>;
+  /** Sign a text message with the connected wallet */
   signMessage: (message: string, opts?: { accountToSign?: string }) => Promise<string>;
+  /** Sign a Soroban auth entry XDR with the connected wallet */
   signAuthEntry: (entryPreimageXdr: string) => Promise<string>;
 }
 
@@ -93,6 +121,67 @@ const initial: State = {
 /** localStorage key for persisting last-connected wallet type (#639). */
 const WALLET_PERSIST_KEY = "stellar-hooks:last-wallet";
 
+/**
+ * Unified multi-wallet interface for Stellar dApps.
+ *
+ * This hook detects installed Stellar wallets (Freighter, Lobstr, xBull, Albedo, Rabet)
+ * and provides a unified interface for connection, disconnection, and signing operations.
+ * It's the recommended approach for new code instead of wallet-specific hooks.
+ *
+ * @param options - Configuration options for wallet behavior
+ * @param options.walletId - Specific wallet ID to use (auto-detects if not provided)
+ * @param options.autoConnect - Automatically reconnect returning users (default: false)
+ *
+ * @returns Object containing wallet state and methods
+ * @returns {WalletId[]} returns.availableWallets - Detected wallet IDs in current browser
+ * @returns {WalletId|null} returns.activeWallet - Currently active wallet ID
+ * @returns {string|null} returns.publicKey - Connected wallet's public key
+ * @returns {boolean} returns.isConnected - Whether a wallet is connected
+ * @returns {boolean} returns.isLoading - True during initial detection/connection
+ * @returns {boolean} returns.isConnecting - True while actively connecting
+ * @returns {boolean} returns.isSigningMessage - True during message signing
+ * @returns {Error|null} returns.error - Any error from wallet operations
+ * @returns {function} returns.setActiveWallet - Set the active wallet ID
+ * @returns {function} returns.connect - Connect to a wallet
+ * @returns {function} returns.disconnect - Disconnect current wallet
+ * @returns {function} returns.signTransaction - Sign transaction XDR
+ * @returns {function} returns.signMessage - Sign text message
+ * @returns {function} returns.signAuthEntry - Sign Soroban auth entry
+ *
+ * @example
+ * ```tsx
+ * const { availableWallets, activeWallet, publicKey, connect, disconnect } = useWallet();
+ *
+ * if (publicKey) {
+ *   return (
+ *     <div>
+ *       <p>Connected via {activeWallet}: {publicKey}</p>
+ *       <button onClick={disconnect}>Disconnect</button>
+ *     </div>
+ *   );
+ * }
+ *
+ * if (availableWallets.length === 0) return <p>No Stellar wallets detected.</p>;
+ *
+ * return (
+ *   <div>
+ *     {availableWallets.map((id) => (
+ *       <button key={id} onClick={() => connect(id)}>
+ *         Connect {id}
+ *       </button>
+ *     ))}
+ *   </div>
+ * );
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Auto-connect returning users
+ * const { publicKey, isConnected } = useWallet({ autoConnect: true });
+ *
+ * if (isConnected) return <p>Welcome back, {publicKey}</p>;
+ * ```
+ */
 export function useWallet(options?: UseWalletOptions): UseWalletReturn {
   const [state, dispatch] = useReducer(reducer, initial);
   const adapters = useMemo<WalletAdapter[]>(() => createAllAdapters(), []);

@@ -9,7 +9,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useStellarContext } from "../context";
 import { useHookActivityDebug } from "../devtools/useHookActivityDebug";
 
+/**
+ * Configuration options for the useXBull hook.
+ */
 export interface UseXBullOptions {
+  /** Optional debug label for hook activity tracking */
   debugLabel?: string;
 }
 
@@ -40,6 +44,32 @@ function getXBullSDK(): XBullSDK | undefined {
 
 /**
  * Connect to and interact with the xBull browser extension wallet.
+ *
+ * xBull is a browser extension wallet for Stellar that provides secure key management
+ * and transaction signing. This hook handles connection detection, wallet connection,
+ * and transaction signing operations.
+ *
+ * @param options - Configuration options for xBull integration
+ * @param options.debugLabel - Optional debug label for hook activity tracking
+ *
+ * @returns Object containing xBull wallet state and methods
+ * @returns {boolean} returns.isInstalled - Whether xBull extension is installed
+ * @returns {boolean} returns.isConnected - Whether user has granted access to the wallet
+ * @returns {string|null} returns.publicKey - Connected wallet's public key (G...)
+ * @returns {boolean} returns.isLoading - True during connection detection or operations
+ * @returns {Error|null} returns.error - Any error from xBull operations
+ * @returns {function} returns.connect - Request wallet connection
+ * @returns {function} returns.disconnect - Disconnect wallet (clears local state)
+ * @returns {function} returns.signTransaction - Sign a Stellar transaction XDR
+ *
+ * @example
+ * ```tsx
+ * const { isInstalled, isConnected, publicKey, connect, signTransaction } = useXBull();
+ *
+ * if (!isInstalled) return <p>Please install xBull extension</p>;
+ * if (!isConnected) return <button onClick={connect}>Connect xBull</button>;
+ * return <p>Connected: {publicKey}</p>;
+ * ```
  */
 export function useXBull(options: UseXBullOptions = {}): UseXBullReturn {
   const { debugLabel = "useXBull" } = options;
