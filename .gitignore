@@ -14,5 +14,6 @@ docs/.vitepress/cache
 # Kiro IDE
 .kiro/
 
-# PR description (generated artefact, not part of the library source)
+# PR descriptions (generated artefacts, not part of the library source)
 pull-request.md
+PR_738-741.md

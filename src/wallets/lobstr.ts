@@ -25,6 +25,14 @@ export function createLobstrAdapter(): WalletAdapter {
   return {
     id: "lobstr",
     name: "Lobstr",
+    meta: {
+      name: "Lobstr",
+      description: "User-friendly Stellar wallet and exchange by Ultra Stellar.",
+      iconUrl: "https://lobstr.co/img/lobstr-icon.png",
+      installUrl: "https://lobstr.co/download",
+      supportsSignMessage: false,
+      supportsSignAuthEntry: false,
+    },
 
     isInstalled(): boolean {
       return getLobstrApi() !== null;

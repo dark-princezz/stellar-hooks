@@ -32,7 +32,6 @@ export type { UseEffectsOptions, UseEffectsReturn } from "./useEffects";
 
 export { useFreighter } from "./useFreighter";
 export { useAlbedo } from "./useAlbedo";
-export { useWallet } from "./useWallet";
 export type {
   AlbedoState,
   UseAlbedoOptions,
@@ -40,7 +39,9 @@ export type {
   SignAlbedoMessageOptions,
   UseAlbedoReturn,
 } from "./useAlbedo";
+export { useWallet } from "./useWallet";
 export type {
+  WalletInfo,
   UseWalletOptions,
   UseWalletReturn,
 } from "./useWallet";

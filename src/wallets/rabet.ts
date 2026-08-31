@@ -19,6 +19,14 @@ export function createRabetAdapter(): WalletAdapter {
   return {
     id: "rabet",
     name: "Rabet",
+    meta: {
+      name: "Rabet",
+      description: "Non-custodial Stellar browser extension wallet with DEX support.",
+      iconUrl: "https://rabet.io/img/rabet-logo.svg",
+      installUrl: "https://rabet.io/download",
+      supportsSignMessage: true,
+      supportsSignAuthEntry: false,
+    },
 
     isInstalled(): boolean {
       return getRabetApi() !== null;
@@ -41,7 +49,7 @@ export function createRabetAdapter(): WalletAdapter {
       return api.sign(xdr, opts);
     },
 
-    async signMessage(message: string): Promise<string> {
+    async signMessage(message: string, opts?: { accountToSign?: string }): Promise<string> {
       const api = getRabetApi();
       if (!api) throw new Error("Rabet extension is not installed");
       const { signature } = await api.signMessage(message);
