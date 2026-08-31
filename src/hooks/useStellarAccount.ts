@@ -33,6 +33,7 @@ export interface UseStellarAccountOptions {
    * Default: 0 (no debounce — backward compatible).
    */
   debounceDelay?: number;
+  /**
    * When provided, account data is stored in (and served from) the shared
    * module-level in-memory cache under this key.  Absent = caching disabled.
    *
@@ -114,8 +115,7 @@ export function useStellarAccount(
   publicKey: StellarPublicKey | null | undefined,
   options: UseStellarAccountOptions = {},
 ): UseStellarAccountReturn {
-  const { enabled = true, refetchInterval = 0, deduplicate = true, debounceDelay = 0 } = options;
-  const { enabled = true, refetchInterval = 0, deduplicate = true, cacheKey, cacheTtl } = options;
+  const { enabled = true, refetchInterval = 0, deduplicate = true, debounceDelay = 0, cacheKey, cacheTtl } = options;
   const { config } = useStellarContext();
 
   const fetchAccount = useCallback(async (_signal?: AbortSignal): Promise<StellarAccountData | null> => {
@@ -133,8 +133,8 @@ export function useStellarAccount(
     initialData: null,
     debugLabel: "useStellarAccount",
     debounceDelay,
-    cacheKey,
-    cacheTtl,
+    ...(cacheKey !== undefined && { cacheKey }),
+    ...(cacheTtl !== undefined && { cacheTtl }),
   });
 
   return useMemo(

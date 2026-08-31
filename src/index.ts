@@ -192,6 +192,25 @@ export type {
   UseMultiSigReturn,
 } from "./hooks/useMultiSig";
 
+export { useMultiSigThreshold } from "./hooks/useMultiSigThreshold";
+export type {
+  ThresholdLevel,
+  UseMultiSigThresholdOptions,
+  UseMultiSigThresholdReturn,
+} from "./hooks/useMultiSigThreshold";
+
+export { useSorobanSimulate } from "./hooks/useSorobanSimulate";
+export type {
+  UseSorobanSimulateOptions,
+  UseSorobanSimulateReturn,
+} from "./hooks/useSorobanSimulate";
+
+export { useSequenceNumber } from "./hooks/useSequenceNumber";
+export type {
+  UseSequenceNumberOptions,
+  UseSequenceNumberReturn,
+} from "./hooks/useSequenceNumber";
+
 export { useTrustline } from "./hooks/useTrustline";
 export type {
   UseTrustlineOptions,
@@ -241,6 +260,8 @@ export type {
   LedgerEntryState,
 } from "./types";
 export type { UseLedgerEntriesOptions, LedgerEntriesState } from "./hooks/useLedgerEntries";
+
+export type {
   // Provider
   StellarProviderProps,
   StellarHooksProviderProps,
@@ -292,6 +313,16 @@ export {
 // Utilities
 export { parseAccountResponse, getCache, setCache, clearCache, getSandboxUrls, HOOK_SANDBOXES } from "./utils";
 export type { HookSandboxInfo } from "./utils";
+
+// Typed error classes
+export {
+  StellarHookError,
+  UserRejectedError,
+  FreighterNotInstalledError,
+  SimulationError,
+  isUserRejectionMessage,
+} from "./utils/errors";
+
 export { decodeXdr, formatXdrResult, detectXdrType } from "./utils/xdr";
 export type { XdrDecodeResult } from "./utils/xdr";
 
@@ -303,12 +334,6 @@ export type {
   AssetDescriptor as ContractAssetDescriptor,
   UseContractIdReturn,
 } from "./hooks/useContractId";
-
-export { useSequenceNumber } from "./hooks/useSequenceNumber";
-export type {
-  UseSequenceNumberOptions,
-  UseSequenceNumberReturn,
-} from "./hooks/useSequenceNumber";
 
 export { useFeeStats } from "./hooks/useFeeStats";
 export type {
@@ -335,6 +360,19 @@ export type {
   UseFeeBumpTransactionReturn,
 } from "./hooks/useFeeBumpTransaction";
 
+export { useTransactionStatus } from "./hooks/useTransactionStatus";
+export type {
+  TransactionStatusSnapshot,
+  UseTransactionStatusOptions,
+  UseTransactionStatusReturn,
+} from "./hooks/useTransactionStatus";
+
+export { useSignTransaction } from "./hooks/useSignTransaction";
+export type {
+  UseSignTransactionOptions,
+  UseSignTransactionReturn,
+} from "./hooks/useSignTransaction";
+
 export { useAccountLiquidityPositions } from "./hooks/useAccountLiquidityPositions";
 export type {
   UseAccountLiquidityPositionsOptions,
@@ -343,6 +381,37 @@ export type {
 
 export { useContractEvents } from "./hooks/useContractEvents";
 export type { UseContractEventsOptions } from "./hooks/useContractEvents";
+
+export { useContractStorageEntry } from "./hooks/useContractStorageEntry";
+export type {
+  ContractStorageDurability,
+  ContractStorageEntry,
+  UseContractStorageEntryOptions,
+  UseContractStorageEntryReturn,
+} from "./hooks/useContractStorageEntry";
+
+export { useSorobanEvents } from "./hooks/useSorobanEvents";
+export type {
+  SorobanEventsPageInfo,
+  UseSorobanEventsOptions,
+  UseSorobanEventsReturn,
+} from "./hooks/useSorobanEvents";
+
+export { useWasmUpload } from "./hooks/useWasmUpload";
+export type {
+  UseWasmUploadOptions,
+  WasmUploadPhase,
+  WasmUploadState,
+  UseWasmUploadReturn,
+} from "./hooks/useWasmUpload";
+
+export { useContractDeploy, deriveContractId } from "./hooks/useContractDeploy";
+export type {
+  UseContractDeployOptions,
+  ContractDeployPhase,
+  ContractDeployOverrides,
+  UseContractDeployReturn,
+} from "./hooks/useContractDeploy";
 
 export { useTrades } from "./hooks/useTrades";
 export type {

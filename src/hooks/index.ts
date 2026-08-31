@@ -184,6 +184,25 @@ export type {
   UseMultiSigReturn,
 } from "./useMultiSig";
 
+export { useMultiSigThreshold } from "./useMultiSigThreshold";
+export type {
+  ThresholdLevel,
+  UseMultiSigThresholdOptions,
+  UseMultiSigThresholdReturn,
+} from "./useMultiSigThreshold";
+
+export { useSorobanSimulate } from "./useSorobanSimulate";
+export type {
+  UseSorobanSimulateOptions,
+  UseSorobanSimulateReturn,
+} from "./useSorobanSimulate";
+
+export { useSequenceNumber } from "./useSequenceNumber";
+export type {
+  UseSequenceNumberOptions,
+  UseSequenceNumberReturn,
+} from "./useSequenceNumber";
+
 export { useTrustline } from "./useTrustline";
 export type {
   UseTrustlineOptions,
@@ -215,6 +234,19 @@ export type {
   UseFeeBumpTransactionOptions,
   UseFeeBumpTransactionReturn,
 } from "./useFeeBumpTransaction";
+
+export { useTransactionStatus } from "./useTransactionStatus";
+export type {
+  TransactionStatusSnapshot,
+  UseTransactionStatusOptions,
+  UseTransactionStatusReturn,
+} from "./useTransactionStatus";
+
+export { useSignTransaction } from "./useSignTransaction";
+export type {
+  UseSignTransactionOptions,
+  UseSignTransactionReturn,
+} from "./useSignTransaction";
 
 export { useAccountLiquidityPositions } from "./useAccountLiquidityPositions";
 export type {
@@ -307,3 +339,34 @@ export type {
   UseSep24Options,
   UseSep24Return,
 } from "./useSep24";
+
+export { useContractStorageEntry } from "./useContractStorageEntry";
+export type {
+  ContractStorageDurability,
+  ContractStorageEntry,
+  UseContractStorageEntryOptions,
+  UseContractStorageEntryReturn,
+} from "./useContractStorageEntry";
+
+export { useSorobanEvents } from "./useSorobanEvents";
+export type {
+  SorobanEventsPageInfo,
+  UseSorobanEventsOptions,
+  UseSorobanEventsReturn,
+} from "./useSorobanEvents";
+
+export { useWasmUpload } from "./useWasmUpload";
+export type {
+  UseWasmUploadOptions,
+  WasmUploadPhase,
+  WasmUploadState,
+  UseWasmUploadReturn,
+} from "./useWasmUpload";
+
+export { useContractDeploy, deriveContractId } from "./useContractDeploy";
+export type {
+  UseContractDeployOptions,
+  ContractDeployPhase,
+  ContractDeployOverrides,
+  UseContractDeployReturn,
+} from "./useContractDeploy";

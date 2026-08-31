@@ -114,6 +114,84 @@ export class UserRejectedError extends StellarHookError {
   }
 }
 
+// ─── FreighterNotInstalledError ───────────────────────────────────────────────
+
+/**
+ * Thrown when an operation requires the Freighter browser extension but it is
+ * not installed (or not reachable) in the current environment.
+ *
+ * Extends {@link StellarHookError} with a fixed `code` of `"FREIGHTER_NOT_INSTALLED"`
+ * so consumers can reliably detect and react to this specific failure mode,
+ * e.g. by showing an "Install Freighter" prompt.
+ *
+ * @example
+ * ```ts
+ * try {
+ *   await signTransaction(xdr);
+ * } catch (err) {
+ *   if (err instanceof FreighterNotInstalledError) {
+ *     return <InstallFreighterPrompt />;
+ *   }
+ * }
+ * ```
+ */
+export class FreighterNotInstalledError extends StellarHookError {
+  constructor(
+    message = "Freighter is not installed or not reachable in this environment.",
+    options?: { cause?: unknown; context?: Record<string, unknown> }
+  ) {
+    super(message, {
+      code: "FREIGHTER_NOT_INSTALLED",
+      ...(options?.cause !== undefined && { cause: options.cause }),
+      ...(options?.context !== undefined && { context: options.context }),
+    });
+    this.name = "FreighterNotInstalledError";
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, FreighterNotInstalledError);
+    }
+  }
+}
+
+// ─── SimulationError ──────────────────────────────────────────────────────────
+
+/**
+ * Thrown when a Soroban transaction simulation fails to produce a usable result.
+ *
+ * Extends {@link StellarHookError} with a fixed `code` of `"SIMULATION_ERROR"` and
+ * an optional `errorCode` carrying the RPC-level error code, when available.
+ *
+ * @example
+ * ```ts
+ * try {
+ *   await simulate("transfer", [from, to, amount]);
+ * } catch (err) {
+ *   if (err instanceof SimulationError) {
+ *     console.error("Simulation failed:", err.errorCode, err.message);
+ *   }
+ * }
+ * ```
+ */
+export class SimulationError extends StellarHookError {
+  /** RPC-level error code (e.g. `"host_error"`, `"txn_failed"`) when available. */
+  public readonly errorCode: string | undefined;
+
+  constructor(
+    message: string,
+    options?: { cause?: unknown; errorCode?: string; context?: Record<string, unknown> }
+  ) {
+    super(message, {
+      code: "SIMULATION_ERROR",
+      cause: options?.cause,
+      context: { ...options?.context, errorCode: options?.errorCode },
+    });
+    this.name = "SimulationError";
+    this.errorCode = options?.errorCode;
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, SimulationError);
+    }
+  }
+}
+
 // ─── User Rejection Detection ────────────────────────────────────────────────────
 
 /**

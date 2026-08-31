@@ -87,6 +87,7 @@ npm install stellar-hooks
 
 ## Community
 
-- [GitHub Repository](https://github.com/dark-princezz/stellar-hooks)
-- [Issues](https://github.com/dark-princezz/stellar-hooks/issues)
-- [Discussions](https://github.com/dark-princezz/stellar-hooks/discussions)
+
+
+## Guides
+- [Wagmi-Inspired Design Philosophy](./guides/wagmi-design-philosophy.md)
