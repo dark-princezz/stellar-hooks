@@ -80,6 +80,24 @@ export interface UseAlbedoReturn extends AlbedoState {
 /**
  * React hook to connect to and sign transactions or messages with the Albedo web-based wallet.
  *
+ * Albedo is a web-based Stellar wallet that uses intent-based signing via the @albedo-link/intent library.
+ * This hook provides a simple interface for connecting, signing transactions, and signing messages.
+ *
+ * @param options - Optional configuration for Albedo connection
+ * @param options.token - Optional token passed to albedo.publicKey() for identity verification
+ *
+ * @returns Object containing Albedo wallet state and methods
+ * @returns {boolean} returns.isConnected - Whether the user has connected their Albedo wallet
+ * @returns {string|null} returns.publicKey - Connected wallet's Stellar public key (G...)
+ * @returns {boolean} returns.isLoading - True while a connect or sign action is in progress
+ * @returns {Error|null} returns.error - Most recent error from an Albedo interaction
+ * @returns {boolean} returns.isConnecting - True while the connection popup is active
+ * @returns {boolean} returns.isSigningMessage - True while a message signing request is active
+ * @returns {function} returns.connect - Request access/public key from Albedo
+ * @returns {function} returns.disconnect - Disconnect and reset active wallet state
+ * @returns {function} returns.signTransaction - Sign a Stellar transaction XDR using Albedo
+ * @returns {function} returns.signMessage - Sign an arbitrary message string using Albedo
+ *
  * @example
  * ```tsx
  * const { isConnected, publicKey, connect, signTransaction } = useAlbedo();
@@ -88,6 +106,20 @@ export interface UseAlbedoReturn extends AlbedoState {
  *   return <button onClick={() => connect()}>Connect Albedo</button>;
  * }
  * return <p>Connected as {publicKey}</p>;
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Sign a transaction
+ * const { signTransaction } = useAlbedo();
+ * const signedXdr = await signTransaction(builtXdr, { network: "testnet" });
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Sign a message for authentication
+ * const { signMessage } = useAlbedo();
+ * const signature = await signMessage("Hello Stellar", { pubkey: "G..." });
  * ```
  */
 export function useAlbedo(options?: UseAlbedoOptions): UseAlbedoReturn {

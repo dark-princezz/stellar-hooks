@@ -60,7 +60,59 @@ export interface UseOperationsReturn {
 /**
  * Fetches operations from Horizon for a given account or transaction.
  *
+ * This hook retrieves Stellar operations from the Horizon API, supporting both
+ * account-level and transaction-level operation queries. It includes pagination
+ * support, filtering options, and optional polling for real-time updates.
+ *
  * At least one of `accountId` or `transactionHash` must be provided.
+ *
+ * @param options - Configuration options for the operations query
+ * @param options.accountId - Stellar account public key to fetch operations for
+ * @param options.transactionHash - Transaction hash to fetch operations for
+ * @param options.cursor - Cursor for pagination
+ * @param options.limit - Maximum number of records per page (default: 10)
+ * @param options.order - Sort order: "asc" or "desc" (default: "desc")
+ * @param options.includeFailed - Include failed operations in results (default: false)
+ * @param options.enabled - Whether the hook should fetch (default: true)
+ * @param options.refetchInterval - Polling interval in milliseconds, 0 = disabled (default: 0)
+ *
+ * @returns Object containing operations data and query state
+ * @returns {Horizon.ServerApi.OperationRecord[]} returns.operations - Array of operation records
+ * @returns {boolean} returns.isLoading - True during fetch
+ * @returns {Error|null} returns.error - Any error from the fetch
+ * @returns {Date|null} returns.lastFetchedAt - Timestamp of last successful fetch
+ * @returns {function} returns.refetch - Manually trigger a refetch
+ *
+ * @example
+ * ```tsx
+ * // Fetch operations for an account
+ * const { operations, isLoading } = useOperations({
+ *   accountId: "G...",
+ *   limit: 20,
+ * });
+ *
+ * // Fetch operations for a transaction
+ * const { operations, isLoading } = useOperations({
+ *   transactionHash: "abc...",
+ * });
+ *
+ * // With polling
+ * const { operations } = useOperations({
+ *   accountId: "G...",
+ *   refetchInterval: 10_000,
+ * });
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // With pagination
+ * const { operations, isLoading } = useOperations({
+ *   accountId: publicKey,
+ *   cursor: "123456...",
+ *   limit: 50,
+ *   order: "asc",
+ * });
+ * ```
  */
 export function useOperations(
   options: UseOperationsOptions = {}

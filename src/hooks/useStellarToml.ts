@@ -121,6 +121,60 @@ export interface UseStellarTomlReturn {
 
 /**
  * Fetches and parses a domain's stellar.toml file via the SEP-1 standard.
+ *
+ * This hook retrieves and parses stellar.toml files from domains, providing
+ * access to SEP-1 well-known fields like federation servers, signing keys,
+ * currencies, and documentation. It handles caching and provides convenient
+ * access to commonly used fields.
+ *
+ * @param domain - Domain to fetch stellar.toml from (e.g., "stellar.org")
+ * @param options - Configuration options for the fetch
+ * @param options.cacheTTL - Time-to-live for cache in milliseconds (default: 300000 = 5 minutes)
+ * @param options.allowHttp - Allow resolving over plain HTTP instead of HTTPS (default: false)
+ * @param options.timeout - Request timeout in milliseconds for SEP-1 resolver
+ *
+ * @returns Object containing parsed stellar.toml data and query state
+ * @returns {StellarTomlData|null} returns.data - Full parsed stellar.toml object
+ * @returns {string|null} returns.federationServer - FEDERATION_SERVER (SEP-2 endpoint)
+ * @returns {string|null} returns.signingKey - SIGNING_KEY for domain signature verification
+ * @returns {string|null} returns.webAuthEndpoint - WEB_AUTH_ENDPOINT (SEP-10 authentication)
+ * @returns {string|null} returns.transferServer - TRANSFER_SERVER (SEP-6 deposit/withdrawal)
+ * @returns {string|null} returns.kycServer - KYC_SERVER (SEP-12 customer info)
+ * @returns {string|null} returns.networkPassphrase - NETWORK_PASSPHRASE the domain operates on
+ * @returns {StellarTomlCurrency[]} returns.currencies - [[CURRENCIES]] entries (empty array if absent)
+ * @returns {StellarTomlDocumentation|null} returns.documentation - [DOCUMENTATION] organization metadata
+ * @returns {boolean} returns.isLoading - True during fetch
+ * @returns {Error|null} returns.error - Any error from the fetch
+ * @returns {function} returns.refetch - Manually trigger a refetch
+ *
+ * @example
+ * ```tsx
+ * const {
+ *   data,             // StellarTomlData | null — full parsed stellar.toml
+ *   federationServer, // string | null — FEDERATION_SERVER
+ *   signingKey,       // string | null — SIGNING_KEY
+ *   currencies,       // StellarTomlCurrency[] — [[CURRENCIES]] entries
+ *   documentation,    // StellarTomlDocumentation | null — [DOCUMENTATION]
+ *   isLoading,        // boolean
+ *   error,            // Error | null
+ *   refetch,          // () => Promise<void>
+ * } = useStellarToml("stellar.org");
+ *
+ * if (isLoading) return <Spinner />;
+ * if (error) return <ErrorBanner error={error} />;
+ *
+ * return (
+ *   <div>
+ *     <p>Federation Server: {federationServer}</p>
+ *     <p>Signing Key: {signingKey}</p>
+ *     <ul>
+ *       {currencies.map(currency => (
+ *         <li key={currency.code}>{currency.code} - {currency.name}</li>
+ *       ))}
+ *     </ul>
+ *   </div>
+ * );
+ * ```
  */
 export function useStellarToml(
   domain: string | null | undefined,

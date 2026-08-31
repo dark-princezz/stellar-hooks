@@ -31,7 +31,24 @@ export interface UseLedgerEntryOptions {
  * Useful for reading persistent contract data without constructing a full
  * contract call.
  *
- * @returns {LedgerEntryState}
+ * This hook provides direct access to Soroban ledger entries via the RPC API.
+ * It's ideal for reading contract storage, persistent data, or any ledger entry
+ * without the overhead of contract invocation.
+ *
+ * @param ledgerKey - XDR LedgerKey to fetch (use xdr.LedgerKey helpers to construct)
+ * @param options - Configuration options for the fetch
+ * @param options.enabled - Set false to skip automatic fetching (default: true)
+ * @param options.refetchInterval - Poll every N ms, 0 = disabled (default: 0)
+ * @param options.cacheTTL - Time-to-live for cache in milliseconds (default: 60000 = 1 minute)
+ *
+ * @returns Object containing ledger entry data and query state
+ * @returns {object|null} returns.data - SorobanRpc.Api.LedgerEntryResult or null if not found
+ * @returns {boolean} returns.isLoading - True during initial fetch
+ * @returns {boolean} returns.isRefetching - True during polling/refresh
+ * @returns {Error|null} returns.error - Any error from the fetch
+ * @returns {Date|null} returns.lastFetchedAt - Timestamp of last successful fetch
+ * @returns {function} returns.refetch - Manually trigger a refetch
+ *
  * @example
  * ```tsx
  * // Build the ledger key for a persistent "Counter" entry
@@ -54,6 +71,17 @@ export interface UseLedgerEntryOptions {
  * const value = data
  *   ? scValToNative(data.val.contractData().val())
  *   : null;
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Poll for ledger entry changes
+ * const { data, isLoading } = useLedgerEntry(ledgerKey, { refetchInterval: 5000 });
+ *
+ * if (isLoading) return <Spinner />;
+ * if (!data) return <div>Entry not found</div>;
+ *
+ * return <div>Value: {scValToNative(data.val.contractData().val())}</div>;
  * ```
  */
 export function useLedgerEntry(

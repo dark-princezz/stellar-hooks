@@ -65,11 +65,30 @@ export interface UseStellarAccountReturn {
 /**
  * Fetch and optionally poll a single Stellar account from Horizon.
  *
+ * This hook retrieves full account information including balances, sequence number,
+ * subentries, and other account details from the Stellar Horizon API. It supports
+ * polling for real-time updates and optional caching.
+ *
  * For multi-account lookups (e.g. fetching several signers or a multisig roster
  * in parallel), see {@link useStellarAccounts}.
  *
- * @param publicKey  Stellar public key (G…) to look up. Pass `null`/`undefined` to suspend the fetch.
- * @param options    Configuration (enabled, refetchInterval, deduplicate).
+ * @param publicKey - Stellar public key (G…) to look up. Pass null/undefined to suspend the fetch
+ * @param options - Configuration options for the hook
+ * @param options.enabled - Whether the query is enabled (default: true)
+ * @param options.refetchInterval - Polling interval in milliseconds, 0 = disabled (default: 0)
+ * @param options.deduplicate - Suppress concurrent duplicate requests (default: true)
+ * @param options.debounceDelay - Delay before initial fetch for rapid publicKey changes (default: 0)
+ * @param options.cacheKey - Storage key for module-level in-memory cache (default: none)
+ * @param options.cacheTtl - Time-to-live for cached entries in milliseconds (default: 5000)
+ *
+ * @returns Object containing account data and query state
+ * @returns {StellarAccountData|null} returns.account - The parsed account data
+ * @returns {StellarAccountData|null} returns.data - Alias for account (backward compatibility)
+ * @returns {boolean} returns.isLoading - True during initial fetch
+ * @returns {boolean} returns.isRefetching - True during refetch/polling
+ * @returns {Error|null} returns.error - Any error from the fetch
+ * @returns {Date|null} returns.lastFetchedAt - Timestamp of last successful fetch
+ * @returns {function} returns.refetch - Manually trigger a refetch
  *
  * @example
  * ```tsx
@@ -77,6 +96,18 @@ export interface UseStellarAccountReturn {
  *   "GAAZI4...",
  *   { refetchInterval: 10_000 },
  * );
+ *
+ * if (isLoading) return <Spinner />;
+ * if (error) return <ErrorBanner error={error} />;
+ * if (!account) return <EmptyState />;
+ *
+ * return <div>Balance: {account.balances[0].balance}</div>;
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Poll for account changes every 5 seconds
+ * const { account } = useStellarAccount("G...", { refetchInterval: 5000 });
  * ```
  */
 export function useStellarAccount(

@@ -77,6 +77,50 @@ export interface UseOrderBookReturn {
  * Fetches the Stellar DEX order book for a selling/buying asset pair from Horizon.
  * Supports both native XLM and any issued asset.
  * Optionally polls at `refetchInterval` for live price feeds.
+ *
+ * @param selling - Asset being sold (e.g., Asset.native() for XLM)
+ * @param buying - Asset being bought (e.g., new Asset("USDC", "GA5..."))
+ * @param options - Configuration options for the order book query
+ * @param options.limit - Max price levels per side (default: 20)
+ * @param options.refetchInterval - Polling interval in milliseconds, 0 = disabled (default: 0)
+ * @param options.enabled - Whether the hook should fetch (default: true)
+ *
+ * @returns Object containing order book data and query state
+ * @returns {OrderBookLevel[]} returns.bids - Buy-side price levels (highest first)
+ * @returns {OrderBookLevel[]} returns.asks - Sell-side price levels (lowest first)
+ * @returns {OrderBookRecord|null} returns.raw - Full raw Horizon response
+ * @returns {boolean} returns.isLoading - True during initial fetch
+ * @returns {Error|null} returns.error - Any error from the fetch
+ * @returns {Date|null} returns.lastFetchedAt - Timestamp of last successful fetch
+ * @returns {function} returns.refetch - Manually trigger a refetch
+ *
+ * @example
+ * ```tsx
+ * import { useOrderBook } from "stellar-hooks";
+ * import { Asset } from "@stellar/stellar-sdk";
+ *
+ * // Swap price display — show XLM/USDC order book, live-updating every 5 s
+ * function SwapPriceDisplay() {
+ *   const { bids, asks, isLoading, error } = useOrderBook(
+ *     Asset.native(),
+ *     new Asset("USDC", "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN"),
+ *     { limit: 10, refetchInterval: 5000 }
+ *   );
+ *
+ *   if (isLoading) return <p>Loading…</p>;
+ *   if (error) return <p>Error: {error.message}</p>;
+ *
+ *   const bestBid = bids[0]?.price ?? "—";
+ *   const bestAsk = asks[0]?.price ?? "—";
+ *
+ *   return (
+ *     <div>
+ *       <p>Best Bid: {bestBid} USDC</p>
+ *       <p>Best Ask: {bestAsk} USDC</p>
+ *     </div>
+ *   );
+ * }
+ * ```
  */
 export function useOrderBook(
   selling: Asset,

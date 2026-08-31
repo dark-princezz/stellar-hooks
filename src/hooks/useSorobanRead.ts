@@ -125,10 +125,57 @@ const DUMMY_ACCOUNT = "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF"
  * Execute simulate-only contract calls that don't require signing,
  * with automatic re-fetch whenever contractId, method, or arguments change.
  *
- * @param contractId - The contract address (C...)
- * @param method - Method name to invoke
- * @param args - Arguments to pass to the method
- * @param options - Configuration options
+ * This hook is ideal for read-only contract operations like querying state,
+ * getting balances, or reading configuration values. It simulates the contract
+ * call without creating or signing a transaction, making it faster and cheaper
+ * than write operations.
+ *
+ * @param contractId - The contract address (C...) to interact with
+ * @param method - Method name to invoke on the contract
+ * @param args - Arguments to pass to the method as an array
+ * @param options - Configuration options for the simulation
+ * @param options.enabled - Enable automatic fetching (default: true)
+ * @param options.accountAddress - Account address (G...) to simulate from (optional)
+ * @param options.refetchInterval - Poll interval in milliseconds, 0 = disabled (default: 0)
+ * @param options.cacheTTL - Cache TTL in milliseconds (default: 30000)
+ * @param options.parseResult - Custom result parser from ScVal to TypeScript type
+ * @param options.onSuccess - Callback fired on successful simulation
+ * @param options.onError - Callback fired on error
+ *
+ * @returns Object containing simulation results and state
+ * @returns {T|null} returns.data - Parsed simulation result
+ * @returns {xdr.ScVal|null} returns.result - Raw ScVal returned by contract simulation
+ * @returns {object|null} returns.simulation - Full Soroban RPC simulation response
+ * @returns {boolean} returns.isLoading - True during initial fetch
+ * @returns {boolean} returns.isRefetching - True during background re-fetch
+ * @returns {Error|null} returns.error - Simulation error, if any
+ * @returns {function} returns.refetch - Trigger manual refetch
+ *
+ * @example
+ * ```tsx
+ * // Read a contract value
+ * const { data, isLoading, error } = useSorobanRead(
+ *   "CABC...XYZ",
+ *   "get_value",
+ *   [],
+ *   { parseResult: (scVal) => scVal.u32().toNumber() }
+ * );
+ *
+ * if (isLoading) return <Spinner />;
+ * if (error) return <ErrorBanner error={error} />;
+ * return <div>Value: {data}</div>;
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Poll for changes every 10 seconds
+ * const { data } = useSorobanRead(
+ *   contractId,
+ *   "get_balance",
+ *   [userAddress],
+ *   { refetchInterval: 10000 }
+ * );
+ * ```
  */
 export function useSorobanRead<T = unknown>(
   contractId: string | null | undefined,

@@ -161,6 +161,6 @@ If a network looks wrong here, the issue is usually app setup or provider config
 
 ## See Also
 
-- [Soroban Cookbook](/guides/soroban-cookbook)
-- [useFreighter](/api/hooks/use-freighter)
-- [useTransaction](/api/hooks/use-transaction)
+- [Soroban Guide](/guide/soroban)
+- [useFreighter](/hooks/use-freighter)
+- [useTransaction](/hooks/use-transaction)

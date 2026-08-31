@@ -273,6 +273,15 @@ const listInitial: ClaimableBalancesState = {
  * Fetches all claimable balances for a given public key from Horizon.
  * Predicates are included in the returned data for display but not enforced.
  *
+ * @param publicKey - Stellar public key (G...) to fetch claimable balances for
+ *
+ * @returns Object containing claimable balance data and methods
+ * @returns {ClaimableBalanceRecord[]} returns.balances - List of claimable balances
+ * @returns {boolean} returns.isLoading - True during initial fetch
+ * @returns {Error|null} returns.error - Any error from the fetch
+ * @returns {function} returns.refetch - Manually trigger a refetch
+ * @returns {function} returns.claim - Claim a specific balance by ID
+ *
  * @example
  * ```tsx
  * const { balances, isLoading, refetch, claim } = useClaimableBalances(publicKey);

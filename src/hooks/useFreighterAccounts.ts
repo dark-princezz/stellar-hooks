@@ -114,39 +114,59 @@ function writeStored(storageKey: string, list: StellarPublicKey[]): void {
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
 /**
- * Remember every wallet address your dApp has previously connected with,
- * and drive Freighter's permission dialog to let the user switch between them.
+ * Track and switch between multiple Freighter wallet accounts.
  *
- * Use this hook when you want to surface a wallet-picker UI even though
- * Freighter itself only exposes the *currently active* account. The hook
- * does NOT enumerate background accounts inside Freighter's extension — that
- * is a Freighter limitation — but it persists all addresses the user has
- * ever shown your dApp so a custom picker / account-switcher UI can be
- * built on top.
+ * This hook records each address Freighter has connected with (most-recent first,
+ * capped at maxHistory) and exposes a `switchAccount(target)` helper that drives
+ * Freighter's `requestAccess()` permission dialog. It's useful for dApps that
+ * support multiple accounts or need to remember user's previous wallets.
+ *
+ * The known addresses list is persisted to localStorage so it survives reloads
+ * and stays in sync across tabs via StorageEvent.
+ *
+ * @param options - Configuration options for account tracking
+ * @param options.maxHistory - Maximum number of previously-seen addresses to remember (default: 20)
+ * @param options.storageKey - localStorage key for persistence (default: "stellar-hooks:freighter-accounts")
+ *
+ * @returns Object containing account management functions and state
+ * @returns {string|null} returns.active - Currently-active Freighter address (mirrors useFreighter().publicKey)
+ * @returns {string[]} returns.known - All previously-seen addresses, most-recent-first, deduped and capped
+ * @returns {function} returns.remember - Manually remember an address in the known list
+ * @returns {function} returns.forget - Forget a specific address from the known list
+ * @returns {function} returns.clear - Empty the known list
+ * @returns {boolean} returns.isSwitching - True while a switchAccount() call is in flight
+ * @returns {function} returns.switchAccount - Trigger Freighter's permission dialog to switch accounts
+ * @returns {function} returns.find - Check if a target address is in the known list
  *
  * @example
  * ```tsx
- * function AccountPicker() {
- *   const { known, active, switchAccount, isSwitching } = useFreighterAccounts();
+ * const { active, known, switchAccount, isSwitching } = useFreighterAccounts();
  *
- *   return (
- *     <select
- *       value={active ?? ""}
- *       disabled={isSwitching}
- *       onChange={async (e) => {
- *         const result = await switchAccount(e.target.value);
- *         if (result !== e.target.value) {
- *           alert(`Freighter landed on ${result ?? "no account"}; please switch in the extension.`);
- *         }
- *       }}
- *     >
- *       {known.length === 0 && <option value="">No accounts yet</option>}
- *       {known.map((pk) => <option key={pk} value={pk}>{pk.slice(0, 8)}…</option>)}
- *     </select>
- *   );
- * }
+ * return (
+ *   <div>
+ *     <p>Current: {active}</p>
+ *     <p>Previous accounts:</p>
+ *     <ul>
+ *       {known.map((account) => (
+ *         <li key={account}>
+ *           <button onClick={() => switchAccount(account)} disabled={isSwitching}>
+ *             {account.slice(0, 8)}...{account.slice(-4)}
+ *           </button>
+ *         </li>
+ *       ))}
+ *     </ul>
+ *   </div>
+ * );
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Check if user has connected before
+ * const { find, known } = useFreighterAccounts();
+ * const isNewUser = known.length === 0;
  * ```
  */
+
 export function useFreighterAccounts(
   options: UseFreighterAccountsOptions = {},
 ): UseFreighterAccountsReturn {

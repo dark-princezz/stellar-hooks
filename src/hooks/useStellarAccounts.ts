@@ -68,12 +68,29 @@ interface BatchedResult {
  * map. Per-key errors are captured individually so a single missing account
  * doesn't poison the whole batch.
  *
- * @param publicKeys  Stellar public keys to look up. `null`/`undefined` entries are skipped.
- *                    Duplicate entries are de-duplicated before the RPC call.
- * @param options     enabled / refetchInterval / deduplicate directives applied uniformly.
+ * This hook is ideal for multisig rosters, account pickers, or any scenario
+ * where you need to fetch multiple accounts simultaneously. It handles
+ * deduplication, error isolation, and efficient parallel fetching.
+ *
+ * @param publicKeys - Array of Stellar public keys to look up. null/undefined entries are skipped
+ * @param options - Configuration options for the batch fetch
+ * @param options.enabled - Whether the query is enabled (default: true)
+ * @param options.refetchInterval - Polling interval in milliseconds, 0 = disabled (default: 0)
+ * @param options.deduplicate - Suppress overlapping poll ticks while batch is in flight (default: true)
+ *
+ * @returns Object containing batch account data and query state
+ * @returns {Record<string, StellarAccountData|null>} returns.accounts - Map of publicKey → account data (null if fetch failed)
+ * @returns {Record<string, Error|null>} returns.errors - Map of publicKey → per-key error (null if no error)
+ * @returns {boolean} returns.isLoading - True during initial batched fetch
+ * @returns {boolean} returns.isRefetching - True during polling/refresh tick
+ * @returns {boolean} returns.isError - True if any key's fetch failed in the most recent batch
+ * @returns {Error|null} returns.error - Aggregate error (first failure across the batch)
+ * @returns {Date|null} returns.lastFetchedAt - Timestamp of last successful batch
+ * @returns {function} returns.refetch - Manually trigger a refetch of all keys
  *
  * @example
  * ```tsx
+ * // Fetch multisig signers in parallel
  * const { accounts, isLoading, isError, refetch } = useStellarAccounts(
  *   [signerA, signerB, signerC],
  *   { refetchInterval: 10_000 },
@@ -89,6 +106,20 @@ interface BatchedResult {
  *     ))}
  *   </ul>
  * );
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Handle partial failures gracefully
+ * const { accounts, errors } = useStellarAccounts([pk1, pk2, pk3]);
+ *
+ * Object.entries(accounts).forEach(([pk, account]) => {
+ *   if (errors[pk]) {
+ *     console.error(`Failed to load ${pk}:`, errors[pk]);
+ *   } else if (account) {
+ *     console.log(`${pk} has sequence ${account.sequence}`);
+ *   }
+ * });
  * ```
  */
 export function useStellarAccounts(
