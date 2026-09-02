@@ -950,7 +950,7 @@
     "lint-staged": "^15.5.0",
     "msw": "^2.15.0",
     "react": "^18.3.0",
-    "react-dom": "^18.3.1",
+    "react-dom": "^19.2.8",
     "react-test-renderer": "^18.3.0",
     "rollup-plugin-visualizer": "^7.0.1",
     "size-limit": "^12.1.0",
