@@ -957,7 +957,7 @@
     "@walletconnect/sign-client": "2.23.10",
     "cross-env": "^10.1.0",
     "eslint": "^8.57.0",
-    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "husky": "^9.1.7",
     "jscodeshift": "^17.3.0",
     "jsdom": "^29.1.1",
