@@ -950,7 +950,7 @@
     "@size-limit/preset-small-lib": "^12.1.0",
     "@storybook/addon-essentials": "^8.6.18",
     "@storybook/addon-interactions": "^8.6.18",
-    "@storybook/addon-links": "^8.6.18",
+    "@storybook/addon-links": "^10.6.1",
     "@storybook/react": "^8.6.18",
     "@storybook/react-vite": "^8.6.18",
     "@storybook/test": "^8.6.18",
