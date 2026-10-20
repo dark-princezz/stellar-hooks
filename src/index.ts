@@ -849,6 +849,20 @@ export type {
 
 export { formatTokenAmount, parseTokenAmount, DEFAULT_TOKEN_DECIMALS } from "./utils/tokenAmount";
 
+export { useFederationLookup } from "./hooks/useFederationLookup";
+export type { UseFederationLookupReturn } from "./hooks/useFederationLookup";
+export { resolveFederationAddress, reverseFederationLookup, isFederationAddress } from "./utils/federation";
+export type { FederationRecord, FederationOptions } from "./utils/federation";
+
+export { useMuxedAccount } from "./hooks/useMuxedAccount";
+export type { UseMuxedAccountReturn } from "./hooks/useMuxedAccount";
+export { createMuxedAddress, parseMuxedAddress, isMuxedAddress } from "./utils/muxedAccount";
+export type { ParsedMuxedAddress } from "./utils/muxedAccount";
+
+export { useAddressBook } from "./hooks/useAddressBook";
+export type { UseAddressBookOptions, UseAddressBookReturn } from "./hooks/useAddressBook";
+export { AddressBookStore } from "./utils/addressBook";
+export type { AddressBookEntry } from "./utils/addressBook";
 export {
   initialWalletState,
   walletActions,
