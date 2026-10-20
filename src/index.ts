@@ -849,6 +849,21 @@ export type {
 
 export { formatTokenAmount, parseTokenAmount, DEFAULT_TOKEN_DECIMALS } from "./utils/tokenAmount";
 
+export { useTransactionPreview } from "./hooks/useTransactionPreview";
+export type {
+  UseTransactionPreviewOptions,
+  UseTransactionPreviewReturn,
+} from "./hooks/useTransactionPreview";
+export { previewTransaction, classifyOperationRisk } from "./utils/transactionPreview";
+export type {
+  TransactionPreview as TransactionPreviewData,
+  PreviewOperation,
+  FeeBreakdown,
+  OperationRisk,
+  RiskLevel,
+} from "./utils/transactionPreview";
+export { TransactionPreview } from "./components/TransactionPreview";
+export type { TransactionPreviewProps } from "./components/TransactionPreview";
 export { useFederationLookup } from "./hooks/useFederationLookup";
 export type { UseFederationLookupReturn } from "./hooks/useFederationLookup";
 export { resolveFederationAddress, reverseFederationLookup, isFederationAddress } from "./utils/federation";
