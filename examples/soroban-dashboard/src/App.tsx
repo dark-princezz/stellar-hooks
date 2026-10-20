@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { StellarProvider, useFreighter, useSorobanContract } from "stellar-hooks";
+import { StellarProvider, useFreighter, useSorobanContract, useResourceEstimate } from "stellar-hooks";
 import { xdr } from "@stellar/stellar-sdk";
 
 // Simple counter contract interface
@@ -7,6 +7,41 @@ interface CounterContract {
   get_count: () => Promise<number>;
   increment: (amount: number) => Promise<number>;
   decrement: (amount: number) => Promise<number>;
+}
+
+function ResourcePanel({ methods }: { methods: Array<{ label: string; simulation: unknown }> }) {
+  return (
+    <div className="section">
+      <h3>Estimated Resources</h3>
+      <p className="hint">Figures come from the latest simulation of each method.</p>
+      {methods.map((m) => (
+        <MethodResources key={m.label} label={m.label} simulation={m.simulation} />
+      ))}
+    </div>
+  );
+}
+
+function MethodResources({ label, simulation }: { label: string; simulation: unknown }) {
+  const { estimate, warnings, isNearLimit } = useResourceEstimate(simulation);
+  if (!estimate) {
+    return <p className="hint">{label}: run it once to see an estimate.</p>;
+  }
+  return (
+    <div className={isNearLimit ? "error" : "success"}>
+      <p>
+        <strong>{label}</strong>: {estimate.cpuInstructions ?? "?"} CPU instructions,{" "}
+        {estimate.memoryBytes ?? "?"} bytes memory, {estimate.footprintEntries} ledger entries
+        ({estimate.readOnlyEntries} read-only, {estimate.readWriteEntries} read-write), min fee{" "}
+        {estimate.minResourceFee ?? "?"} stroops
+      </p>
+      {warnings.map((w) => (
+        <p key={w.resource}>
+          ⚠ {w.resource} at {Math.round(w.ratio * 100)}% of the limit
+          {w.level === "critical" ? " — this call will likely fail" : " — consider splitting the work"}
+        </p>
+      ))}
+    </div>
+  );
 }
 
 function ContractDashboard() {
@@ -239,6 +274,14 @@ function ContractDashboard() {
               )}
             </div>
           </div>
+
+          <ResourcePanel
+            methods={[
+              { label: "get_count", simulation: readContract.simulation },
+              { label: "increment", simulation: incrementContract.simulation },
+              { label: "decrement", simulation: decrementContract.simulation },
+            ]}
+          />
 
           <div className="info">
             <p className="public-key">Connected: {publicKey}</p>

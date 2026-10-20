@@ -864,3 +864,30 @@ export type {
 } from "./utils/transactionPreview";
 export { TransactionPreview } from "./components/TransactionPreview";
 export type { TransactionPreviewProps } from "./components/TransactionPreview";
+export { useFederationLookup } from "./hooks/useFederationLookup";
+export type { UseFederationLookupReturn } from "./hooks/useFederationLookup";
+export { resolveFederationAddress, reverseFederationLookup, isFederationAddress } from "./utils/federation";
+export type { FederationRecord, FederationOptions } from "./utils/federation";
+
+export { useMuxedAccount } from "./hooks/useMuxedAccount";
+export type { UseMuxedAccountReturn } from "./hooks/useMuxedAccount";
+export { createMuxedAddress, parseMuxedAddress, isMuxedAddress } from "./utils/muxedAccount";
+export type { ParsedMuxedAddress } from "./utils/muxedAccount";
+
+export { useAddressBook } from "./hooks/useAddressBook";
+export type { UseAddressBookOptions, UseAddressBookReturn } from "./hooks/useAddressBook";
+export { AddressBookStore } from "./utils/addressBook";
+export type { AddressBookEntry } from "./utils/addressBook";
+export {
+  initialWalletState,
+  walletActions,
+  walletReducer,
+  walletSelectors,
+} from "./integrations/walletState";
+export type { WalletState, WalletStatus, WalletBalance, WalletAction } from "./integrations/walletState";
+export { createWalletStore } from "./integrations/zustand";
+export type { WalletStore } from "./integrations/zustand";
+export { createWalletAtoms } from "./integrations/jotai";
+export { walletSlice, walletRootSelectors } from "./integrations/redux";
+export { useSyncWalletState } from "./hooks/useSyncWalletState";
+export type { UseSyncWalletStateOptions } from "./hooks/useSyncWalletState";
