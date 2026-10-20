@@ -848,3 +848,19 @@ export type {
 } from "./hooks/useNotificationPermission";
 
 export { formatTokenAmount, parseTokenAmount, DEFAULT_TOKEN_DECIMALS } from "./utils/tokenAmount";
+
+export { useTransactionPreview } from "./hooks/useTransactionPreview";
+export type {
+  UseTransactionPreviewOptions,
+  UseTransactionPreviewReturn,
+} from "./hooks/useTransactionPreview";
+export { previewTransaction, classifyOperationRisk } from "./utils/transactionPreview";
+export type {
+  TransactionPreview as TransactionPreviewData,
+  PreviewOperation,
+  FeeBreakdown,
+  OperationRisk,
+  RiskLevel,
+} from "./utils/transactionPreview";
+export { TransactionPreview } from "./components/TransactionPreview";
+export type { TransactionPreviewProps } from "./components/TransactionPreview";
