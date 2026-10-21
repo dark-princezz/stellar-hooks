@@ -76,6 +76,12 @@ export type {
 } from "./hooks/useMultiOperationTransaction";
 export { useLedgerEntry, useSuspenseLedgerEntry } from "./hooks/useLedgerEntry";
 export { useLedgerEntries, useSuspenseLedgerEntries } from "./hooks/useLedgerEntries";
+export { useEntryTtl } from "./hooks/useEntryTtl";
+export type {
+  EntryTtlData,
+  UseEntryTtlOptions,
+  UseEntryTtlReturn,
+} from "./hooks/useEntryTtl";
 export { useStellarToml } from "./hooks/useStellarToml";
 export { useAssetMetadata } from "./hooks/useAssetMetadata";
 export { useStellarOffers } from "./hooks/useStellarOffers";
