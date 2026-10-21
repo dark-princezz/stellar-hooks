@@ -231,6 +231,7 @@ For a cross-hook breakdown of how `error`, `isError`, `refetch`, and `reset` beh
 |------|-------------|
 | [`useSorobanContract()`](#usesorobancontractoptions) ↓ | Simulate → sign → submit → poll a Soroban contract call in one hook. |
 | [`useLedgerEntry()`](#useledgerentryledgerkey-options) ↓ | Read a raw Soroban ledger entry without constructing a contract call. |
+| `useEntryTtl()` | Read the live-until ledger and estimated time remaining for a contract instance, code, or data entry. |
 | [`useSorobanServer()`](#usesorobanserver) ↓ | Get a configured `SorobanRpc.Server` instance from the provider context. |
 | `useContractEvents()` | Poll Soroban contract events from RPC. |
 | `useContractId()` | Compute a contract ID from an asset descriptor (issuer + code). |
