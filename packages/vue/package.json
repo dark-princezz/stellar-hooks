@@ -47,7 +47,7 @@
     "@stellar-hooks/core": "file:../core",
     "@stellar/stellar-sdk": "13.3.0",
     "tsup": "^8.0.0",
-    "typescript": "^5.4.0",
+    "typescript": "^7.0.2",
     "vue": "^3.4.0"
   }
 }
