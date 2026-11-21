@@ -104,6 +104,13 @@ export type {
   UsePaymentOptions,
   UsePaymentReturn,
 } from "./hooks/usePayment";
+export { usePaymentLink } from "./hooks/usePaymentLink";
+export type {
+  PaymentLinkAsset,
+  PaymentLinkMemoType,
+  UsePaymentLinkOptions,
+  UsePaymentLinkReturn,
+} from "./hooks/usePaymentLink";
 export { useBumpSequence } from "./hooks/useBumpSequence";
 export type {
   UseBumpSequenceOptions,

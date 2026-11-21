@@ -1,0 +1,43 @@
+{
+  "name": "create-stellar-hooks-app",
+  "version": "0.1.0",
+  "description": "Create a Stellar dApp powered by stellar-hooks in seconds",
+  "bin": {
+    "create-stellar-hooks-app": "./bin/cli.js"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "bin",
+    "dist",
+    "templates",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "stellar",
+    "soroban",
+    "react",
+    "stellar-hooks",
+    "starter",
+    "cli",
+    "scaffolder",
+    "template"
+  ],
+  "author": "stellar-hooks contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dark-princezz/stellar-hooks.git",
+    "directory": "packages/create-stellar-hooks-app"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  }
+}

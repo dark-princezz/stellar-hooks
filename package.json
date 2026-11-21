@@ -16,6 +16,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test:testnet": "vitest run tests/integration/testnet",
+    "test:templates": "node scripts/smoke-test-templates.mjs",
     "check:circular": "node scripts/check-circular-deps.mjs",
     "check:circular:warn": "node scripts/check-circular-deps.mjs --warn",
     "check:circular:graph": "node scripts/check-circular-deps.mjs --graph",
@@ -581,6 +582,17 @@
       "require": {
         "types": "./dist/hooks/usePayment.d.ts",
         "default": "./dist/hooks/usePayment.js"
+      }
+    },
+    "./usePaymentLink": {
+      "types": "./dist/hooks/usePaymentLink.d.ts",
+      "import": {
+        "types": "./dist/hooks/usePaymentLink.d.mts",
+        "default": "./dist/hooks/usePaymentLink.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/usePaymentLink.d.ts",
+        "default": "./dist/hooks/usePaymentLink.js"
       }
     },
     "./useSequenceNumber": {

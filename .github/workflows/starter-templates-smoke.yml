@@ -1,0 +1,48 @@
+name: Starter Templates Smoke Test
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'templates/**'
+      - 'src/**'
+      - 'packages/**'
+      - 'scripts/smoke-test-templates.mjs'
+      - '.github/workflows/starter-templates-smoke.yml'
+  pull_request:
+    paths:
+      - 'templates/**'
+      - 'src/**'
+      - 'packages/**'
+      - 'scripts/smoke-test-templates.mjs'
+      - '.github/workflows/starter-templates-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-test-templates:
+    name: Smoke test starter templates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build stellar-hooks library
+        run: npx tsup
+
+      - name: Smoke test all starter templates (install, build, lint)
+        run: node scripts/smoke-test-templates.mjs
