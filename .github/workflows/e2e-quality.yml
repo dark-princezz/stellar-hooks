@@ -1,0 +1,76 @@
+name: E2E quality
+
+# Runs the wallet-free end-to-end checks (accessibility scan) and reports flaky and quarantined tests.
+# The scheduled run also executes the quarantined tests, without failing the workflow, so they can be fixed
+# and un-quarantined.
+on:
+  pull_request:
+    paths:
+      - "tests/e2e/**"
+      - "examples/e2e-test-app/**"
+      - "playwright.config.ts"
+      - ".github/workflows/e2e-quality.yml"
+  schedule:
+    - cron: "30 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  a11y:
+    name: Accessibility scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build the library (the example app imports it)
+        run: npx tsup
+      - name: Install the example app
+        run: npm install --prefix examples/e2e-test-app
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Run accessibility scan
+        run: npx playwright test --project=a11y
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-a11y-report
+          path: |
+            playwright-report/
+            flaky-report.json
+          if-no-files-found: ignore
+
+  quarantined:
+    name: Quarantined tests (informational)
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx tsup
+      - run: npm install --prefix examples/e2e-test-app
+      - run: npx playwright install --with-deps chromium
+      - name: Run quarantined tests
+        run: npm run test:e2e:quarantined
+        env:
+          E2E_QUARANTINED: "1"
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-quarantine-report
+          path: flaky-report.json
+          if-no-files-found: ignore
