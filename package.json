@@ -16,9 +16,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test:testnet": "vitest run tests/integration/testnet",
-    "test:e2e:mock": "playwright test -c playwright.mock.config.ts",
-    "test:visual": "playwright test -c playwright.visual.config.ts",
-    "test:visual:update": "playwright test -c playwright.visual.config.ts --update-snapshots",
+    "test:templates": "node scripts/smoke-test-templates.mjs",
     "check:circular": "node scripts/check-circular-deps.mjs",
     "check:circular:warn": "node scripts/check-circular-deps.mjs --warn",
     "check:circular:graph": "node scripts/check-circular-deps.mjs --graph",
@@ -586,6 +584,17 @@
         "default": "./dist/hooks/usePayment.js"
       }
     },
+    "./usePaymentLink": {
+      "types": "./dist/hooks/usePaymentLink.d.ts",
+      "import": {
+        "types": "./dist/hooks/usePaymentLink.d.mts",
+        "default": "./dist/hooks/usePaymentLink.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/usePaymentLink.d.ts",
+        "default": "./dist/hooks/usePaymentLink.js"
+      }
+    },
     "./useSequenceNumber": {
       "types": "./dist/hooks/useSequenceNumber.d.ts",
       "import": {
@@ -1015,7 +1024,6 @@
     "@changesets/cli": "^2.31.1",
     "@commitlint/cli": "^21.1.0",
     "@commitlint/config-conventional": "^21.1.0",
-    "@playwright/test": "^1.49.0",
     "@size-limit/preset-small-lib": "^12.1.0",
     "@storybook/addon-essentials": "^8.6.18",
     "@storybook/addon-interactions": "^8.6.18",
