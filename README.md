@@ -1284,3 +1284,22 @@ function AnchorInfo() {
 | `refetch` | `() => Promise<void>` | Force a refetch, bypassing the cache |
 
 Passing `null` or `undefined` as the domain keeps the hook idle and clears any previous result.
+
+---
+
+## Sponsors
+
+stellar-hooks is open source and maintained in spare time. Sponsorship pays for maintenance, testnet and CI
+costs, and the bounties on [`good first issue`](BOUNTIES.md) items.
+
+Thank you to everyone who sponsors the project. There are no sponsors listed yet; yours would be the first.
+
+**Ways to support the project**
+
+- Sponsor the maintainers through the **Sponsor** button on the repository (configured in
+  [`.github/FUNDING.yml`](.github/FUNDING.yml)).
+- Fund a bounty on an open issue; see [BOUNTIES.md](BOUNTIES.md).
+- Contribute code, docs or bug reports; see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+How funding is used is described in [docs/funding.md](docs/funding.md). Companies that rely on stellar-hooks and
+want their logo here can open an issue or contact the maintainers.

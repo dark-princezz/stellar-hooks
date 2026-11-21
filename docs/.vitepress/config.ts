@@ -80,6 +80,8 @@ export default defineConfig({
           text: 'Reference',
           items: [
             { text: 'Migration Guide', link: '/guide/migration' },
+            { text: 'Migrating from soroban-react', link: '/guides/migrate-from-soroban-react' },
+            { text: 'Funding & Sustainability', link: '/funding' },
             { text: 'Troubleshooting', link: '/guide/troubleshooting' },
             { text: 'Changelog', link: '/guide/changelog' },
             { text: 'Changelog Format Guide', link: '/guides/changelog-format-guide' },
