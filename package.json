@@ -16,6 +16,7 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test:testnet": "vitest run tests/integration/testnet",
+    "test:templates": "node scripts/smoke-test-templates.mjs",
     "check:circular": "node scripts/check-circular-deps.mjs",
     "check:circular:warn": "node scripts/check-circular-deps.mjs --warn",
     "check:circular:graph": "node scripts/check-circular-deps.mjs --graph",

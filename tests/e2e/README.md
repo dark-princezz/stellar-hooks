@@ -105,3 +105,9 @@ Current tests cover:
 - Ensure test account has sufficient XLM balance
 - Verify destination address is valid on testnet
 - Check network status at https://status.stellar.org
+
+## Tests without the extension
+
+Tests that use a mocked wallet (no Freighter extension) live in `tests/e2e-mock/` and run with
+`npm run test:e2e:mock`. `fixtures/mock-wallet.ts` documents how the mock answers Freighter's messages. See
+`.github/workflows/e2e-testnet.yml` for the CI job.

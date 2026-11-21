@@ -529,6 +529,22 @@ export {
 } from "./utils/historyExport";
 export type { HistoryFilter, NormalizedHistoryEntry } from "./utils/historyExport";
 
+export {
+  buildPaymentReceipt,
+  receiptFromHorizon,
+  receiptToText,
+  receiptToJson,
+  receiptToHtml,
+  receiptFilename,
+  downloadReceipt,
+  explorerTransactionUrl,
+  ReceiptError,
+  RECEIPT_SCHEMA_VERSION,
+} from "./utils/receipt";
+export type { PaymentReceipt, PaymentReceiptInput, ReceiptFormat } from "./utils/receipt";
+export { usePaymentReceipt } from "./hooks/usePaymentReceipt";
+export type { UsePaymentReceiptReturn } from "./hooks/usePaymentReceipt";
+
 export { useOfferBook } from "./hooks/useOfferBook";
 export type { UseOfferBookOptions } from "./hooks/useOfferBook";
 
