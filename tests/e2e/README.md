@@ -105,3 +105,30 @@ Current tests cover:
 - Ensure test account has sufficient XLM balance
 - Verify destination address is valid on testnet
 - Check network status at https://status.stellar.org
+
+## Accessibility checks (#1202)
+
+Import `test` and `expect` from `./fixtures/a11y` instead of `@playwright/test`. Every page a test loads is
+scanned with axe-core (WCAG 2.0/2.1 A and AA) and the test fails on any violated rule that is not listed for that
+page in `a11y-baseline.json`. Full results are attached to each test as `a11y-<page>.json`. For states a plain load
+does not reach (an open dialog, an error message), call `expectNoNewA11yViolations(page, "name", testInfo)`.
+
+```bash
+npm run test:e2e:a11y
+```
+
+Fixing a violation: remove its rule id from the baseline. Do not add ids to the baseline to make a failure go away
+unless an issue is linked in the PR.
+
+## Flaky tests and quarantine (#1203)
+
+The `flaky-reporter` runs with every `playwright test`. It writes `flaky-report.json` and, in GitHub Actions, adds a
+table to the job summary listing tests that **passed only after a retry** (flaky) and which quarantined tests ran.
+
+To quarantine a flaky test:
+
+1. Open an issue describing the flake and link the failing run.
+2. Tag the test: `test("connects @quarantine", async ({ page }) => { ... })`, with a comment pointing at the issue.
+3. The default run skips `@quarantine` tests. The scheduled `E2E quality` workflow runs only them
+   (`npm run test:e2e:quarantined`) without failing the build, and the summary shows which pass.
+4. When a quarantined test passes consistently, fix the issue, remove the tag, and close the issue.

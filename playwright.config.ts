@@ -18,7 +18,10 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1, // Single worker to avoid extension conflicts
-  reporter: "html",
+  // Quarantined tests (tagged @quarantine) are skipped by default; `npm run test:e2e:quarantined` runs only them.
+  grepInvert: process.env.E2E_QUARANTINED ? undefined : /@quarantine/,
+  grep: process.env.E2E_QUARANTINED ? /@quarantine/ : undefined,
+  reporter: [["html"], ["list"], ["./tests/e2e/reporters/flaky-reporter.ts"]],
   use: {
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
@@ -26,7 +29,14 @@ export default defineConfig({
   },
   projects: [
     {
+      // Accessibility scan of the example app; needs no wallet extension (#1202).
+      name: "a11y",
+      testMatch: /a11y\.spec\.ts/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
       name: "chromium-with-freighter",
+      testIgnore: /a11y\.spec\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         channel: "chrome", // Use Chrome for extension support
