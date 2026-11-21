@@ -1,0 +1,68 @@
+name: Visual regression
+
+on:
+  pull_request:
+    paths:
+      - "src/components/**"
+      - "src/stories/**"
+      - ".storybook/**"
+      - "tests/visual/**"
+      - "playwright.visual.config.ts"
+      - ".github/workflows/visual-regression.yml"
+  workflow_dispatch:
+    inputs:
+      update:
+        description: "Regenerate the baselines and upload them as an artifact"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  visual:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build Storybook
+        run: npx storybook build --quiet
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Regenerate baselines
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.update }}
+        run: npm run test:visual:update
+      - name: Upload baselines
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.update }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-baselines
+          path: tests/visual/__screenshots__/
+
+      - name: Check for committed baselines
+        id: baselines
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.update) }}
+        run: |
+          if [ -d tests/visual/__screenshots__ ] && [ -n "$(ls -A tests/visual/__screenshots__)" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No visual baselines are committed yet. Run this workflow with update=true, then commit the visual-baselines artifact."
+          fi
+      - name: Compare screenshots
+        if: ${{ steps.baselines.outputs.present == 'true' }}
+        run: npm run test:visual
+      - name: Upload report
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-report
+          path: |
+            playwright-report/
+            test-results/
