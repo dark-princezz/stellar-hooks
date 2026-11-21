@@ -115,6 +115,8 @@ export default defineConfig({
           text: 'Transaction Hooks',
           items: [
             { text: 'usePayment', link: '/hooks/use-payment' },
+            { text: 'useInvoice', link: '/hooks/use-invoice' },
+            { text: 'useRefund', link: '/hooks/use-refund' },
             { text: 'usePathPayment', link: '/hooks/use-path-payment' },
             { text: 'useTransaction', link: '/hooks/use-transaction' },
             { text: 'useMultiOperationTransaction', link: '/hooks/use-multi-operation-transaction' },

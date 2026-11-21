@@ -104,6 +104,25 @@ export type {
   UsePaymentOptions,
   UsePaymentReturn,
 } from "./hooks/usePayment";
+export { useInvoice } from "./hooks/useInvoice";
+export type {
+  InvoiceStatus,
+  InvoiceMatchedPayment,
+  UseInvoiceOptions,
+  UseInvoiceReturn,
+} from "./hooks/useInvoice";
+export { useRefund } from "./hooks/useRefund";
+export type {
+  UseRefundOptions,
+  UseRefundReturn,
+} from "./hooks/useRefund";
+export { buildRefundPayment, validateRefund } from "./utils/refund";
+export type {
+  ReceivedPaymentInfo,
+  RefundPaymentOptions,
+  RefundValidationResult,
+  RefundPaymentResult,
+} from "./utils/refund";
 export { useBumpSequence } from "./hooks/useBumpSequence";
 export type {
   UseBumpSequenceOptions,
