@@ -1,0 +1,54 @@
+name: E2E (mock wallet, testnet)
+
+# Runs the main example-app flows in a real browser with the mocked wallet (tests/e2e-mock). The offline wallet
+# tests run on pull requests; the scheduled run also runs the flows that hit the public testnet through Friendbot.
+on:
+  pull_request:
+    paths:
+      - "tests/e2e-mock/**"
+      - "examples/e2e-test-app/**"
+      - "playwright.mock.config.ts"
+      - ".github/workflows/e2e-testnet.yml"
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    name: ${{ github.event_name == 'pull_request' && 'Mock wallet (offline)' || 'Mock wallet + testnet' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build the library (the example app imports it)
+        run: npx tsup
+      - name: Install the example app
+        run: npm install --prefix examples/e2e-test-app
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+      - name: Run offline wallet tests
+        if: ${{ github.event_name == 'pull_request' }}
+        run: npx playwright test -c playwright.mock.config.ts wallet.mock.spec.ts
+      - name: Run all tests including testnet flows
+        if: ${{ github.event_name != 'pull_request' }}
+        run: npm run test:e2e:mock
+      - name: Upload report
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-mock-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+      - name: Report scheduled failure
+        if: ${{ failure() && github.event_name == 'schedule' }}
+        run: echo "::error::Scheduled testnet end-to-end run failed; see the e2e-mock-report artifact."
