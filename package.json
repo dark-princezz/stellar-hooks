@@ -16,9 +16,9 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test:testnet": "vitest run tests/integration/testnet",
-    "test:e2e": "playwright test",
-    "test:e2e:a11y": "playwright test --project=a11y",
-    "test:e2e:quarantined": "cross-env E2E_QUARANTINED=1 playwright test",
+    "test:e2e:mock": "playwright test -c playwright.mock.config.ts",
+    "test:visual": "playwright test -c playwright.visual.config.ts",
+    "test:visual:update": "playwright test -c playwright.visual.config.ts --update-snapshots",
     "check:circular": "node scripts/check-circular-deps.mjs",
     "check:circular:warn": "node scripts/check-circular-deps.mjs --warn",
     "check:circular:graph": "node scripts/check-circular-deps.mjs --graph",
@@ -1012,7 +1012,6 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.10.0",
     "@changesets/cli": "^2.31.1",
     "@commitlint/cli": "^21.1.0",
     "@commitlint/config-conventional": "^21.1.0",
