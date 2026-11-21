@@ -1,0 +1,6 @@
+{
+  "_comment": "Accepted axe rule ids per page, so existing violations do not block work while new ones fail. Remove ids as they are fixed; never add one without an issue link in the PR.",
+  "pages": {
+    "home": []
+  }
+}

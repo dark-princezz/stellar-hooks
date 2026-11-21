@@ -1,0 +1,10 @@
+# Sponsor button configuration.
+# Docs: https://docs.github.com/en/repository-and-organization/managing-your-repository-settings/displaying-a-sponsor-button-in-your-repository
+#
+# Only the channels the maintainers actually use should be enabled. GitHub Sponsors must be set up for the
+# account before the first line works. Uncomment and fill in others as they are created.
+github: [dark-princezz]
+# open_collective: your-collective
+# ko_fi: your-handle
+# liberapay: your-handle
+# custom: ["https://example.com/donate"]
