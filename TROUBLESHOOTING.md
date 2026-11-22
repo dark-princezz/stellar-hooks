@@ -13,7 +13,7 @@ App stuck on loading spinner
 ```
 
 **Causes:**
-1. Freighter extension is not installed and `isConnected()` never resolves
+1. Freighter extension is not installed and `isConnected()` does not resolves
 2. Browser message channel communication issues
 3. Running in headless/preview environments without timeout handling
 4. Extension in a different browser profile
