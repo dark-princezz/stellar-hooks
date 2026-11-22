@@ -15,6 +15,7 @@ docs/.vitepress/cache
 .kiro/
 
 # PR descriptions (generated artefacts, not part of the library source)
+CHANGES_1186-1189.md
 pull-request.md
 PR_738-741.md
 PR_726-729.md

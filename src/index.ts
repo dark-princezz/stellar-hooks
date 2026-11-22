@@ -913,7 +913,23 @@ export type { FederationRecord, FederationOptions } from "./utils/federation";
 export { useMuxedAccount } from "./hooks/useMuxedAccount";
 export type { UseMuxedAccountReturn } from "./hooks/useMuxedAccount";
 export { createMuxedAddress, parseMuxedAddress, isMuxedAddress } from "./utils/muxedAccount";
-export type { ParsedMuxedAddress } from "./utils/muxedAccount";
+export type { ParsedMuxedAddress } from "./utils/muxedAddress";
+
+export {
+  WELL_KNOWN_ASSETS,
+  normalizeAssetCode,
+  checkAssetCodeSafety,
+  isSuspiciousAssetCode,
+  checkAssetBalanceSafety,
+  useAssetSafety,
+} from "./utils/assetSafety";
+export type {
+  WellKnownAsset,
+  AssetCodeFlagReason,
+  AssetCodeMatch,
+  AssetCodeSafetyReport,
+  UseAssetSafetyOptions,
+} from "./utils/assetSafety";
 
 export { useAddressBook } from "./hooks/useAddressBook";
 export type { UseAddressBookOptions, UseAddressBookReturn } from "./hooks/useAddressBook";
