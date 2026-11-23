@@ -165,5 +165,4 @@ export * from './formatAmount';
 export * from './errorStrings';
 export * from './deprecation';
 export * from './storageAdapter';
-export * from './decodeInvocationArgs';
-export * from './decodeContractEvents';
+export * from './assetSafety';
