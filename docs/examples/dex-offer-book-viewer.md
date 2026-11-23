@@ -44,7 +44,7 @@ function OrderBookWidget() {
 }
 ```
 
-## Running the Example
+## Running all Examples
 
 ```bash
 cd examples/dex-offer-book-viewer
