@@ -223,6 +223,10 @@ export type {
 export { exportPartialXdr, importPartialXdr, mergeSignatures, toShareLink } from "./utils/partialXdr";
 export { decodeInvocationArgs } from "./utils/decodeInvocationArgs";
 export type { DecodedArgument } from "./utils/decodeInvocationArgs";
+
+export { decodeContractEvents, decodeContractEvent } from "./utils/decodeContractEvents";
+export type { DecodedEvent, DecodedEventField, DecodeEventsOptions } from "./utils/decodeContractEvents";
+
 export type {
   BuildOptions,
   SignerEntry,
