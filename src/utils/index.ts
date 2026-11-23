@@ -166,4 +166,4 @@ export * from './errorStrings';
 export * from './deprecation';
 export * from './storageAdapter';
 
-export * from './server/buildUnsignedTransaction';
+export * from './server/verifySep10Token';
