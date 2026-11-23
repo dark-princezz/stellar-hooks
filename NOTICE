@@ -1,0 +1,15 @@
+stellar-hooks
+Copyright (c) dark-princezz
+
+This project is licensed under the MIT License. See LICENSE.
+
+Third-party notices
+-------------------
+This package depends on third-party open source software. Key runtime dependencies include:
+- @stellar/stellar-sdk (Apache-2.0)
+- React (MIT)
+
+For complete dependency license information, run:
+  npx license-checker --production --summary
+
+Consumers should review transitive dependency licenses before redistribution.
