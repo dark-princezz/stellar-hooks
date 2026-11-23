@@ -56,6 +56,7 @@ The hook reference is automatically generated from source code JSDoc comments vi
 | [useNetworkConfig](/hooks/use-network-config) | Full network configuration |
 | [useHorizonServer](/hooks/use-horizon-server) | Custom Horizon queries |
 | [useNetworkStatus](/hooks/use-network-status) | Network health monitoring |
+| [useLedgerTime](/hooks/use-ledger-time) | Latest ledger + estimated network time |
 
 ## DEX Hooks
 

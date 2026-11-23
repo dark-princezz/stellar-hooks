@@ -1,8 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Ask a question
-    url: https://github.com/dark-princezz/stellar-hooks/discussions/new?category=q-a
-    about: Please ask and answer questions here.
-  - name: Request a feature
-    url: https://github.com/dark-princezz/stellar-hooks/discussions/new?category=ideas
-    about: Please suggest new features and ideas here.

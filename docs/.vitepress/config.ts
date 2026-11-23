@@ -142,6 +142,7 @@ export default defineConfig({
             { text: 'useNetworkConfig', link: '/hooks/use-network-config' },
             { text: 'useHorizonServer', link: '/hooks/use-horizon-server' },
             { text: 'useNetworkStatus', link: '/hooks/use-network-status' },
+            { text: 'useLedgerTime', link: '/hooks/use-ledger-time' },
           ]
         },
         {

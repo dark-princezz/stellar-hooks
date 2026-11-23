@@ -15,8 +15,12 @@ docs/.vitepress/cache
 .kiro/
 
 # PR descriptions (generated artefacts, not part of the library source)
+CHANGES_1186-1189.md
 pull-request.md
 PR_738-741.md
 PR_726-729.md
+CHANGES.md
+DECODE_EVENTS_README.md
 PR_788-791.md
 PR_792-793-795.md
+LEDGER_TIME_CHANGES.md
