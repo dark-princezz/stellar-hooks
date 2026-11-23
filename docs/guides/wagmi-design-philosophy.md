@@ -1,5 +1,7 @@
 # Wagmi-Inspired Design Philosophy
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 If you are coming to the Stellar and Soroban ecosystem from Ethereum or EVM-compatible tooling, you are likely familiar with **wagmi**—the premier React hooks library for Ethereum. 
 
 `stellar-hooks` was built with a deliberate **wagmi-inspired architecture**. Our goal is to eliminate the friction and redundant boilerplate of working directly with the Stellar JavaScript SDK (`@stellar/stellar-sdk`) and Freighter API by providing the exact mental models, hook naming conventions, and predictable return types you already know.

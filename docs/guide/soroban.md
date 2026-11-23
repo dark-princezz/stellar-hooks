@@ -1,5 +1,7 @@
 # Soroban Contracts
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Interact with Soroban smart contracts using stellar-hooks.
 
 ## Overview

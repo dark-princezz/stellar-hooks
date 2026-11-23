@@ -1,5 +1,7 @@
 # Error Handling Patterns
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 `stellar-hooks` does not use one single error strategy everywhere. Some hooks expose a simple `error: Error | null`, some return typed transaction errors, some collect per-item failures, and a few treat "missing data" as a valid `null` result instead of an exception.
 
 This guide groups those patterns so you know what to render, what to retry, and which hooks should be wrapped in `try/catch`.

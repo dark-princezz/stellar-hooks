@@ -1,5 +1,7 @@
 # Introduction
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 `stellar-hooks` is a React hooks library that provides a declarative interface for building Stellar and Soroban applications. It's designed to make Stellar development feel like modern web development with React.
 
 ## Why stellar-hooks?

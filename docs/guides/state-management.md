@@ -1,5 +1,7 @@
 # Choosing between built-in context and an external store
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 stellar-hooks keeps its own state (network, hook results) in `<StellarProvider>`. Wallet and account
 state can additionally be mirrored into the store your app already uses.
 

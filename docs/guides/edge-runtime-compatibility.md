@@ -1,5 +1,7 @@
 # Edge Runtime Compatibility
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 This guide documents edge runtime compatibility for non-React stellar-hooks utilities.
 
 ## Scope

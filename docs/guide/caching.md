@@ -1,5 +1,7 @@
 # Caching & Performance
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Optimize your application with caching strategies.
 
 ## Built-in Caching

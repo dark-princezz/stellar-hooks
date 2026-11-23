@@ -1,5 +1,7 @@
 # Release runbook
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 ## Overview
 
 `stellar-hooks` uses **semantic-release** for automated versioning, changelog generation, and npm publishing. Releases are fully automated: no manual version bumps, no manual changelog edits. The only human action required is writing conventional commits.

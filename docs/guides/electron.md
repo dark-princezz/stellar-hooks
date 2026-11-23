@@ -1,5 +1,7 @@
 # Electron integration guide
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 ## Overview
 
 Electron apps do not have normal browser wallet extensions available. Use wallet-connect style flows, hardware-backed signers, or explicit signing bridges.

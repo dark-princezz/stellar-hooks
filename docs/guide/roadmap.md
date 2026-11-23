@@ -1,5 +1,7 @@
 # Public Roadmap & Milestones
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 This page outlines the public development roadmap for **stellar-hooks**.
 
 We track issues, features, and release planning using our public **[GitHub Projects Roadmap Board](https://github.com/dark-princezz/stellar-hooks/projects)**, where open issues are organized by milestone so contributors can see what's planned next at a glance.

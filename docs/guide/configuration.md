@@ -1,5 +1,7 @@
 # Configuration
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Configure `stellar-hooks` for your application's needs.
 
 ## StellarProvider

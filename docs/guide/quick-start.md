@@ -1,12 +1,30 @@
 # Quick Start
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Get a stellar-hooks application running in just a few minutes.
 
 ## 1. Install the Package
 
-```bash
+::: code-group
+
+```sh [npm]
 npm install stellar-hooks
 ```
+
+```sh [yarn]
+yarn add stellar-hooks
+```
+
+```sh [pnpm]
+pnpm add stellar-hooks
+```
+
+```sh [bun]
+bun add stellar-hooks
+```
+
+:::
 
 ## 2. Set Up the Provider
 

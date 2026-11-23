@@ -1,0 +1,41 @@
+name: Link check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "README.md"
+      - "scripts/check-links.mjs"
+      - "scripts/check-guide-versions.mjs"
+      - "scripts/link-allowlist.json"
+      - ".github/workflows/link-check.yml"
+  pull_request:
+    paths:
+      - "docs/**"
+      - "README.md"
+      - "scripts/check-links.mjs"
+      - "scripts/check-guide-versions.mjs"
+      - "scripts/link-allowlist.json"
+      - ".github/workflows/link-check.yml"
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-links:
+    name: Check documentation links
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check guide verification notes
+        run: npm run check:guide-versions
+      - name: Check links
+        run: npm run check:links

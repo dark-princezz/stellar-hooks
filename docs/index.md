@@ -81,9 +81,25 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 ## Installation
 
-```bash
+::: code-group
+
+```sh [npm]
 npm install stellar-hooks
 ```
+
+```sh [yarn]
+yarn add stellar-hooks
+```
+
+```sh [pnpm]
+pnpm add stellar-hooks
+```
+
+```sh [bun]
+bun add stellar-hooks
+```
+
+:::
 
 ## Community
 

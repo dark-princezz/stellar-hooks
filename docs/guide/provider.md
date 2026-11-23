@@ -1,5 +1,7 @@
 # Provider Setup
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 The `StellarProvider` is the root component that makes stellar-hooks available throughout your application.
 
 ## Overview

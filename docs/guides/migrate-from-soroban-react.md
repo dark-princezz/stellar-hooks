@@ -1,5 +1,7 @@
 # Migrating from soroban-react
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 This guide maps [`soroban-react`](https://github.com/soroban-react/soroban-react) (`@soroban-react/core`,
 `@soroban-react/contracts`, wallet connector packages) to `stellar-hooks`. The soroban-react side is
 described from its documented 9.x API; check names against the version you run.

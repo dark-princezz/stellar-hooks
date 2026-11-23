@@ -1,5 +1,7 @@
 # Migrating from `@stellar/freighter-api`
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 If you call `@stellar/freighter-api` directly, `useFreighter()` gives you the same wallet with React state
 handled for you: connection, address, network, loading and error are values you read instead of
 promises you track. It is built on `@stellar/freighter-api` v6, so the calls below map one to one.

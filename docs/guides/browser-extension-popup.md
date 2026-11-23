@@ -1,5 +1,7 @@
 # Browser extension popup integration (Manifest V3)
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 ## Overview
 
 stellar-hooks React hooks can be used in a Manifest V3 extension popup UI. The popup is a browser-like page, but it has extension CSP/storage constraints.

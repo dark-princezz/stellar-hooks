@@ -1,5 +1,7 @@
 # Changelog
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Recent changes and updates to stellar-hooks.
 
 ## Version 0.2.0

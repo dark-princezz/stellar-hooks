@@ -1,5 +1,7 @@
 # Astro islands integration
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 stellar-hooks are React hooks, so they must run inside a client-hydrated React island in Astro.
 
 ## Install

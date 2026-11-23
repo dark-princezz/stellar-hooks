@@ -1,5 +1,7 @@
 # Testing
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Test your stellar-hooks applications effectively.
 
 ## Testing Overview

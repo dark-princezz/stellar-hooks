@@ -1,0 +1,22 @@
+{
+  "./migration-guide.md": "Legacy link to a document that was moved to docs/guides/migration-guide.md; cleanup tracked separately.",
+  "../CONTRIBUTING.md": "Root CONTRIBUTING.md does not exist in this checkout; the contributing docs need to be restored.",
+  "/CHANGELOG.md": "VitePress root-relative link resolves inside docs/; the changelog lives at the repository root.",
+  "/guide/contributing": "No contributing page is published under /guide/ yet.",
+  "MIGRATION.md": "Root-level migration document is not available inside the docs tree.",
+  "./freighter-api-migration.md": "The migration page lives at docs/freighter-api-migration.md.",
+  "/hooks/use-anchor-info": "Hook documentation has not been published for this route yet.",
+  "/hooks/use-web-auth": "Hook documentation has not been published for this route yet.",
+  "/hooks/use-soroban-token-balance": "Hook documentation is published under a different filename.",
+  "COMPATIBILITY.md": "Root-level compatibility document is not available inside the docs tree.",
+  "CHANGELOG.md": "Root-level changelog is not available inside the docs tree.",
+  "/guides/rpc-endpoint-configuration": "README link is intended for the VitePress site and does not resolve from GitHub.",
+  "CONTRIBUTING.md": "Root CONTRIBUTING.md does not exist in this checkout.",
+  "https://github.com/stellar/freighter/blob/master/CHANGELOG.md": "Upstream Freighter changelog moved; needs a replacement URL.",
+  "https://xbull.app": "Site intermittently blocks automated requests; verified manually.",
+  "https://github.com/dark-princezz/stellar-hooks/projects": "GitHub returns 400 to unauthenticated link checks for the projects page.",
+  "https://github.com/dark-princezz/stellar-hooks/blob/main/CONTRIBUTING.md": "Contributing guide has not been added to the repository root.",
+  "https://github.com/dark-princezz/stellar-hooks/pull/PR_NUMBER": "Documentation placeholder, not a real pull request link.",
+  "https://github.com/soroban-react/soroban-react": "Upstream project repository is unavailable.",
+  "https://spiffamani.github.io/stellar-hooks/": "Old documentation host is no longer deployed."
+}

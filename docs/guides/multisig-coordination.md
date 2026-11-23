@@ -1,5 +1,7 @@
 # Coordinating multisig signatures without a backend
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 A multisig transaction needs signatures from several people. The transaction envelope (XDR)
 is the only thing that has to travel: each signer adds a signature and passes it on. Track
 progress with `useCollectSignatures`, which verifies each signature against the account's

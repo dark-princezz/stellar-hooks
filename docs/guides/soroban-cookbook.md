@@ -1,5 +1,7 @@
 # Soroban Contract Integration Cookbook
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 A collection of real-world patterns for integrating Soroban smart contracts using `stellar-hooks`.
 
 ## Table of Contents
