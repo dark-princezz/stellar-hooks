@@ -188,12 +188,15 @@ Every hook listed below is implemented and exported from the package entry point
 | `useOperations()` | Fetch operations for an account or transaction from Horizon; supports `includeFailed` and cursor-based pagination. |
 | `useEffects()` | Stream account effects from Horizon. |
 | `useAssets()` | Fetch and list Stellar assets via Horizon. |
+| `useAssetStats()` | Read supply, holder, and trading activity for an issued asset. |
 | `useAssetMetadata()` | Fetch asset metadata from a domain's `stellar.toml`. |
 | [`useStellarToml()`](#usestellartomldomain-options) ↓ | Fetch and parse a domain's `stellar.toml` (SEP-1); surfaces the federation server, signing key, currencies, and other well-known fields. |
 | `useOffers()` | Fetch open offers for a Stellar account with pagination helpers. |
 | `useStellarOffers()` | Fetch open offers for a Stellar account. |
 | [`useOrderBook()`](#useorderbookselling-buying-options) ↓ | Query the Stellar DEX order book for any asset pair; supports live polling. |
-| [`useTrades()`](#usestrictpublickey-options) ↓ | Fetch DEX trade history for an account with optional asset pair filtering. |
+| `useTradeHistory()` | Fetch paginated recent trades for an asset pair. |
+| `usePriceHistory()` | Fetch Horizon trade aggregations as OHLC candles. |
+| [`useTrades()`](#usetradespublickey-options) ↓ | Fetch DEX trade history for an account with optional asset pair filtering. |
 | [`useStrictSendPaths()`](#usestrictsendpathssourceasset-sourceamount-destinationassets-options) ↓ | Discover payment paths and exchange rates via Horizon's strict-send endpoint before committing to a swap. |
 | `useClaimableBalances()` | List claimable balances for an account. |
 | [`useAssetBalance()`](#useassetbalancepublickey-asset-options) ↓ | Fetch a specific asset balance (native or issued) for a given public key. |
