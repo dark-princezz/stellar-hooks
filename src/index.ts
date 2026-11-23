@@ -573,6 +573,13 @@ export type {
   UseLedgerInfoReturn,
 } from "./hooks/useLedgerInfo";
 
+export { useLedgerTime } from "./hooks/useLedgerTime";
+export type {
+  LedgerTimeSnapshot,
+  UseLedgerTimeOptions,
+  UseLedgerTimeReturn,
+} from "./hooks/useLedgerTime";
+
 export { useLiquidityPool } from "./hooks/useLiquidityPool";
 export type {
   LiquidityPoolReserve,
