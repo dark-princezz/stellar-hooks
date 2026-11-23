@@ -165,4 +165,5 @@ export * from './formatAmount';
 export * from './errorStrings';
 export * from './deprecation';
 export * from './storageAdapter';
-export * from './assetSafety';
+
+export * from './server/buildUnsignedTransaction';
