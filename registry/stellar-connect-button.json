@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "stellar-connect-button",
+  "type": "registry:component",
+  "title": "Stellar Connect Button",
+  "description": "Connect wallet button and address display powered by stellar-hooks.",
+  "dependencies": ["stellar-hooks", "@stellar/stellar-sdk"],
+  "files": [
+    {
+      "path": "registry/stellar/connect-button.tsx",
+      "type": "registry:component",
+      "content": "import { useFreighter } from 'stellar-hooks';\nexport function StellarConnectButton(){ const { isConnected, connect, publicKey } = useFreighter(); return <button onClick={connect}>{isConnected ? publicKey : 'Connect Wallet'}</button>; }\n"
+    },
+    {
+      "path": "registry/stellar/address-display.tsx",
+      "type": "registry:component",
+      "content": "export function StellarAddressDisplay({ address }: { address?: string | null }){ if(!address) return null; return <code>{address.slice(0,4)}...{address.slice(-4)}</code>; }\n"
+    }
+  ]
+}
