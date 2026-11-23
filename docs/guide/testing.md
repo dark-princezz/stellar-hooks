@@ -200,6 +200,61 @@ test('detects network mismatch', () => {
 })
 ```
 
+## Sandbox and Mock RPC Testing
+
+### Configuring the mock RPC in a consumer test suite
+
+stellar-hooks ships MSW handlers and a mock server for deterministic tests. Configure them in your test setup:
+
+```ts
+// vitest.setup.ts / jest.setup.ts
+import { server } from 'stellar-hooks/mocks/server';
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+```
+
+### Loading a scenario in tests
+
+Use the scenario helpers to simulate common failure modes without hand-writing fixtures:
+
+```ts
+import { server } from 'stellar-hooks/mocks/server';
+import { scenarios } from 'stellar-hooks/mocks/scenarios';
+
+test('handles insufficient balance', async () => {
+  server.use(...scenarios.insufficientBalance());
+  // render hook/component and assert error handling
+});
+
+test('handles bad sequence number', async () => {
+  server.use(...scenarios.badSequence());
+});
+
+test('handles RPC timeout', async () => {
+  server.use(...scenarios.rpcTimeout());
+});
+```
+
+### Record and replay RPC responses
+
+For deterministic CI runs, record real RPC responses once and replay them:
+
+```ts
+import { createRpcRecorder, createRpcReplay } from 'stellar-hooks/mocks/recordReplay';
+
+const recorder = createRpcRecorder({ fixturePath: 'fixtures/horizon.json' });
+await recorder.record(async () => {
+  // exercise real calls once
+});
+await recorder.save();
+
+// In CI / later runs
+const replay = await createRpcReplay({ fixturePath: 'fixtures/horizon.json' });
+server.use(...replay.handlers());
+```
+
 ## Transaction Testing
 
 ### Mock Transaction Submission
