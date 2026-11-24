@@ -901,6 +901,29 @@ export type {
 // Anchor (SEP-1 / SEP-24) hooks (#979, #980, #981)
 export { useAnchorInfo, stellarTomlUrl } from "./hooks/useAnchorInfo";
 export type { UseAnchorInfoOptions, UseAnchorInfoReturn } from "./hooks/useAnchorInfo";
+export { useStake, useUnstake } from "./hooks/useStake";
+export type {
+  StakingLockup,
+  UseStakeOptions,
+  UseStakeReturn,
+  UseUnstakeReturn,
+} from "./hooks/useStake";
+export { useRewards, formatUnits } from "./hooks/useRewards";
+export type { UseRewardsOptions, UseRewardsReturn } from "./hooks/useRewards";
+export { useBridgeQuote, parseBridgeQuote } from "./hooks/useBridgeQuote";
+export type {
+  BridgeQuote,
+  BridgeQuoteParams,
+  UseBridgeQuoteOptions,
+  UseBridgeQuoteReturn,
+} from "./hooks/useBridgeQuote";
+export { useBridgeTransfer } from "./hooks/useBridgeTransfer";
+export type {
+  BridgeTransfer,
+  BridgeTransferParams,
+  UseBridgeTransferOptions,
+  UseBridgeTransferReturn,
+} from "./hooks/useBridgeTransfer";
 
 export { useAnchorDeposit } from "./hooks/useAnchorDeposit";
 export type {
