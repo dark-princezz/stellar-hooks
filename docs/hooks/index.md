@@ -63,6 +63,8 @@ The hook reference is automatically generated from source code JSDoc comments vi
 | Hook | Description |
 |------|-------------|
 | [useOrderBook](/hooks/use-order-book) | DEX order book queries |
+| [useTradeHistory](/hooks/use-trade-history) | Paginated recent trades |
+| [usePriceHistory](/hooks/use-price-history) | OHLC candle data |
 | [useOffers](/hooks/use-offers) | Account offers |
 | [useStellarOffers](/hooks/use-stellar-offers) | Stellar DEX offers |
 | [useTrade](/hooks/use-trade) | DEX trading operations |
@@ -73,6 +75,7 @@ The hook reference is automatically generated from source code JSDoc comments vi
 | Hook | Description |
 |------|-------------|
 | [useStellarToml](/hooks/use-stellar-toml) | stellar.toml file parsing |
+| [useAssetStats](/hooks/use-asset-stats) | Asset supply, holders, and activity |
 | [useOperations](/hooks/use-operations) | Horizon operations |
 | [useTrustline](/hooks/use-trustline) | Trustline management |
 | [useCreateAccount](/hooks/use-create-account) | Account creation |

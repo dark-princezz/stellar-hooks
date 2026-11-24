@@ -151,6 +151,8 @@ export default defineConfig({
           text: 'DEX Hooks',
           items: [
             { text: 'useOrderBook', link: '/hooks/use-order-book' },
+            { text: 'useTradeHistory', link: '/hooks/use-trade-history' },
+            { text: 'usePriceHistory', link: '/hooks/use-price-history' },
             { text: 'useOffers', link: '/hooks/use-offers' },
             { text: 'useStellarOffers', link: '/hooks/use-stellar-offers' },
             { text: 'useTrade', link: '/hooks/use-trade' },
@@ -168,6 +170,7 @@ export default defineConfig({
             { text: 'useFeeStats', link: '/hooks/use-fee-stats' },
             { text: 'useTransactionHistory', link: '/hooks/use-transaction-history' },
             { text: 'useAssets', link: '/hooks/use-assets' },
+            { text: 'useAssetStats', link: '/hooks/use-asset-stats' },
             { text: 'useAssetSearch', link: '/hooks/use-asset-search' },
             { text: 'useNotificationPermission', link: '/hooks/use-notification-permission' },
             { text: 'useTokenAllowance', link: '/hooks/use-token-allowance' },

@@ -1,4 +1,4 @@
-# Bounty Program
+# Bounty Program and how it works
 
 To help new contributors get started, a subset of `good first issue` items carry a
 small bounty, paid through [Algora](https://algora.io) (or a similar platform).

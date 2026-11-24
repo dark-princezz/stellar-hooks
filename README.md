@@ -188,6 +188,7 @@ Every hook listed below is implemented and exported from the package entry point
 | `useOperations()` | Fetch operations for an account or transaction from Horizon; supports `includeFailed` and cursor-based pagination. |
 | `useEffects()` | Stream account effects from Horizon. |
 | `useAssets()` | Fetch and list Stellar assets via Horizon. |
+| `useAssetStats()` | Read supply, holder, and trading activity for an issued asset. |
 | `useAssetMetadata()` | Fetch asset metadata from a domain's `stellar.toml`. |
 | [`useStellarToml()`](#usestellartomldomain-options) ↓ | Fetch and parse a domain's `stellar.toml` (SEP-1); surfaces the federation server, signing key, currencies, and other well-known fields. |
 | `useOffers()` | Fetch open offers for a Stellar account with pagination helpers. |
