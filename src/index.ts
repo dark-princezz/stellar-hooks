@@ -99,6 +99,20 @@ export { useNetworkConfig } from "./hooks/useNetworkConfig";
 export { useHorizonServer } from "./hooks/useHorizonServer";
 export { useEffects } from "./hooks/useEffects";
 export { usePayment } from "./hooks/usePayment";
+export { useStellarPaymentQR } from "./hooks/useStellarPaymentQR";
+export type {
+  UseStellarPaymentQROptions,
+  UseStellarPaymentQRReturn,
+} from "./hooks/useStellarPaymentQR";
+export { useWalletDeepLink } from "./hooks/useWalletDeepLink";
+export type {
+  DeepLinkWallet,
+  WalletDeepLinkRequest,
+  UseWalletDeepLinkOptions,
+  UseWalletDeepLinkReturn,
+} from "./hooks/useWalletDeepLink";
+export { buildSep7PayUri, parseSep7PayUri, validateSep7Pay } from "./utils/sep7";
+export type { Sep7PayParams } from "./utils/sep7";
 export type {
   PaymentAsset,
   UsePaymentOptions,
