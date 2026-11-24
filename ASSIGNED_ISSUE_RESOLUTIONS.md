@@ -1,4 +1,4 @@
-# Assigned Issue Resolutions
+# Assigned Issue Resolutions analysis
 
 Analysis of the four issues currently assigned to this contributor, confirmed against
 `dark-princezz/stellar-hooks` at `c7852b7` (`main`), package version `stellar-hooks@0.2.0`.
