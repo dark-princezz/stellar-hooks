@@ -14,6 +14,20 @@ export type { DevToolsPanelProps } from "./devtools/DevToolsPanel";
 
 // Hooks
 export { useNetwork } from "./hooks/useNetwork";
+export { useSwapQuote, parseRouterQuote, computePriceImpactBps } from "./hooks/useSwapQuote";
+export type { SwapQuote, UseSwapQuoteOptions, UseSwapQuoteReturn } from "./hooks/useSwapQuote";
+export { useSwap } from "./hooks/useSwap";
+export type { SwapParams, UseSwapOptions, UseSwapReturn } from "./hooks/useSwap";
+export {
+  useSlippageTolerance,
+  getSlippageBps,
+  setSlippageBps,
+  isValidSlippageBps,
+  minReceived,
+  DEFAULT_SLIPPAGE_BPS,
+  MIN_SLIPPAGE_BPS,
+  MAX_SLIPPAGE_BPS,
+} from "./utils/slippage";
 export { useStellarNetwork } from "./hooks/useStellarNetwork";
 export type { UseStellarNetworkReturn } from "./hooks/useStellarNetwork";
 export { useFreighter } from "./hooks/useFreighter";
