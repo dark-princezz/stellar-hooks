@@ -21,8 +21,12 @@ assignees: ""
 <!-- What actually happened instead. -->
 
 ## Code Snippet / Minimal Reproduction
+Fork the [minimal reproduction starter](https://github.com/dark-princezz/stellar-hooks/tree/main/templates/minimal-repro), change only what is needed to trigger the bug, and link your fork here. A small runnable project is much easier to investigate than a large application.
+
+Repository URL:
+
 ```tsx
-// Reproducible example code here
+// Or paste the relevant snippet from src/App.tsx here
 ```
 
 ## Affected Hook(s)

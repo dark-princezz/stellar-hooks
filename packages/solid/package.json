@@ -1,0 +1,56 @@
+{
+  "name": "@stellar-hooks/solid",
+  "version": "0.1.0",
+  "private": true,
+  "sideEffects": false,
+  "description": "Prototype SolidJS primitives for Stellar and Soroban built on framework-agnostic @stellar-hooks/core.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "stellar",
+    "soroban",
+    "solid",
+    "solidjs",
+    "signals",
+    "web3",
+    "blockchain"
+  ],
+  "author": "stellar-hooks contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dark-princezz/stellar-hooks.git",
+    "directory": "packages/solid"
+  },
+  "peerDependencies": {
+    "@stellar-hooks/core": "^0.2.0",
+    "@stellar/freighter-api": "^6.0.0",
+    "@stellar/stellar-sdk": "^13.0.0",
+    "solid-js": "^1.8.0"
+  },
+  "devDependencies": {
+    "@stellar-hooks/core": "file:../core",
+    "@stellar/freighter-api": "6.0.1",
+    "@stellar/stellar-sdk": "13.3.0",
+    "solid-js": "^1.8.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  }
+}

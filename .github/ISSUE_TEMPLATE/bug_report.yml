@@ -50,7 +50,8 @@ body:
     id: code
     attributes:
       label: "Code snippet / reproduction"
-      description: "Please provide a minimal reproduction repository link or a code snippet that reproduces the issue."
+      description: "Fork the minimal reproduction starter (https://github.com/dark-princezz/stellar-hooks/tree/main/templates/minimal-repro), change only what is needed to trigger the bug, and paste the link here. A short code snippet is also welcome."
+      placeholder: "https://github.com/<your-account>/stellar-hooks-minimal-repro"
       render: tsx
     validations:
       required: false
