@@ -672,6 +672,27 @@ export type {
   UseOrderBookReturn,
 } from "./hooks/useOrderBook";
 
+export { useTradeHistory } from "./hooks/useTradeHistory";
+export type {
+  TradeHistoryEntry,
+  UseTradeHistoryOptions,
+  UseTradeHistoryReturn,
+} from "./hooks/useTradeHistory";
+
+export { usePriceHistory } from "./hooks/usePriceHistory";
+export type {
+  PriceCandle,
+  UsePriceHistoryOptions,
+  UsePriceHistoryReturn,
+} from "./hooks/usePriceHistory";
+
+export { useAssetStats } from "./hooks/useAssetStats";
+export type {
+  AssetStats,
+  UseAssetStatsOptions,
+  UseAssetStatsReturn,
+} from "./hooks/useAssetStats";
+
 export { useStrictSendPaths } from "./hooks/useStrictSendPaths";
 export type {
   PathRecord,

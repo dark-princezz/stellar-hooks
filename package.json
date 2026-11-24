@@ -18,6 +18,7 @@
     "test:testnet": "vitest run tests/integration/testnet",
     "test:templates": "node scripts/smoke-test-templates.mjs",
     "check:circular": "node scripts/check-circular-deps.mjs",
+    "check:snippets": "node scripts/check-snippets.mjs",
     "check:circular:warn": "node scripts/check-circular-deps.mjs --warn",
     "check:circular:graph": "node scripts/check-circular-deps.mjs --graph",
     "commitlint": "commitlint --edit",
@@ -109,6 +110,17 @@
       "require": {
         "types": "./dist/hooks/useAssetSearch.d.ts",
         "default": "./dist/hooks/useAssetSearch.js"
+      }
+    },
+    "./useAssetStats": {
+      "types": "./dist/hooks/useAssetStats.d.ts",
+      "import": {
+        "types": "./dist/hooks/useAssetStats.d.mts",
+        "default": "./dist/hooks/useAssetStats.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useAssetStats.d.ts",
+        "default": "./dist/hooks/useAssetStats.js"
       }
     },
     "./useAssets": {
@@ -804,6 +816,17 @@
         "default": "./dist/hooks/useStrictSendPaths.js"
       }
     },
+    "./usePriceHistory": {
+      "types": "./dist/hooks/usePriceHistory.d.ts",
+      "import": {
+        "types": "./dist/hooks/usePriceHistory.d.mts",
+        "default": "./dist/hooks/usePriceHistory.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/usePriceHistory.d.ts",
+        "default": "./dist/hooks/usePriceHistory.js"
+      }
+    },
     "./useTrade": {
       "types": "./dist/hooks/useTrade.d.ts",
       "import": {
@@ -824,6 +847,17 @@
       "require": {
         "types": "./dist/hooks/useTrades.d.ts",
         "default": "./dist/hooks/useTrades.js"
+      }
+    },
+    "./useTradeHistory": {
+      "types": "./dist/hooks/useTradeHistory.d.ts",
+      "import": {
+        "types": "./dist/hooks/useTradeHistory.d.mts",
+        "default": "./dist/hooks/useTradeHistory.mjs"
+      },
+      "require": {
+        "types": "./dist/hooks/useTradeHistory.d.ts",
+        "default": "./dist/hooks/useTradeHistory.js"
       }
     },
     "./useTransaction": {
