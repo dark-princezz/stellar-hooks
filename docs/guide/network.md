@@ -1,5 +1,7 @@
 # Network Management
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Learn how to manage Stellar networks in your application.
 
 ## Network Basics

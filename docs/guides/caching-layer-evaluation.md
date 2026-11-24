@@ -1,5 +1,7 @@
 # Architectural Evaluation: React Query & SWR Optional Caching Layers
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 ## Overview
 
 Stellar and Soroban decentralized applications frequently encounter redundant network traffic. Multiple components across a component tree may request the same Stellar account, balance, ledger entry, or contract simulation within milliseconds of one another.

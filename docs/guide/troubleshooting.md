@@ -1,5 +1,7 @@
 # Troubleshooting
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Common issues and their solutions.
 
 ## Freighter Connection Issues

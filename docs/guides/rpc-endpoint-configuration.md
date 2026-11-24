@@ -1,5 +1,7 @@
 # Soroban RPC Endpoint Configuration
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 This guide explains how to configure custom RPC and Horizon endpoints for testnet, futurenet, mainnet, or your own custom network.
 
 ## Quick Start

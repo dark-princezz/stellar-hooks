@@ -1,5 +1,7 @@
 # Soroban resource limits and fees
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Every Soroban transaction declares the resources it will use. If a call needs more than a limit allows,
 it fails; if it declares more, you pay more. Simulate first and use the numbers.
 

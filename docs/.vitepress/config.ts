@@ -25,6 +25,7 @@ export default defineConfig({
     
     nav: [
       { text: 'Guide', link: '/guide/introduction' },
+      { text: 'FAQ', link: '/guide/faq' },
       { text: 'Hooks', link: '/hooks/' },
       { text: 'API', link: '/api/' },
       { text: 'Examples', link: '/examples/' },
@@ -79,6 +80,7 @@ export default defineConfig({
         {
           text: 'Reference',
           items: [
+            { text: 'FAQ', link: '/guide/faq' },
             { text: 'Migration Guide', link: '/guide/migration' },
             { text: 'Migrating from freighter-api', link: '/guides/migrate-from-freighter-api' },
             { text: 'Migrating from Stellar Wallets Kit', link: '/guides/migrate-from-stellar-wallets-kit' },

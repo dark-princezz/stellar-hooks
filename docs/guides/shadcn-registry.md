@@ -1,5 +1,7 @@
 # shadcn/ui registry entry
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Package connect button and address display components for installation via shadcn CLI.
 
 ## Registry item (example)

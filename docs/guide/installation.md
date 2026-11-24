@@ -1,5 +1,7 @@
 # Installation
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Get started with `stellar-hooks` in your React project.
 
 ## Prerequisites
@@ -8,23 +10,29 @@ Get started with `stellar-hooks` in your React project.
 - React 18+
 - A Stellar wallet (Freighter recommended for development)
 
-## Install via npm
+## Install
 
-```bash
+Pick your package manager; each snippet has a copy button.
+
+::: code-group
+
+```sh [npm]
 npm install stellar-hooks
 ```
 
-## Install via yarn
-
-```bash
+```sh [yarn]
 yarn add stellar-hooks
 ```
 
-## Install via pnpm
-
-```bash
+```sh [pnpm]
 pnpm add stellar-hooks
 ```
+
+```sh [bun]
+bun add stellar-hooks
+```
+
+:::
 
 ## Peer Dependencies
 
@@ -39,9 +47,25 @@ pnpm add stellar-hooks
 
 Make sure you have these installed in your project:
 
-```bash
+::: code-group
+
+```sh [npm]
 npm install react @stellar/stellar-sdk
 ```
+
+```sh [yarn]
+yarn add react @stellar/stellar-sdk
+```
+
+```sh [pnpm]
+pnpm add react @stellar/stellar-sdk
+```
+
+```sh [bun]
+bun add react @stellar/stellar-sdk
+```
+
+:::
 
 ## TypeScript Support
 

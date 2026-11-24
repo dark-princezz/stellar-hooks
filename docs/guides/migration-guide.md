@@ -1,5 +1,7 @@
 # Migration Guide: Raw stellar-sdk → stellar-hooks
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 This guide shows how to replace boilerplate `@stellar/stellar-sdk` and `@stellar/freighter-api` code with the equivalent `stellar-hooks` hook. Every before/after pair maps a common pattern you'd write by hand to the hook that replaces it.
 
 ---

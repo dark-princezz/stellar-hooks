@@ -1,5 +1,7 @@
 # Circular Dependency Audit Report
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 > **Issue:** #837 — Audit circular dependency risk between hook modules
 >
 > Tool: [madge](https://github.com/pahen/madge) v8  

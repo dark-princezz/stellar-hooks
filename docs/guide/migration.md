@@ -1,5 +1,7 @@
 # Migration Guide
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Migrate from previous versions or other Stellar libraries.
 
 ## From stellar-hooks v0.1.x

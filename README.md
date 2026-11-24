@@ -194,8 +194,6 @@ Every hook listed below is implemented and exported from the package entry point
 | `useOffers()` | Fetch open offers for a Stellar account with pagination helpers. |
 | `useStellarOffers()` | Fetch open offers for a Stellar account. |
 | [`useOrderBook()`](#useorderbookselling-buying-options) ↓ | Query the Stellar DEX order book for any asset pair; supports live polling. |
-| `useTradeHistory()` | Fetch paginated recent trades for an asset pair. |
-| `usePriceHistory()` | Fetch Horizon trade aggregations as OHLC candles. |
 | [`useTrades()`](#usetradespublickey-options) ↓ | Fetch DEX trade history for an account with optional asset pair filtering. |
 | [`useStrictSendPaths()`](#usestrictsendpathssourceasset-sourceamount-destinationassets-options) ↓ | Discover payment paths and exchange rates via Horizon's strict-send endpoint before committing to a swap. |
 | `useClaimableBalances()` | List claimable balances for an account. |
@@ -213,7 +211,7 @@ Every hook listed below is implemented and exported from the package entry point
 
 | Hook | Description |
 |------|-------------|
-| [`usePayment()`](#usepaymentoptions) ↓ | Build, sign, and submit a classic XLM / asset payment. |
+| `usePayment()` | Build, sign, and submit a classic XLM / asset payment. See the [payment hook docs](docs/hooks/use-payment.md). |
 | `usePathPayment()` | Strict send / receive path payments. |
 | [`useTransaction()`](#usetransactionoptions) ↓ | Submit a pre-signed XDR and poll until confirmed (Soroban RPC or classic Horizon). |
 | `useTrade()` | Place, modify, and cancel Stellar DEX offers. |

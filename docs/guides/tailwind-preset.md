@@ -1,5 +1,7 @@
 # Tailwind preset for optional UI components
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Use the preset to map stellar-hooks CSS variables to Tailwind theme values.
 
 ```js

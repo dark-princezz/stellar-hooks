@@ -1,5 +1,7 @@
 # CHANGELOG Entry Format Guide
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 This guide establishes the standard format for entries in [`CHANGELOG.md`](../../CHANGELOG.md). We adhere strictly to the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) standard and follow [Semantic Versioning (SemVer 2.0.0)](https://semver.org/spec/v2.0.0.html) as detailed in [`SEMVER.md`](../../SEMVER.md).
 
 ---

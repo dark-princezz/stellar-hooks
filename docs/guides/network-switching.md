@@ -1,5 +1,7 @@
 # Network Switching & Mismatch Handling
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 `stellar-hooks` lets you target **testnet**, **mainnet**, or **futurenet** (plus fully custom networks). Because a Stellar transaction is only valid on the network whose passphrase it was signed for, the single most important rule is:
 
 > **The app's configured network must match the network your wallet is connected to.** A mismatch means every signature is on the wrong network — often with funds at risk.

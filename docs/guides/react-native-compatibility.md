@@ -1,5 +1,7 @@
 # React Native Compatibility Audit
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 > **Issue:** #838 — Investigate React Native compatibility for core hooks
 >
 > This document catalogues every hook and utility that relies on browser-only globals

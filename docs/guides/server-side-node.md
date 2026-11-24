@@ -1,5 +1,7 @@
 # Server-side usage in Node.js
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 stellar-hooks includes framework-independent helpers that can be used outside React.
 
 ## What works outside React

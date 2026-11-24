@@ -1,5 +1,7 @@
 # Transaction Building
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Build and submit Stellar transactions using stellar-hooks.
 
 ## Overview

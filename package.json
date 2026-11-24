@@ -17,6 +17,8 @@
     "build-storybook": "storybook build",
     "test:testnet": "vitest run tests/integration/testnet",
     "test:templates": "node scripts/smoke-test-templates.mjs",
+    "check:links": "node scripts/check-links.mjs",
+    "check:guide-versions": "node scripts/check-guide-versions.mjs",
     "check:circular": "node scripts/check-circular-deps.mjs",
     "check:snippets": "node scripts/check-snippets.mjs",
     "check:circular:warn": "node scripts/check-circular-deps.mjs --warn",

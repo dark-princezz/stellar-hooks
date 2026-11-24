@@ -1,5 +1,7 @@
 # Public vs Internal API Boundary
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 **Issue:** [#835](https://github.com/dark-princezz/stellar-hooks/issues/835)
 
 ---

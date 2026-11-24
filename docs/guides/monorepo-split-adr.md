@@ -1,5 +1,7 @@
 # ADR: Monorepo Split into core, react, and wallets Packages
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 **Issue:** [#833](https://github.com/dark-princezz/stellar-hooks/issues/833)  
 **Status:** Accepted  
 **Date:** 2026-09-28

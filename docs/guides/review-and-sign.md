@@ -1,5 +1,7 @@
 # Building a review-and-sign screen
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Before asking a user to sign, show them what the transaction does. This guide combines the
 XDR decoder, the Soroban argument decoder and the signing hooks into one confirmation step.
 

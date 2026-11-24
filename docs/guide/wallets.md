@@ -1,5 +1,7 @@
 # Wallet Integration
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 Connect Stellar wallets to your application using stellar-hooks.
 
 ## Supported Wallets

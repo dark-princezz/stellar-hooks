@@ -1,5 +1,7 @@
 # Migrating from Stellar Wallets Kit
 
+> **Last verified:** stellar-hooks v0.2.0 (2026-11-23)
+
 [Stellar Wallets Kit](https://github.com/Creit-Tech/Stellar-Wallets-Kit) (`@creit-tech/stellar-wallets-kit`)
 gives you one API over many wallets. stellar-hooks has two ways to get the same result, depending on how much
 you want to keep from the kit:
