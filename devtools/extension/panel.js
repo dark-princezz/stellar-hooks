@@ -7,6 +7,19 @@
   let activeFilter = "all";
   let searchQuery = "";
 
+  /**
+   * JSON.stringify replacer that serializes BigInt values as decimal strings
+   * instead of throwing. Soroban contract data may contain BigInt values.
+   */
+  function bigIntReplacer(_key, value) {
+    return typeof value === "bigint" ? value.toString() : value;
+  }
+
+  /** Wrapper around JSON.stringify that never throws on BigInt values. */
+  function safeStringify(value, indent) {
+    return JSON.stringify(value, bigIntReplacer, indent);
+  }
+
   const instancesContainer = document.getElementById("instances-container");
   const inspectorContainer = document.getElementById("inspector-container");
   const searchInput = document.getElementById("search-input");
@@ -187,7 +200,7 @@
     html +=
       '<div style="color: #94a3b8; font-size: 11px; margin-bottom: 8px;">// Instance Snapshot State</div>' +
       '<pre class="state-box">' +
-      escapeHtml(JSON.stringify(entry, null, 2)) +
+      escapeHtml(safeStringify(entry, 2)) +
       "</pre>";
 
     inspectorContainer.innerHTML = html;
@@ -195,7 +208,7 @@
     const copyBtn = document.getElementById("copy-btn");
     if (copyBtn) {
       copyBtn.onclick = function () {
-        navigator.clipboard.writeText(JSON.stringify(entry, null, 2)).catch(function () {});
+        navigator.clipboard.writeText(safeStringify(entry, 2)).catch(function () {});
         copyBtn.textContent = "Copied!";
         setTimeout(function () {
           copyBtn.textContent = "Copy JSON";
