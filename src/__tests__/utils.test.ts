@@ -12,7 +12,8 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { parseAccountResponse, parseBalance } from "../utils/index";       
+import { parseAccountResponse, parseBalance } from "../utils/index";
+import { bigIntReplacer, safeJsonStringify } from "../utils/bigIntSerializer";       
 import { NETWORK_CONFIGS } from "../types";
 import type { StellarBalance } from "../types";
 import type { Horizon } from "@stellar/stellar-sdk";
@@ -302,5 +303,60 @@ describe("parseBalance", () => {
   it("handles whitespace", () => {
     expect(parseBalance(" 100.1234567 ")).toBe(100.1234567);
     expect(parseBalance("50 ")).toBe(50);
+  });
+});
+
+// ─── bigIntReplacer / safeJsonStringify ───────────────────────────────────────
+
+describe("bigIntReplacer", () => {
+  it("converts bigint values to their decimal string", () => {
+    expect(bigIntReplacer("balance", 9007199254740993n)).toBe("9007199254740993");
+    expect(bigIntReplacer("amount", 0n)).toBe("0");
+    expect(bigIntReplacer("large", BigInt("99999999999999999"))).toBe("99999999999999999");
+  });
+
+  it("passes non-bigint values through unchanged", () => {
+    expect(bigIntReplacer("n", 42)).toBe(42);
+    expect(bigIntReplacer("s", "hello")).toBe("hello");
+    expect(bigIntReplacer("b", true)).toBe(true);
+    expect(bigIntReplacer("n", null)).toBeNull();
+    expect(bigIntReplacer("arr", [1, 2])).toEqual([1, 2]);
+  });
+});
+
+describe("safeJsonStringify", () => {
+  it("serializes objects containing bigint without throwing", () => {
+    const obj = { balance: 9007199254740993n, label: "test" };
+    expect(() => safeJsonStringify(obj)).not.toThrow();
+    const parsed = JSON.parse(safeJsonStringify(obj));
+    expect(parsed.balance).toBe("9007199254740993");
+    expect(parsed.label).toBe("test");
+  });
+
+  it("handles nested bigint values", () => {
+    const obj = { outer: { inner: 123n }, arr: [1n, 2n, 3n] };
+    const parsed = JSON.parse(safeJsonStringify(obj));
+    expect(parsed.outer.inner).toBe("123");
+    expect(parsed.arr).toEqual(["1", "2", "3"]);
+  });
+
+  it("produces the same output as JSON.stringify for bigint-free values", () => {
+    const obj = { a: 1, b: "two", c: true, d: null, e: [3, 4] };
+    expect(safeJsonStringify(obj, 2)).toBe(JSON.stringify(obj, null, 2));
+  });
+
+  it("applies indent argument", () => {
+    const result = safeJsonStringify({ x: 1n }, 2);
+    expect(result).toContain("\n");
+    expect(result).toContain('"x": "1"');
+  });
+
+  it("composes with an extra replacer", () => {
+    const redact = (_key: string, val: unknown) =>
+      typeof val === "string" && val.startsWith("G") ? "[REDACTED]" : val;
+    const obj = { address: "GABC1234", balance: 500n };
+    const parsed = JSON.parse(safeJsonStringify(obj, undefined, redact));
+    expect(parsed.address).toBe("[REDACTED]");
+    expect(parsed.balance).toBe("500");
   });
 });

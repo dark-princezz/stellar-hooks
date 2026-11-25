@@ -6,6 +6,7 @@ import {
   normalizeOperation,
   type NormalizedHistoryEntry,
 } from "./historyExport";
+import { safeJsonStringify } from "./bigIntSerializer";
 
 const entry = (over: Partial<NormalizedHistoryEntry>): NormalizedHistoryEntry => ({
   id: "1",
@@ -84,5 +85,18 @@ describe("historyToJson", () => {
     const json = JSON.parse(historyToJson([entry({})], { account: "GA", now: new Date("2026-04-02T00:00:00Z") }));
     expect(json).toMatchObject({ schemaVersion: 1, generatedAt: "2026-04-02T00:00:00.000Z", account: "GA" });
     expect(json.entries[0].transactionHash).toBe("abc");
+  });
+
+  it("serializes BigInt amount values to strings without throwing", () => {
+    // NormalizedHistoryEntry uses string amounts, but verify the envelope
+    // itself is safe when other bigint-carrying data is mixed in.
+    const payload = {
+      schemaVersion: 1,
+      generatedAt: new Date("2026-04-02T00:00:00Z").toISOString(),
+      entries: [{ id: "1", balance: BigInt("9007199254740993") }],
+    };
+    expect(() => safeJsonStringify(payload, 2)).not.toThrow();
+    const parsed = JSON.parse(safeJsonStringify(payload, 2));
+    expect(parsed.entries[0].balance).toBe("9007199254740993");
   });
 });

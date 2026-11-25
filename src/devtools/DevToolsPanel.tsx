@@ -9,6 +9,7 @@ import React, { useState, useMemo, useEffect, useCallback } from "react";
 import type { HookActivitySnapshot } from "../types";
 import { useOptionalStellarHookDebugContext } from "../context";
 import { subscribeToDevToolsActivity, clearDevToolsActivity } from "./devtoolsBridge";
+import { safeJsonStringify } from "../utils/bigIntSerializer";
 
 export interface DevToolsPanelProps {
   /** Optional custom hook snapshots. If omitted, uses active context and devtools bridge. */
@@ -161,7 +162,7 @@ export function DevToolsPanel({
 
   const handleCopyState = useCallback(() => {
     if (!selectedEntry) return;
-    const json = JSON.stringify(selectedEntry, null, 2);
+    const json = safeJsonStringify(selectedEntry, 2);
     if (typeof navigator !== "undefined" && navigator.clipboard) {
       navigator.clipboard.writeText(json).catch(() => {});
     }
@@ -499,7 +500,7 @@ export function DevToolsPanel({
                   // Instance Snapshot State
                 </div>
                 <pre style={{ margin: 0, whiteSpace: "pre-wrap", wordBreak: "break-all" }}>
-                  {JSON.stringify(
+                  {safeJsonStringify(
                     {
                       id: selectedEntry.id,
                       name: selectedEntry.name,
@@ -507,7 +508,6 @@ export function DevToolsPanel({
                       lastError: selectedEntry.lastError,
                       updatedAt: selectedEntry.updatedAt,
                     },
-                    null,
                     2
                   )}
                 </pre>

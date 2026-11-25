@@ -6,6 +6,7 @@
  */
 
 import type { HookActivitySnapshot } from "../types";
+import { safeJsonStringify } from "../utils/bigIntSerializer";
 
 export type DevToolsSubscriber = (entries: HookActivitySnapshot[]) => void;
 
@@ -42,11 +43,14 @@ export function emitDevToolsActivity(entries: HookActivitySnapshot[]): void {
 
   if (typeof window !== "undefined" && typeof window.postMessage === "function") {
     try {
+      // Serialize through safeJsonStringify first so BigInt values in hook
+      // snapshots are converted to strings before structured-clone transfer.
+      const serialized = JSON.parse(safeJsonStringify({ entries }));
       window.postMessage(
         {
           source: "stellar-hooks-devtools",
           type: "HOOK_ACTIVITY_UPDATE",
-          payload: entries,
+          payload: serialized.entries,
         },
         "*"
       );

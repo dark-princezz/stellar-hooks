@@ -1,4 +1,5 @@
 import type { Horizon } from "@stellar/stellar-sdk";
+import { safeJsonStringify } from "./bigIntSerializer";
 
 /** One row of account activity in a stable, export-friendly shape. */
 export interface NormalizedHistoryEntry {
@@ -138,14 +139,13 @@ export function historyToCsv(entries: NormalizedHistoryEntry[]): string {
 
 /** Builds the documented JSON export (see {@link HISTORY_JSON_SCHEMA}). */
 export function historyToJson(entries: NormalizedHistoryEntry[], options: { account?: string; now?: Date } = {}): string {
-  return JSON.stringify(
+  return safeJsonStringify(
     {
       schemaVersion: HISTORY_JSON_SCHEMA_VERSION,
       generatedAt: (options.now ?? new Date()).toISOString(),
       ...(options.account ? { account: options.account } : {}),
       entries,
     },
-    null,
     2,
   );
 }
